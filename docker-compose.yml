@@ -1,0 +1,18 @@
+server:
+  image: ftgibran/simpli-tomcat:latest
+  container_name: tomcat-container-usecase
+  ports:
+    - "8080:8080"
+  volumes:
+    - ./target/Usecase.war:/usr/local/tomcat/webapps/ROOT.war
+  links:
+    - db
+db:
+  image: mysql:5.7
+  container_name: mysql-container-usecase
+  environment:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: usecase
+  volumes:
+    - ./src/test/resources/database/create.sql:/docker-entrypoint-initdb.d/create.sql
+    - ./src/test/resources/database/data.sql:/docker-entrypoint-initdb.d/data.sql

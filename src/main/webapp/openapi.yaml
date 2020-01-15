@@ -1,0 +1,7 @@
+openAPI:
+  info:
+    title: 'Usecase'
+    description: 'Welcome to Usecase API documentation.'
+    version: 0.1.0
+  servers:
+    - url: '/api'
