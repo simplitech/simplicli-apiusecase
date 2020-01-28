@@ -83,17 +83,17 @@ class Principal() {
 
     var idGrupoDoPrincipalFk: Long
         @Schema(required = true, maxLength = 11)
-        get() = grupoDoPrincipal1?.idGrupoDoPrincipalPk ?: 0
+        get() = grupoDoPrincipal1?.idgrupodoprincipalpk ?: 0
         set(value) {
             if (grupoDoPrincipal1 == null) {
                 grupoDoPrincipal1 = GrupoDoPrincipal()
             }
-            grupoDoPrincipal1?.idGrupoDoPrincipalPk = value
+            grupoDoPrincipal1?.idgrupodoprincipalpk = value
         }
 
     var idGrupoDoPrincipalFacultativoFk: Long?
         @Schema(maxLength = 11)
-        get() = grupoDoPrincipal2?.idGrupoDoPrincipalPk
+        get() = grupoDoPrincipal2?.idgrupodoprincipalpk
         set(value) {
             if (value == null) {
                 grupoDoPrincipal2 = null
@@ -102,7 +102,7 @@ class Principal() {
             if (grupoDoPrincipal2 == null) {
                 grupoDoPrincipal2 = GrupoDoPrincipal()
             }
-            grupoDoPrincipal2?.idGrupoDoPrincipalPk = value
+            grupoDoPrincipal2?.idgrupodoprincipalpk = value
         }
 
     fun validate(lang: LanguageHolder) {
