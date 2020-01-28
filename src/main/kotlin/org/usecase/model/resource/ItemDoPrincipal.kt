@@ -42,12 +42,12 @@ class ItemDoPrincipal() {
 
     var idPrincipalFk: Long
         @Schema(required = true, maxLength = 11)
-        get() = principal?.idprincipalpk ?: 0
+        get() = principal?.idPrincipalPk ?: 0
         set(value) {
             if (principal == null) {
                 principal = Principal()
             }
-            principal?.idprincipalpk = value
+            principal?.idPrincipalPk = value
         }
 
     fun validate(lang: LanguageHolder) {
