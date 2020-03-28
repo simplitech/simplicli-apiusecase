@@ -44,9 +44,9 @@ class TagRouter : RouterWrapper() {
     }
 
     @GET
-    @Path("/csv")
-    @Operation(tags = ["Tag"], summary = "Lists the instances of Tag to use it in a CSV file")
-    fun listCsvTag(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Tag> {
+    @Path("/export")
+    @Operation(tags = ["Tag"], summary = "Lists the instances of Tag to export as a file")
+    fun listExportTag(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Tag> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             TagProcess(context).list(param)

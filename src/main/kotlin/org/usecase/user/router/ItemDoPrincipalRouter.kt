@@ -44,9 +44,9 @@ class ItemDoPrincipalRouter : RouterWrapper() {
     }
 
     @GET
-    @Path("/csv")
-    @Operation(tags = ["ItemDoPrincipal"], summary = "Lists the instances of ItemDoPrincipal to use it in a CSV file")
-    fun listCsvItemDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ItemDoPrincipal> {
+    @Path("/export")
+    @Operation(tags = ["ItemDoPrincipal"], summary = "Lists the instances of ItemDoPrincipal to export as a file")
+    fun listExportItemDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ItemDoPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ItemDoPrincipalProcess(context).list(param)

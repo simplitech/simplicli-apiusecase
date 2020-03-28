@@ -44,9 +44,9 @@ class EnderecoRouter : RouterWrapper() {
     }
 
     @GET
-    @Path("/csv")
-    @Operation(tags = ["Endereco"], summary = "Lists the instances of Endereco to use it in a CSV file")
-    fun listCsvEndereco(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Endereco> {
+    @Path("/export")
+    @Operation(tags = ["Endereco"], summary = "Lists the instances of Endereco to export as a file")
+    fun listExportEndereco(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Endereco> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             EnderecoProcess(context).list(param)
