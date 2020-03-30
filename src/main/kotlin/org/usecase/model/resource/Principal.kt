@@ -1,15 +1,12 @@
 package org.usecase.model.resource
 
 import org.usecase.exception.response.BadRequestException
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.LanguageHolder
 import br.com.simpli.sql.ResultBuilder
 import br.com.simpli.sql.Query
 import br.com.simpli.tools.Validator
 import io.swagger.v3.oas.annotations.media.Schema
-import java.sql.ResultSet
 import java.util.Date
-import javax.ws.rs.PathParam
 import javax.xml.bind.annotation.XmlRootElement
 
 /**
@@ -177,39 +174,39 @@ class Principal() {
         }
     }
 
-    constructor(rs: ResultBuilder) : this() {
-        idPrincipalPk = rs.getLong("idPrincipalPk")
-        textoObrigatorio = rs.getString("textoObrigatorio")
-        textoFacultativo = rs.getString("textoFacultativo")
-        decimalObrigatorio = rs.getDouble("decimalObrigatorio")
-        decimalFacultativo = rs.getDoubleOrNull("decimalFacultativo")
-        inteiroObrigatorio = rs.getLong("inteiroObrigatorio")
-        inteiroFacultativo = rs.getLongOrNull("inteiroFacultativo")
-        booleanoObrigatorio = rs.getBoolean("booleanoObrigatorio")
-        booleanoFacultativo = rs.getBooleanOrNull("booleanoFacultativo")
-        dataObrigatoria = rs.getTimestamp("dataObrigatoria")
-        dataFacultativa = rs.getTimestamp("dataFacultativa")
-        datahoraObrigatoria = rs.getTimestamp("datahoraObrigatoria")
-        datahoraFacultativa = rs.getTimestamp("datahoraFacultativa")
-        ativo = rs.getBoolean("ativo")
-        email = rs.getString("email")
-        senha = rs.getString("senha")
-        urlImagem = rs.getString("urlImagem")
-        url = rs.getString("url")
-        idGrupoDoPrincipalFk = rs.getLong("idGrupoDoPrincipalFk")
-        idGrupoDoPrincipalFacultativoFk = rs.getLongOrNull("idGrupoDoPrincipalFacultativoFk")
-        unico = rs.getString("unico")
-        dataCriacao = rs.getTimestamp("dataCriacao")
-        dataAlteracao = rs.getTimestamp("dataAlteracao")
-        nome = rs.getString("nome")
-        titulo = rs.getString("titulo")
-        cpf = rs.getString("cpf")
-        cnpj = rs.getString("cnpj")
-        rg = rs.getString("rg")
-        celular = rs.getString("celular")
-        textoGrande = rs.getString("textoGrande")
-        snakeCase = rs.getString("snake_case")
-        preco = rs.getDoubleOrNull("preco")
+    constructor(rb: ResultBuilder) : this() {
+        idPrincipalPk = rb.getLong("idPrincipalPk")
+        textoObrigatorio = rb.getString("textoObrigatorio")
+        textoFacultativo = rb.getString("textoFacultativo")
+        decimalObrigatorio = rb.getDouble("decimalObrigatorio")
+        decimalFacultativo = rb.getDoubleOrNull("decimalFacultativo")
+        inteiroObrigatorio = rb.getLong("inteiroObrigatorio")
+        inteiroFacultativo = rb.getLongOrNull("inteiroFacultativo")
+        booleanoObrigatorio = rb.getBoolean("booleanoObrigatorio")
+        booleanoFacultativo = rb.getBooleanOrNull("booleanoFacultativo")
+        dataObrigatoria = rb.getTimestamp("dataObrigatoria")
+        dataFacultativa = rb.getTimestamp("dataFacultativa")
+        datahoraObrigatoria = rb.getTimestamp("datahoraObrigatoria")
+        datahoraFacultativa = rb.getTimestamp("datahoraFacultativa")
+        ativo = rb.getBoolean("ativo")
+        email = rb.getString("email")
+        senha = rb.getString("senha")
+        urlImagem = rb.getString("urlImagem")
+        url = rb.getString("url")
+        idGrupoDoPrincipalFk = rb.getLong("idGrupoDoPrincipalFk")
+        idGrupoDoPrincipalFacultativoFk = rb.getLongOrNull("idGrupoDoPrincipalFacultativoFk")
+        unico = rb.getString("unico")
+        dataCriacao = rb.getTimestamp("dataCriacao")
+        dataAlteracao = rb.getTimestamp("dataAlteracao")
+        nome = rb.getString("nome")
+        titulo = rb.getString("titulo")
+        cpf = rb.getString("cpf")
+        cnpj = rb.getString("cnpj")
+        rg = rb.getString("rg")
+        celular = rb.getString("celular")
+        textoGrande = rb.getString("textoGrande")
+        snakeCase = rb.getString("snake_case")
+        preco = rb.getDoubleOrNull("preco")
     }
 
     fun updateSet() = mapOf(
