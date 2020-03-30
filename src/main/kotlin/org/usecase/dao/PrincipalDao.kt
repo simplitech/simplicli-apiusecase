@@ -4,6 +4,7 @@ import org.usecase.model.collection.ListFilter
 import org.usecase.model.resource.Principal
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.ResultBuilder
 
 /**
  * Data Access Object of Principal from table principal
@@ -14,23 +15,23 @@ class PrincipalDao(val con: AbstractConnector) {
     fun getOne(idPrincipalPk: Long): Principal? {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectFields(Principal.selectFields())
                 .from("principal")
                 .whereEq("idPrincipalPk", idPrincipalPk)
 
         return con.getOne(query) {
-            Principal(it)
+            Principal(ResultBuilder(Principal.selectFields(), it, "principal"))
         }
     }
 
     fun getList(filter: ListFilter): MutableList<Principal> {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectFields(Principal.selectFields())
                 .from("principal")
                 .applyListFilter(filter)
 
-        Principal.orderMap[filter.orderBy]?.also {
+        Principal.orderMap()[filter.orderBy]?.also {
             query.orderByAsc(it, filter.ascending)
         }
 
@@ -40,7 +41,7 @@ class PrincipalDao(val con: AbstractConnector) {
         }
 
         return con.getList(query) {
-            Principal(it)
+            Principal(ResultBuilder(Principal.selectFields(), it, "principal"))
         }
     }
 
@@ -104,25 +105,25 @@ class PrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    private fun Query.applyListFilter(filter: ListFilter): Query {
-        whereEq("principal.ativo", true)
+    private fun Query.applyListFilter(filter: ListFilter, alias: String = "principal"): Query {
+        whereEq("$alias.ativo", true)
 
         filter.query?.also {
             if (it.isNotEmpty()) {
                 whereSome {
-                    whereLike("principal.idPrincipalPk", "%$it%")
-                    whereLike("principal.textoObrigatorio", "%$it%")
-                    whereLike("principal.textoFacultativo", "%$it%")
-                    whereLike("principal.email", "%$it%")
-                    whereLike("principal.unico", "%$it%")
-                    whereLike("principal.nome", "%$it%")
-                    whereLike("principal.titulo", "%$it%")
-                    whereLike("principal.cpf", "%$it%")
-                    whereLike("principal.cnpj", "%$it%")
-                    whereLike("principal.rg", "%$it%")
-                    whereLike("principal.celular", "%$it%")
-                    whereLike("principal.textoGrande", "%$it%")
-                    whereLike("principal.snake_case", "%$it%")
+                    whereLike("$alias.idPrincipalPk", "%$it%")
+                    whereLike("$alias.textoObrigatorio", "%$it%")
+                    whereLike("$alias.textoFacultativo", "%$it%")
+                    whereLike("$alias.email", "%$it%")
+                    whereLike("$alias.unico", "%$it%")
+                    whereLike("$alias.nome", "%$it%")
+                    whereLike("$alias.titulo", "%$it%")
+                    whereLike("$alias.cpf", "%$it%")
+                    whereLike("$alias.cnpj", "%$it%")
+                    whereLike("$alias.rg", "%$it%")
+                    whereLike("$alias.celular", "%$it%")
+                    whereLike("$alias.textoGrande", "%$it%")
+                    whereLike("$alias.snake_case", "%$it%")
                 }
             }
         }

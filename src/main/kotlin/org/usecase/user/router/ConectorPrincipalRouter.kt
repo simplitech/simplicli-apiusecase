@@ -44,9 +44,9 @@ class ConectorPrincipalRouter : RouterWrapper() {
     }
 
     @GET
-    @Path("/csv")
-    @Operation(tags = ["ConectorPrincipal"], summary = "Lists the instances of ConectorPrincipal to use it in a CSV file")
-    fun listCsvConectorPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ConectorPrincipal> {
+    @Path("/export")
+    @Operation(tags = ["ConectorPrincipal"], summary = "Lists the instances of ConectorPrincipal to export as a file")
+    fun listExportConectorPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ConectorPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ConectorPrincipalProcess(context).list(param)

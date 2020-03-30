@@ -1,22 +1,12 @@
 package org.usecase.model.resource
 
 import org.usecase.exception.response.BadRequestException
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.LanguageHolder
-import br.com.simpli.sql.getDouble
-import br.com.simpli.sql.getDoubleOrNull
-import br.com.simpli.sql.getLong
-import br.com.simpli.sql.getString
-import br.com.simpli.sql.getLongOrNull
-import br.com.simpli.sql.getBoolean
-import br.com.simpli.sql.getBooleanOrNull
-import br.com.simpli.sql.getTimestamp
+import br.com.simpli.sql.ResultBuilder
 import br.com.simpli.sql.Query
 import br.com.simpli.tools.Validator
 import io.swagger.v3.oas.annotations.media.Schema
-import java.sql.ResultSet
 import java.util.Date
-import javax.ws.rs.PathParam
 import javax.xml.bind.annotation.XmlRootElement
 
 /**
@@ -184,39 +174,39 @@ class Principal() {
         }
     }
 
-    constructor(rs: ResultSet, alias: String = "principal") : this() {
-        idPrincipalPk = rs.getLong(alias, "idPrincipalPk")
-        textoObrigatorio = rs.getString(alias, "textoObrigatorio")
-        textoFacultativo = rs.getString(alias, "textoFacultativo")
-        decimalObrigatorio = rs.getDouble(alias, "decimalObrigatorio")
-        decimalFacultativo = rs.getDoubleOrNull(alias, "decimalFacultativo")
-        inteiroObrigatorio = rs.getLong(alias, "inteiroObrigatorio")
-        inteiroFacultativo = rs.getLongOrNull(alias, "inteiroFacultativo")
-        booleanoObrigatorio = rs.getBoolean(alias, "booleanoObrigatorio")
-        booleanoFacultativo = rs.getBooleanOrNull(alias, "booleanoFacultativo")
-        dataObrigatoria = rs.getTimestamp(alias, "dataObrigatoria")
-        dataFacultativa = rs.getTimestamp(alias, "dataFacultativa")
-        datahoraObrigatoria = rs.getTimestamp(alias, "datahoraObrigatoria")
-        datahoraFacultativa = rs.getTimestamp(alias, "datahoraFacultativa")
-        ativo = rs.getBoolean(alias, "ativo")
-        email = rs.getString(alias, "email")
-        senha = rs.getString(alias, "senha")
-        urlImagem = rs.getString(alias, "urlImagem")
-        url = rs.getString(alias, "url")
-        idGrupoDoPrincipalFk = rs.getLong(alias, "idGrupoDoPrincipalFk")
-        idGrupoDoPrincipalFacultativoFk = rs.getLongOrNull(alias, "idGrupoDoPrincipalFacultativoFk")
-        unico = rs.getString(alias, "unico")
-        dataCriacao = rs.getTimestamp(alias, "dataCriacao")
-        dataAlteracao = rs.getTimestamp(alias, "dataAlteracao")
-        nome = rs.getString(alias, "nome")
-        titulo = rs.getString(alias, "titulo")
-        cpf = rs.getString(alias, "cpf")
-        cnpj = rs.getString(alias, "cnpj")
-        rg = rs.getString(alias, "rg")
-        celular = rs.getString(alias, "celular")
-        textoGrande = rs.getString(alias, "textoGrande")
-        snakeCase = rs.getString(alias, "snake_case")
-        preco = rs.getDoubleOrNull(alias, "preco")
+    constructor(rb: ResultBuilder) : this() {
+        idPrincipalPk = rb.getLong("idPrincipalPk")
+        textoObrigatorio = rb.getString("textoObrigatorio")
+        textoFacultativo = rb.getString("textoFacultativo")
+        decimalObrigatorio = rb.getDouble("decimalObrigatorio")
+        decimalFacultativo = rb.getDoubleOrNull("decimalFacultativo")
+        inteiroObrigatorio = rb.getLong("inteiroObrigatorio")
+        inteiroFacultativo = rb.getLongOrNull("inteiroFacultativo")
+        booleanoObrigatorio = rb.getBoolean("booleanoObrigatorio")
+        booleanoFacultativo = rb.getBooleanOrNull("booleanoFacultativo")
+        dataObrigatoria = rb.getTimestamp("dataObrigatoria")
+        dataFacultativa = rb.getTimestamp("dataFacultativa")
+        datahoraObrigatoria = rb.getTimestamp("datahoraObrigatoria")
+        datahoraFacultativa = rb.getTimestamp("datahoraFacultativa")
+        ativo = rb.getBoolean("ativo")
+        email = rb.getString("email")
+        senha = rb.getString("senha")
+        urlImagem = rb.getString("urlImagem")
+        url = rb.getString("url")
+        idGrupoDoPrincipalFk = rb.getLong("idGrupoDoPrincipalFk")
+        idGrupoDoPrincipalFacultativoFk = rb.getLongOrNull("idGrupoDoPrincipalFacultativoFk")
+        unico = rb.getString("unico")
+        dataCriacao = rb.getTimestamp("dataCriacao")
+        dataAlteracao = rb.getTimestamp("dataAlteracao")
+        nome = rb.getString("nome")
+        titulo = rb.getString("titulo")
+        cpf = rb.getString("cpf")
+        cnpj = rb.getString("cnpj")
+        rg = rb.getString("rg")
+        celular = rb.getString("celular")
+        textoGrande = rb.getString("textoGrande")
+        snakeCase = rb.getString("snake_case")
+        preco = rb.getDoubleOrNull("preco")
     }
 
     fun updateSet() = mapOf(
@@ -286,38 +276,72 @@ class Principal() {
     )
 
     companion object {
-        val orderMap = mapOf(
-                "idPrincipalPk" to "principal.idPrincipalPk",
-                "textoObrigatorio" to "principal.textoObrigatorio",
-                "textoFacultativo" to "principal.textoFacultativo",
-                "decimalObrigatorio" to "principal.decimalObrigatorio",
-                "decimalFacultativo" to "principal.decimalFacultativo",
-                "inteiroObrigatorio" to "principal.inteiroObrigatorio",
-                "inteiroFacultativo" to "principal.inteiroFacultativo",
-                "booleanoObrigatorio" to "principal.booleanoObrigatorio",
-                "booleanoFacultativo" to "principal.booleanoFacultativo",
-                "dataObrigatoria" to "principal.dataObrigatoria",
-                "dataFacultativa" to "principal.dataFacultativa",
-                "datahoraObrigatoria" to "principal.datahoraObrigatoria",
-                "datahoraFacultativa" to "principal.datahoraFacultativa",
-                "ativo" to "principal.ativo",
-                "email" to "principal.email",
-                "urlImagem" to "principal.urlImagem",
-                "url" to "principal.url",
-                "idGrupoDoPrincipalFk" to "principal.idGrupoDoPrincipalFk",
-                "idGrupoDoPrincipalFacultativoFk" to "principal.idGrupoDoPrincipalFacultativoFk",
-                "unico" to "principal.unico",
-                "dataCriacao" to "principal.dataCriacao",
-                "dataAlteracao" to "principal.dataAlteracao",
-                "nome" to "principal.nome",
-                "titulo" to "principal.titulo",
-                "cpf" to "principal.cpf",
-                "cnpj" to "principal.cnpj",
-                "rg" to "principal.rg",
-                "celular" to "principal.celular",
-                "textoGrande" to "principal.textoGrande",
-                "snakeCase" to "principal.snake_case",
-                "preco" to "principal.preco"
+        fun selectFields(alias: String = "principal") = arrayOf(
+                "$alias.idPrincipalPk",
+                "$alias.textoObrigatorio",
+                "$alias.textoFacultativo",
+                "$alias.decimalObrigatorio",
+                "$alias.decimalFacultativo",
+                "$alias.inteiroObrigatorio",
+                "$alias.inteiroFacultativo",
+                "$alias.booleanoObrigatorio",
+                "$alias.booleanoFacultativo",
+                "$alias.dataObrigatoria",
+                "$alias.dataFacultativa",
+                "$alias.datahoraObrigatoria",
+                "$alias.datahoraFacultativa",
+                "$alias.ativo",
+                "$alias.email",
+                "$alias.urlImagem",
+                "$alias.url",
+                "$alias.idGrupoDoPrincipalFk",
+                "$alias.idGrupoDoPrincipalFacultativoFk",
+                "$alias.unico",
+                "$alias.dataCriacao",
+                "$alias.dataAlteracao",
+                "$alias.nome",
+                "$alias.titulo",
+                "$alias.cpf",
+                "$alias.cnpj",
+                "$alias.rg",
+                "$alias.celular",
+                "$alias.textoGrande",
+                "$alias.snake_case",
+                "$alias.preco"
+        )
+
+        fun orderMap(alias: String = "principal") = mapOf(
+                "idPrincipalPk" to "$alias.idPrincipalPk",
+                "textoObrigatorio" to "$alias.textoObrigatorio",
+                "textoFacultativo" to "$alias.textoFacultativo",
+                "decimalObrigatorio" to "$alias.decimalObrigatorio",
+                "decimalFacultativo" to "$alias.decimalFacultativo",
+                "inteiroObrigatorio" to "$alias.inteiroObrigatorio",
+                "inteiroFacultativo" to "$alias.inteiroFacultativo",
+                "booleanoObrigatorio" to "$alias.booleanoObrigatorio",
+                "booleanoFacultativo" to "$alias.booleanoFacultativo",
+                "dataObrigatoria" to "$alias.dataObrigatoria",
+                "dataFacultativa" to "$alias.dataFacultativa",
+                "datahoraObrigatoria" to "$alias.datahoraObrigatoria",
+                "datahoraFacultativa" to "$alias.datahoraFacultativa",
+                "ativo" to "$alias.ativo",
+                "email" to "$alias.email",
+                "urlImagem" to "$alias.urlImagem",
+                "url" to "$alias.url",
+                "idGrupoDoPrincipalFk" to "$alias.idGrupoDoPrincipalFk",
+                "idGrupoDoPrincipalFacultativoFk" to "$alias.idGrupoDoPrincipalFacultativoFk",
+                "unico" to "$alias.unico",
+                "dataCriacao" to "$alias.dataCriacao",
+                "dataAlteracao" to "$alias.dataAlteracao",
+                "nome" to "$alias.nome",
+                "titulo" to "$alias.titulo",
+                "cpf" to "$alias.cpf",
+                "cnpj" to "$alias.cnpj",
+                "rg" to "$alias.rg",
+                "celular" to "$alias.celular",
+                "textoGrande" to "$alias.textoGrande",
+                "snakeCase" to "$alias.snake_case",
+                "preco" to "$alias.preco"
         )
     }
 }

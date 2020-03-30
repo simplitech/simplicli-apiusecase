@@ -4,6 +4,8 @@ import org.usecase.model.resource.Principal
 import org.usecase.model.resource.Tag
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.ResultBuilder
+import java.util.*
 
 /**
  * Data Access Object of TagPrincipal from table tag_principal
@@ -57,13 +59,13 @@ class TagPrincipalDao(val con: AbstractConnector) {
     fun listPrincipalOfTag(idTagFk: Long): MutableList<Principal> {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectFields(Principal.selectFields())
                 .from("principal")
                 .innerJoin("tag_principal", "principal.idprincipalpk", "tag_principal.idPrincipalFk")
                 .whereEq("tag_principal.idTagFk", idTagFk)
 
         return con.getList(query) {
-            Principal(it)
+            Principal(ResultBuilder(Principal.selectFields(), it, "principal"))
         }
     }
 

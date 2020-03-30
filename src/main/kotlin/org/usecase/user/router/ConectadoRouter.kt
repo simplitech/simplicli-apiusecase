@@ -44,9 +44,9 @@ class ConectadoRouter : RouterWrapper() {
     }
 
     @GET
-    @Path("/csv")
-    @Operation(tags = ["Conectado"], summary = "Lists the instances of Conectado to use it in a CSV file")
-    fun listCsvConectado(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Conectado> {
+    @Path("/export")
+    @Operation(tags = ["Conectado"], summary = "Lists the instances of Conectado to export as a file")
+    fun listExportConectado(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Conectado> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ConectadoProcess(context).list(param)

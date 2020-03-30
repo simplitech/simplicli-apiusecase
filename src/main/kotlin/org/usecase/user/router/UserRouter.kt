@@ -44,9 +44,9 @@ class UserRouter : RouterWrapper() {
     }
 
     @GET
-    @Path("/csv")
-    @Operation(tags = ["User"], summary = "Lists the instances of User to use it in a CSV file")
-    fun listCsvUser(@BeanParam param: DefaultParam.AuthPaged): PageCollection<User> {
+    @Path("/export")
+    @Operation(tags = ["User"], summary = "Lists the instances of User to export as a file")
+    fun listExportUser(@BeanParam param: DefaultParam.AuthPaged): PageCollection<User> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             UserProcess(context).list(param)

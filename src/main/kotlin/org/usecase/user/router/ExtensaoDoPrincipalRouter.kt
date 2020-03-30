@@ -44,9 +44,9 @@ class ExtensaoDoPrincipalRouter : RouterWrapper() {
     }
 
     @GET
-    @Path("/csv")
-    @Operation(tags = ["ExtensaoDoPrincipal"], summary = "Lists the instances of ExtensaoDoPrincipal to use it in a CSV file")
-    fun listCsvExtensaoDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ExtensaoDoPrincipal> {
+    @Path("/export")
+    @Operation(tags = ["ExtensaoDoPrincipal"], summary = "Lists the instances of ExtensaoDoPrincipal to export as a file")
+    fun listExportExtensaoDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ExtensaoDoPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ExtensaoDoPrincipalProcess(context).list(param)

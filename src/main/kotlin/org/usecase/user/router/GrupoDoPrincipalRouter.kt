@@ -44,9 +44,9 @@ class GrupoDoPrincipalRouter : RouterWrapper() {
     }
 
     @GET
-    @Path("/csv")
-    @Operation(tags = ["GrupoDoPrincipal"], summary = "Lists the instances of GrupoDoPrincipal to use it in a CSV file")
-    fun listCsvGrupoDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<GrupoDoPrincipal> {
+    @Path("/export")
+    @Operation(tags = ["GrupoDoPrincipal"], summary = "Lists the instances of GrupoDoPrincipal to export as a file")
+    fun listExportGrupoDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<GrupoDoPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             GrupoDoPrincipalProcess(context).list(param)
