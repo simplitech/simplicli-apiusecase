@@ -7,13 +7,13 @@ import org.usecase.model.resource.Principal
 import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
+import org.usecase.param.AuthPrincipalListFilter
 import javax.ws.rs.BeanParam
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.POST
-import javax.ws.rs.PUT
 import javax.ws.rs.core.MediaType
 
 /**
@@ -36,7 +36,7 @@ class PrincipalRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["Principal"], summary = "Lists the instances of Principal")
-    fun listPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Principal> {
+    fun listPrincipal(@BeanParam param: AuthPrincipalListFilter): PageCollection<Principal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             PrincipalProcess(context).list(param)
@@ -46,7 +46,7 @@ class PrincipalRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["Principal"], summary = "Lists the instances of Principal to export as a file")
-    fun listExportPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Principal> {
+    fun listExportPrincipal(@BeanParam param: AuthPrincipalListFilter): PageCollection<Principal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             PrincipalProcess(context).list(param)

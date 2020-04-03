@@ -3,7 +3,7 @@ package org.usecase.user.context
 import org.usecase.app.Env
 import org.usecase.enums.Lang
 import org.usecase.locale.EnUs
-import org.usecase.model.collection.ListFilter
+import org.usecase.model.filter.ListFilter
 import org.usecase.param.DefaultParam
 import br.com.simpli.model.LanguageHolder
 import br.com.simpli.sql.AbstractConnector

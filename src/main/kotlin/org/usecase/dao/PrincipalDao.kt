@@ -1,10 +1,11 @@
 package org.usecase.dao
 
-import org.usecase.model.collection.ListFilter
 import org.usecase.model.resource.Principal
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.ResultBuilder
+import org.usecase.rm.PrincipalRM
+import org.usecase.model.filter.PrincipalListFilter
 
 /**
  * Data Access Object of Principal from table principal
@@ -15,23 +16,23 @@ class PrincipalDao(val con: AbstractConnector) {
     fun getOne(idPrincipalPk: Long): Principal? {
         // TODO: review generated method
         val query = Query()
-                .selectFields(Principal.selectFields())
+                .selectFields(PrincipalRM.selectFields())
                 .from("principal")
                 .whereEq("idPrincipalPk", idPrincipalPk)
 
         return con.getOne(query) {
-            Principal(ResultBuilder(Principal.selectFields(), it, "principal"))
+            PrincipalRM.build(ResultBuilder(PrincipalRM.selectFields(), it, "principal"))
         }
     }
 
-    fun getList(filter: ListFilter): MutableList<Principal> {
+    fun getList(filter: PrincipalListFilter): MutableList<Principal> {
         // TODO: review generated method
         val query = Query()
-                .selectFields(Principal.selectFields())
+                .selectFields(PrincipalRM.selectFields())
                 .from("principal")
                 .applyListFilter(filter)
 
-        Principal.orderMap()[filter.orderBy]?.also {
+        PrincipalRM.orderMap()[filter.orderBy]?.also {
             query.orderByAsc(it, filter.ascending)
         }
 
@@ -41,11 +42,11 @@ class PrincipalDao(val con: AbstractConnector) {
         }
 
         return con.getList(query) {
-            Principal(ResultBuilder(Principal.selectFields(), it, "principal"))
+            PrincipalRM.build(ResultBuilder(PrincipalRM.selectFields(), it, "principal"))
         }
     }
 
-    fun count(filter: ListFilter): Int {
+    fun count(filter: PrincipalListFilter): Int {
         // TODO: review generated method
         val query = Query()
                 .countRaw("DISTINCT idPrincipalPk")
@@ -59,7 +60,7 @@ class PrincipalDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .updateTable("principal")
-                .updateSet(principal.updateSet())
+                .updateSet(PrincipalRM.updateSet(principal))
                 .whereEq("idPrincipalPk", principal.id)
 
         return con.execute(query).affectedRows
@@ -69,7 +70,7 @@ class PrincipalDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .insertInto("principal")
-                .insertValues(principal.insertValues())
+                .insertValues(PrincipalRM.insertValues(principal))
 
         return con.execute(query).key
     }
@@ -105,27 +106,109 @@ class PrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    private fun Query.applyListFilter(filter: ListFilter, alias: String = "principal"): Query {
+    private fun Query.applyListFilter(filter: PrincipalListFilter, alias: String = "principal"): Query {
         whereEq("$alias.ativo", true)
 
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSome {
-                    whereLike("$alias.idPrincipalPk", "%$it%")
-                    whereLike("$alias.textoObrigatorio", "%$it%")
-                    whereLike("$alias.textoFacultativo", "%$it%")
-                    whereLike("$alias.email", "%$it%")
-                    whereLike("$alias.unico", "%$it%")
-                    whereLike("$alias.nome", "%$it%")
-                    whereLike("$alias.titulo", "%$it%")
-                    whereLike("$alias.cpf", "%$it%")
-                    whereLike("$alias.cnpj", "%$it%")
-                    whereLike("$alias.rg", "%$it%")
-                    whereLike("$alias.celular", "%$it%")
-                    whereLike("$alias.textoGrande", "%$it%")
-                    whereLike("$alias.snake_case", "%$it%")
-                }
+                whereSomeLikeThis(PrincipalRM.fieldsToSearch(alias), "%$it%")
             }
+        }
+
+        filter.idGrupoDoPrincipalFk?.also {
+            if (it.isNotEmpty()) {
+                whereIn("$alias.idGrupoDoPrincipalFk", *it.toTypedArray())
+            }
+        }
+        filter.idGrupoDoPrincipalFacultativoFk?.also {
+            if (it.isNotEmpty()) {
+                whereIn("$alias.idGrupoDoPrincipalFacultativoFk", *it.toTypedArray())
+            }
+        }
+
+        filter.minInteiroObrigatorio?.also {
+            whereGtEq("$alias.inteiroObrigatorio", it)
+        }
+        filter.maxInteiroObrigatorio?.also {
+            whereLtEq("$alias.inteiroObrigatorio", it)
+        }
+
+        filter.minDecimalObrigatorio?.also {
+            whereGtEq("$alias.decimalObrigatorio", it)
+        }
+        filter.maxDecimalObrigatorio?.also {
+            whereLtEq("$alias.decimalObrigatorio", it)
+        }
+
+        filter.booleanoObrigatorio?.also {
+            whereEq("$alias.booleanoObrigatorio", it)
+        }
+
+        filter.minDataObrigatoria?.also {
+            whereGtEq("$alias.dataObrigatoria", it)
+        }
+        filter.maxDataObrigatoria?.also {
+            whereLtEq("$alias.dataObrigatoria", it)
+        }
+
+        filter.minDatahoraObrigatoria?.also {
+            whereGtEq("$alias.datahoraObrigatoria", it)
+        }
+        filter.maxDatahoraObrigatoria?.also {
+            whereLtEq("$alias.datahoraObrigatoria", it)
+        }
+
+        filter.minDataCriacao?.also {
+            whereGtEq("$alias.dataCriacao", it)
+        }
+        filter.maxDataCriacao?.also {
+            whereLtEq("$alias.dataCriacao", it)
+        }
+
+        filter.minInteiroFacultativo?.also {
+            whereGtEq("$alias.inteiroFacultativo", it)
+        }
+        filter.maxInteiroFacultativo?.also {
+            whereLtEq("$alias.inteiroFacultativo", it)
+        }
+
+        filter.minDecimalFacultativo?.also {
+            whereGtEq("$alias.decimalFacultativo", it)
+        }
+        filter.maxDecimalFacultativo?.also {
+            whereLtEq("$alias.decimalFacultativo", it)
+        }
+
+        filter.booleanoFacultativo?.also {
+            whereEq("$alias.booleanoFacultativo", it)
+        }
+
+        filter.minDataFacultativa?.also {
+            whereGtEq("$alias.dataFacultativa", it)
+        }
+        filter.maxDataFacultativa?.also {
+            whereLtEq("$alias.dataFacultativa", it)
+        }
+
+        filter.minDatahoraFacultativa?.also {
+            whereGtEq("$alias.datahoraFacultativa", it)
+        }
+        filter.maxDatahoraFacultativa?.also {
+            whereLtEq("$alias.datahoraFacultativa", it)
+        }
+
+        filter.minDataAlteracao?.also {
+            whereGtEq("$alias.dataAlteracao", it)
+        }
+        filter.maxDataAlteracao?.also {
+            whereLtEq("$alias.dataAlteracao", it)
+        }
+
+        filter.minPreco?.also {
+            whereGtEq("$alias.preco", it)
+        }
+        filter.maxPreco?.also {
+            whereLtEq("$alias.preco", it)
         }
 
         return this

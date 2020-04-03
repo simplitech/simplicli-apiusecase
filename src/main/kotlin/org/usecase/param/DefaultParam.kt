@@ -1,6 +1,6 @@
 package org.usecase.param
 
-import org.usecase.model.collection.ListFilter
+import org.usecase.model.filter.ListFilter
 import org.usecase.enums.Lang
 import io.swagger.v3.oas.annotations.media.Schema
 import javax.ws.rs.HeaderParam

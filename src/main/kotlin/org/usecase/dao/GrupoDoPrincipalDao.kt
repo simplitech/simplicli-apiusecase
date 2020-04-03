@@ -1,6 +1,6 @@
 package org.usecase.dao
 
-import org.usecase.model.collection.ListFilter
+import org.usecase.model.filter.ListFilter
 import org.usecase.model.resource.GrupoDoPrincipal
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query

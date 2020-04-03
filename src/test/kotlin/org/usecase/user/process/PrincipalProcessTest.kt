@@ -14,6 +14,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
 import org.junit.Ignore
 import org.junit.Test
+import org.usecase.param.AuthPrincipalListFilter
 
 /**
  * Tests Principal business logic
@@ -23,7 +24,7 @@ class PrincipalProcessTest : ProcessTest() {
     private val id = 1L
     private val model = Principal()
 
-    private val listFilter = DefaultParam.AuthPaged()
+    private val listFilter = AuthPrincipalListFilter()
 
     private val subject = PrincipalProcess(context)
 
