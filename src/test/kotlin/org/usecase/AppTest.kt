@@ -9,7 +9,7 @@ import br.com.simpli.sql.TransacConnector
  * Extended class of database connector tests
  * @author Simpli CLI generator
  */
-open class AppTest : DaoTest(Env.props.dsName, Env.props.testerDatabase) {
+open class AppTest : DaoTest() {
     protected val transacConnector = TransacConnector(getConnection())
     protected val param = DefaultParam()
 }
