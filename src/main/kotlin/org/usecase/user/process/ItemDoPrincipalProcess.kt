@@ -2,12 +2,11 @@ package org.usecase.user.process
 
 import org.usecase.user.context.RequestContext
 import org.usecase.dao.ItemDoPrincipalDao
-import org.usecase.model.collection.ListFilter
+import org.usecase.model.filter.ListFilter
 import org.usecase.model.resource.ItemDoPrincipal
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import br.com.simpli.model.PageCollection
-import java.util.Date
 
 /**
  * ItemDoPrincipal business logic

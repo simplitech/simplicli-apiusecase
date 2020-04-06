@@ -3,11 +3,12 @@ package org.usecase.user.process
 import org.usecase.user.context.RequestContext
 import org.usecase.dao.PrincipalDao
 import org.usecase.dao.TagPrincipalDao
-import org.usecase.model.collection.ListFilter
+import org.usecase.model.filter.ListFilter
 import org.usecase.model.resource.Principal
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import br.com.simpli.model.PageCollection
+import org.usecase.model.filter.PrincipalListFilter
 import java.util.Date
 
 /**
@@ -30,7 +31,7 @@ class PrincipalProcess(val context: RequestContext) {
         return model
     }
 
-    fun list(filter: ListFilter): PageCollection<Principal> {
+    fun list(filter: PrincipalListFilter): PageCollection<Principal> {
         // TODO: review generated method
         val items = dao.getList(filter)
         val total = dao.count(filter)

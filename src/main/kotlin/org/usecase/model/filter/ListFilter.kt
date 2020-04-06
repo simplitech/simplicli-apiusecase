@@ -1,4 +1,4 @@
-package org.usecase.model.collection
+package org.usecase.model.filter
 
 /**
  * ListFilter
