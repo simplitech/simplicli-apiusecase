@@ -73,6 +73,10 @@ class Principal() {
         @Schema(required = true, maxLength = 11)
         get() = grupoDoPrincipal1?.idGrupoDoPrincipalPk ?: 0
         set(value) {
+            if (value == 0L) {
+                grupoDoPrincipal1 = null
+                return
+            }
             if (grupoDoPrincipal1 == null) {
                 grupoDoPrincipal1 = GrupoDoPrincipal()
             }
@@ -83,7 +87,7 @@ class Principal() {
         @Schema(maxLength = 11)
         get() = grupoDoPrincipal2?.idGrupoDoPrincipalPk
         set(value) {
-            if (value == null) {
+            if (value == null || value == 0L) {
                 grupoDoPrincipal2 = null
                 return
             }
