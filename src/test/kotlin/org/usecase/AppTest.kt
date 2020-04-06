@@ -1,6 +1,5 @@
 package org.usecase
 
-import org.usecase.app.Env
 import org.usecase.param.DefaultParam
 import br.com.simpli.sql.DaoTest
 import br.com.simpli.sql.TransacConnector

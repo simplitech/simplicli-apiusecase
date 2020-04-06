@@ -3,13 +3,13 @@ package org.usecase.app
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonSerializer
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonSerializationContext
 import org.joda.time.DateTime
+import org.usecase.app.Facade.Env
 import java.lang.reflect.Type
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -23,7 +23,7 @@ import javax.ws.rs.WebApplicationException
 object Cast {
 
     val builder: Gson = GsonBuilder()
-            .setDateFormat(Env.props.dateFormat)
+            .setDateFormat(Env.DATE_FORMAT)
             .registerTypeAdapter(DateTime::class.java, DateTimeTypeAdapter())
             .create()
 
@@ -50,7 +50,7 @@ object Cast {
     }
 
     internal class DateTimeTypeAdapter : JsonSerializer<DateTime>, JsonDeserializer<DateTime> {
-        private val simpleDateFormat = SimpleDateFormat(Env.props.dateFormat)
+        private val simpleDateFormat = SimpleDateFormat(Env.DATE_FORMAT)
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DateTime {
             try {

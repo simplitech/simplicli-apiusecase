@@ -1,6 +1,6 @@
 package org.usecase.wrapper
 
-import org.usecase.app.Env
+import org.usecase.app.Facade.Env
 import org.usecase.exception.HttpException
 import br.com.simpli.sql.ReadConPipe
 import br.com.simpli.sql.TransacConPipe
@@ -16,8 +16,8 @@ import javax.ws.rs.ext.ExceptionMapper
  * @author Simpli CLI generator
  */
 abstract class RouterWrapper : ExceptionMapper<Throwable> {
-    val connectionPipe = ReadConPipe(Env.props.dsName)
-    val transactionPipe = TransacConPipe(Env.props.dsName)
+    val connectionPipe = ReadConPipe(Env.DS_NAME)
+    val transactionPipe = TransacConPipe(Env.DS_NAME)
 
     override fun toResponse(e: Throwable): Response {
         Logger.getLogger(RouterWrapper::class.java.name).log(Level.SEVERE, e.message, e)
@@ -30,7 +30,7 @@ abstract class RouterWrapper : ExceptionMapper<Throwable> {
                         .build()
             }
             else -> {
-                val message = if (Env.props.detailedLog && !e.message.isNullOrEmpty()) e.message else "Unexpected Error"
+                val message = if (Env.DETAILED_LOG && !e.message.isNullOrEmpty()) e.message else "Unexpected Error"
                 Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity(ExceptionModel(message))
                         .type(MediaType.APPLICATION_JSON)

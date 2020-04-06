@@ -2,7 +2,7 @@ package org.usecase.app
 
 import org.usecase.app.Cast.builder
 import com.google.gson.Gson
-import java.io.IOException
+import org.usecase.app.Facade.Env
 import java.lang.reflect.Type
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -42,7 +42,7 @@ class AppProvider : ParamConverterProvider, ContextResolver<Gson>, ContainerResp
     }
 
     internal class DateParameterConverter : ParamConverter<Date> {
-        private val simpleDateFormat = SimpleDateFormat(Env.props.dateFormat)
+        private val simpleDateFormat = SimpleDateFormat(Env.DATE_FORMAT)
 
         override fun fromString(str: String): Date? {
             try {

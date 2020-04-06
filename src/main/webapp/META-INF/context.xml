@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Context path="/Usecase">
-<!--docker-->
     <Resource
         name="jdbc/usecaseDS"
-        url="jdbc:mysql://db:3306/usecase"
-        username="root"
-        password="root"
+        url="jdbc:mysql://${DB_URL}:3306/${DB_NAME}?useSSL=false"
+        username="${DB_USER}"
+        password="${DB_PASS}"
         auth="Container" driverClassName="com.mysql.jdbc.Driver"
         factory="org.apache.commons.dbcp.BasicDataSourceFactory"
         initialSize="1" maxActive="3" maxIdle="1"
@@ -13,18 +12,4 @@
         removeAbandonedTimeout="5" timeBetweenEvictionRunsMillis="30000"
         type="javax.sql.DataSource"
     />
-
-<!--localhost-->
-<!--    <Resource-->
-<!--            name="jdbc/usecaseDS"-->
-<!--            url="jdbc:mysql://localhost:3306/usecase"-->
-<!--            username="root"-->
-<!--            password="root"-->
-<!--            auth="Container" driverClassName="com.mysql.jdbc.Driver"-->
-<!--            factory="org.apache.commons.dbcp.BasicDataSourceFactory"-->
-<!--            initialSize="1" maxActive="3" maxIdle="1"-->
-<!--            maxWait="20000" minEvictableIdleTimeMillis="3000" minIdle="1"-->
-<!--            removeAbandonedTimeout="5" timeBetweenEvictionRunsMillis="30000"-->
-<!--            type="javax.sql.DataSource"-->
-<!--    />-->
 </Context>

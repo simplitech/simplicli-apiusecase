@@ -1,6 +1,6 @@
 package org.usecase.user.context
 
-import org.usecase.app.Env
+import org.usecase.app.Facade.Env
 import org.usecase.enums.Lang
 import org.usecase.locale.EnUs
 import org.usecase.model.filter.ListFilter
@@ -14,7 +14,7 @@ import br.com.simpli.sql.AbstractConnector
  * @author Simpli CLI generator
  */
  open class RequestContext(val con: AbstractConnector, param: DefaultParam) {
-     val lang: LanguageHolder = Env.props.availableLanguages[Lang.from(param.lang)] ?: EnUs()
+     val lang: LanguageHolder = Env.AVAILABLE_LANGUAGES[Lang.from(param.lang)] ?: EnUs()
      val clientVersion: String = param.clientVersion
 
      init {

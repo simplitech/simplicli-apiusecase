@@ -1,11 +1,8 @@
 package org.usecase.app
 
-import java.io.BufferedReader
+import org.usecase.app.Facade.Env
 import java.io.ByteArrayInputStream
-import java.io.IOException
-import java.io.InputStreamReader
 import javax.servlet.http.HttpServletRequest
-import javax.ws.rs.WebApplicationException
 import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.container.ContainerResponseContext
 import javax.ws.rs.container.ContainerResponseFilter
@@ -15,7 +12,6 @@ import javax.ws.rs.ext.ReaderInterceptor
 import javax.ws.rs.ext.ReaderInterceptorContext
 import java.util.logging.Level
 import java.util.logging.Logger
-import java.util.stream.Collectors
 
 /**
  * Request Logger
@@ -29,7 +25,7 @@ class RequestLogger : ContainerResponseFilter, ReaderInterceptor {
     var sr: HttpServletRequest? = null
 
     override fun filter(request: ContainerRequestContext, response: ContainerResponseContext) {
-        if (Env.props.detailedLog) {
+        if (Env.DETAILED_LOG) {
             Logger.getLogger(RequestLogger::class.java.name).log(Level.INFO, """
             REQUEST URI: ${request.uriInfo.requestUri}
             REQUEST METHOD: ${sr?.method}
@@ -43,7 +39,7 @@ class RequestLogger : ContainerResponseFilter, ReaderInterceptor {
     override fun aroundReadFrom(context: ReaderInterceptorContext): Any {
         val body = context.inputStream.reader(Charsets.UTF_8).readLines().joinToString("\n")
 
-        if (Env.props.detailedLog) {
+        if (Env.DETAILED_LOG) {
             Logger.getLogger(RequestLogger::class.java.name).log(Level.INFO, """
             REQUEST BODY: $body
             """)
