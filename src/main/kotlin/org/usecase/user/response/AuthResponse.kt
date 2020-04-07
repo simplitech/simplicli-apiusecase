@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Authentication Response Model
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class AuthResponse(var token: String, var user: User) {
     val id @Schema(hidden = true) get() = user.id
     val email @Schema(hidden = true) get() = user.email

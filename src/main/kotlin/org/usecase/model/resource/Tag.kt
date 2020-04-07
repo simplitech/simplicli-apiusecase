@@ -23,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Reference model of table tag
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class Tag() {
     @Schema(required = true, maxLength = 11)
     var idTagPk: Long = 0

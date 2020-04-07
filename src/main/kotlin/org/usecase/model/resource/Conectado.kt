@@ -23,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Reference model of table conectado
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class Conectado() {
     @Schema(required = true, maxLength = 11)
     var idConectadoPk: Long = 0

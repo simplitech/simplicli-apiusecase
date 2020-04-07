@@ -23,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Reference model of table extensao_do_principal
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class ExtensaoDoPrincipal() {
     @Schema(required = true, maxLength = 11)
     var idPrincipalFk: Long = 0

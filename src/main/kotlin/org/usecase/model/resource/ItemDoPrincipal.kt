@@ -23,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Reference model of table item_do_principal
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class ItemDoPrincipal() {
     @Schema(required = true, maxLength = 11)
     var idItemDoPrincipalPk: Long = 0

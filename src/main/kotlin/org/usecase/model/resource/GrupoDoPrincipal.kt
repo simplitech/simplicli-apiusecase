@@ -23,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Reference model of table grupo_do_principal
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class GrupoDoPrincipal() {
     @Schema(required = true, maxLength = 11)
     var idGrupoDoPrincipalPk: Long = 0
