@@ -11,7 +11,6 @@ import org.usecase.exception.response.BadRequestException
  * Authentication Request Model
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class AuthRequest(var email: String?, var senha: String?) {
     fun validate(lang: LanguageHolder) {
         if (email.isNullOrEmpty()) {

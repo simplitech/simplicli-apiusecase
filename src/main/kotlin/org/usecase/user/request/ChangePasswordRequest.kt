@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Change Password Request Model
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class ChangePasswordRequest(var currentPassword: String?, var newPassword: String?, var confirmPassword: String?) {
     fun validate(lang: LanguageHolder) {
         if (currentPassword.isNullOrEmpty()) {

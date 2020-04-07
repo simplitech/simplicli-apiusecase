@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Recover Password By Mail Request Model
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class RecoverPasswordByMailRequest(var email: String?) {
     fun validate(lang: LanguageHolder) {
         if (email.isNullOrEmpty()) {

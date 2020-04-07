@@ -13,9 +13,8 @@ import javax.xml.bind.annotation.XmlRootElement
  *
  * @author Simpli CLI generator
  */
-@XmlRootElement
 @Schema(description = "the main model of generator usecase")
-class Principal() {
+class Principal {
     @Schema(required = true, maxLength = 11)
     var idPrincipalPk: Long = 0
 

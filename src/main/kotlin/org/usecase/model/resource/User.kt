@@ -23,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Reference model of table user
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class User() {
     @Schema(required = true, maxLength = 11)
     var idUserPk: Long = 0

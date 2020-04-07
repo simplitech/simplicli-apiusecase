@@ -23,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Reference model of table conector_principal
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class ConectorPrincipal() {
     @Schema(required = true, maxLength = 11)
     var idPrincipalFk: Long = 0

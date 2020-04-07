@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlRootElement
  * Reset Password Request Model
  * @author Simpli CLI generator
  */
-@XmlRootElement
 class ResetPasswordRequest(var newPassword: String?, var confirmPassword: String?, var hash: String?) {
     fun validate(lang: LanguageHolder) {
         if (newPassword.isNullOrEmpty()) {
