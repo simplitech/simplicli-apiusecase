@@ -3,7 +3,7 @@ package org.usecase.user.auth
 import org.usecase.user.ProcessTest
 import org.usecase.user.request.AuthRequest
 import org.usecase.user.request.ChangePasswordRequest
-import org.usecase.app.Env
+import org.usecase.app.Facade.Env
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.exception.response.UnauthorizedException
@@ -17,7 +17,7 @@ import kotlin.test.assertEquals
  * @author Simpli CLI generator
  */
 class AuthProcessTest : ProcessTest() {
-    private val unauthorizedRequest = AuthRequest(Env.props.testerLogin, "wrongpassword")
+    private val unauthorizedRequest = AuthRequest(Env.TESTER_LOGIN, "wrongpassword")
     private val subject = AuthProcess(context)
 
     @Test(expected = UnauthorizedException::class)
@@ -48,9 +48,9 @@ class AuthProcessTest : ProcessTest() {
     @Test
     fun testChangePassword() {
         val request = ChangePasswordRequest(
-                sha256(Env.props.testerPassword),
-                sha256("""${Env.props.testerPassword}new"""),
-                sha256("""${Env.props.testerPassword}new""")
+                sha256(Env.TESTER_PASSWORD),
+                sha256("""${Env.TESTER_PASSWORD}new"""),
+                sha256("""${Env.TESTER_PASSWORD}new""")
         )
 
         val result = subject.changePassword(request, auth)
@@ -61,8 +61,8 @@ class AuthProcessTest : ProcessTest() {
     fun testChangePasswordWrongPassword() {
         val request = ChangePasswordRequest(
                 sha256("wrongpassword"),
-                sha256("""${Env.props.testerPassword}new"""),
-                sha256("""${Env.props.testerPassword}new""")
+                sha256("""${Env.TESTER_PASSWORD}new"""),
+                sha256("""${Env.TESTER_PASSWORD}new""")
         )
 
         subject.changePassword(request, auth)
@@ -71,9 +71,9 @@ class AuthProcessTest : ProcessTest() {
     @Test(expected = BadRequestException::class)
     fun testChangePasswordPasswordNoMatch() {
         val request = ChangePasswordRequest(
-                sha256(Env.props.testerPassword),
-                sha256("""${Env.props.testerPassword}new"""),
-                sha256("""${Env.props.testerPassword}different""")
+                sha256(Env.TESTER_PASSWORD),
+                sha256("""${Env.TESTER_PASSWORD}new"""),
+                sha256("""${Env.TESTER_PASSWORD}different""")
         )
 
         subject.changePassword(request, auth)

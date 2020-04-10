@@ -1,7 +1,7 @@
 package org.usecase.user.socket
 
 import org.usecase.user.context.AuthPipe
-import org.usecase.app.Env
+import org.usecase.app.Facade.Env
 import org.usecase.app.RequestLogger
 import org.usecase.param.DefaultParam
 import org.usecase.wrapper.RouterWrapper
@@ -42,7 +42,7 @@ class NotificationSocket: RouterWrapper() {
             socket.attachSession(session, auth.id)
         }
 
-        if (Env.props.detailedLog) {
+        if (Env.DETAILED_LOG) {
             Logger.getLogger(RequestLogger::class.java.name).log(Level.INFO, """
             ===== CLIENT SOCKET CONNECTION ESTABLISHED =====
             CLIENT ID: ${session.userProperties["id"]}
@@ -56,7 +56,7 @@ class NotificationSocket: RouterWrapper() {
     fun onDisconnect(session: Session) {
         socket.detachSession(session)
 
-        if (Env.props.detailedLog) {
+        if (Env.DETAILED_LOG) {
             Logger.getLogger(RequestLogger::class.java.name).log(Level.INFO, """
             ===== CLIENT SOCKET CONNECTION LOST =====
             CLIENT ID: ${session.userProperties["id"]}

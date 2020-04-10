@@ -1,7 +1,7 @@
 package org.usecase.user.auth
 
 import org.usecase.app.Cast
-import org.usecase.app.Env
+import org.usecase.app.Facade.Env
 import org.usecase.param.DefaultParam
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
@@ -71,7 +71,7 @@ class AuthProcess(val context: RequestContext) {
         val user = dao.getUserByEmail("${request.email}") ?: throw BadRequestException(context.lang.emailNotFound())
 
         val json = Cast.classToJson(TokenForgottenPassword("${user.email}"))
-        val encrypted = SecurityUtils.encrypt(json, Env.props.encryptHash)
+        val encrypted = SecurityUtils.encrypt(json, Env.ENCRYPT_HASH)
         val hash = encrypted?.replace("/", "%2F") ?: "invalid_hash"
 
         RecoverPasswordMail(context.lang, user, hash).send()
@@ -86,13 +86,13 @@ class AuthProcess(val context: RequestContext) {
         request.validate(context.lang)
 
         val hashResolved = request.hash?.replace(" ", "+") ?: ""
-        val token = SecurityUtils.decrypt(hashResolved, Env.props.encryptHash) ?: throw BadRequestException(context.lang.invalidToken())
+        val token = SecurityUtils.decrypt(hashResolved, Env.ENCRYPT_HASH) ?: throw BadRequestException(context.lang.invalidToken())
 
         val tokenForgottenPassword = Cast.jsonToClass(token, TokenForgottenPassword::class.java)
 
         val calendar = Calendar.getInstance()
         calendar.time = tokenForgottenPassword.date
-        calendar.add(Calendar.DAY_OF_MONTH, Env.props.forgottenPasswordTokenLife)
+        calendar.add(Calendar.DAY_OF_MONTH, Env.FORGOTTEN_PASSWORD_TOKEN_LIFE)
 
         // token expires after x days
         if (calendar.time.before(Date())) throw BadRequestException(context.lang.expiredToken())
@@ -150,7 +150,7 @@ class AuthProcess(val context: RequestContext) {
             val empty = "invalid_token"
             return try {
                 val json = Cast.classToJson(request)
-                val encrypted = SecurityUtils.encrypt(json, Env.props.encryptHash) ?: empty
+                val encrypted = SecurityUtils.encrypt(json, Env.ENCRYPT_HASH) ?: empty
                 val token = SecurityUtils.encode(encrypted, "UTF-8") ?: empty
 
                 token
@@ -166,7 +166,7 @@ class AuthProcess(val context: RequestContext) {
             val empty = AuthRequest(null, null)
             return try {
                 val encrypted = SecurityUtils.decode(token, "UTF-8")
-                val json = SecurityUtils.decrypt(encrypted ?: return empty, Env.props.encryptHash)
+                val json = SecurityUtils.decrypt(encrypted ?: return empty, Env.ENCRYPT_HASH)
                 val request = Cast.jsonToClass(json ?: return empty, AuthRequest::class.java)
 
                 request
