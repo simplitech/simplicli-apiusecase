@@ -2,17 +2,11 @@ package org.usecase.app.env
 
 import com.amazonaws.regions.Regions
 import org.usecase.enums.Lang
+import org.usecase.enums.Mode
 import org.usecase.locale.EnUs
 import org.usecase.locale.PtBr
 
 abstract class Props(val MODE: Mode) {
-
-    /**
-     * If set true then it provides more information in the log such as client requests
-     * Not recommended in production mode
-     */
-    abstract val DETAILED_LOG: Boolean
-
     /**
      * Database DS name
      * Do not change it unless you know what you are doing

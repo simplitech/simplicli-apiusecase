@@ -1,6 +1,8 @@
 package org.usecase.app
 
+import org.apache.logging.log4j.LogManager
 import org.usecase.app.env.*
+import org.usecase.enums.Mode
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -10,6 +12,8 @@ import java.util.logging.Logger
  */
 object Facade {
 
+    private val logger = LogManager.getLogger(Facade::class.java)
+
     /**
      * Enviroment mode: BETA, STAGING or PRODUCTION
      */
@@ -17,7 +21,7 @@ object Facade {
 
     init {
         val mode = Mode.fromString(System.getProperty("ENVIRONMENT")) ?: Mode.BETA.also {
-            Logger.getLogger(Facade::class.simpleName).log(Level.WARNING, "System property not found for ENVIRONMENT. Using Mode.BETA as default")
+            logger.warn("System property not found for ENVIRONMENT. Using Mode.BETA as default")
         }
 
         Env = when (mode) {

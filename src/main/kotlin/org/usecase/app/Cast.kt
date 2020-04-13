@@ -27,6 +27,8 @@ object Cast {
             .registerTypeAdapter(DateTime::class.java, DateTimeTypeAdapter())
             .create()
 
+    val pretty = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
+
     /**
      * Transform a class object to another class
      */

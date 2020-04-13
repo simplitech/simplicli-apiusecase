@@ -5,8 +5,12 @@ import org.usecase.wrapper.RouterWrapper
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 
-@Path("/healthcheck")
+@Path(HealthCheckRouter.PATH)
 class HealthCheckRouter : RouterWrapper() {
+
+    companion object {
+       const val PATH = "/healthcheck"
+    }
 
     @GET
     @Operation(tags = ["HealthCheck"], summary = "Checks status of DB connection and coroutines")
