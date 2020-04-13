@@ -1,8 +1,11 @@
 package org.usecase.user.socket
 
+import org.apache.logging.log4j.LogManager
 import org.usecase.user.context.AuthPipe
 import org.usecase.app.Facade.Env
 import org.usecase.app.RequestLogger
+import org.usecase.enums.ConnectionStatus
+import org.usecase.extension.jsonProperties
 import org.usecase.param.DefaultParam
 import org.usecase.wrapper.RouterWrapper
 import org.usecase.wrapper.SocketWrapper
@@ -25,6 +28,8 @@ class NotificationSocket: RouterWrapper() {
 
     companion object {
         val socket = SocketWrapper<String>()
+
+        private val logger = LogManager.getLogger(NotificationSocket::class.java)
     }
 
     @OnOpen
@@ -42,28 +47,14 @@ class NotificationSocket: RouterWrapper() {
             socket.attachSession(session, auth.id)
         }
 
-        if (Env.DETAILED_LOG) {
-            Logger.getLogger(RequestLogger::class.java.name).log(Level.INFO, """
-            ===== CLIENT SOCKET CONNECTION ESTABLISHED =====
-            CLIENT ID: ${session.userProperties["id"]}
-            CLIENT LOGIN: ${session.userProperties["email"]}
-            =========================================
-            """)
-        }
+        logger.debug(session.jsonProperties(ConnectionStatus.ESTABLISHED))
     }
 
     @OnClose
     fun onDisconnect(session: Session) {
         socket.detachSession(session)
 
-        if (Env.DETAILED_LOG) {
-            Logger.getLogger(RequestLogger::class.java.name).log(Level.INFO, """
-            ===== CLIENT SOCKET CONNECTION LOST =====
-            CLIENT ID: ${session.userProperties["id"]}
-            CLIENT LOGIN: ${session.userProperties["email"]}
-            =========================================
-            """)
-        }
+        logger.debug(session.jsonProperties(ConnectionStatus.LOST))
     }
 
     @OnError

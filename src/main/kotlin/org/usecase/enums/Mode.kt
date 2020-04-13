@@ -1,4 +1,4 @@
-package org.usecase.app.env
+package org.usecase.enums
 
 enum class Mode {
     BETA, STAGING, PRODUCTION;

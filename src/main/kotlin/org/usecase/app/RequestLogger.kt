@@ -1,6 +1,12 @@
 package org.usecase.app
 
+import com.google.gson.JsonIOException
+import org.apache.logging.log4j.LogManager
+import org.glassfish.jersey.server.ContainerRequest
 import org.usecase.app.Facade.Env
+import org.usecase.app.healthcheck.HealthCheckRouter
+import org.usecase.extension.forwarded
+import org.usecase.extension.ip
 import java.io.ByteArrayInputStream
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.container.ContainerRequestContext
@@ -12,6 +18,7 @@ import javax.ws.rs.ext.ReaderInterceptor
 import javax.ws.rs.ext.ReaderInterceptorContext
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.ws.rs.container.ContainerRequestFilter
 
 /**
  * Request Logger
@@ -19,35 +26,71 @@ import java.util.logging.Logger
  * @author Simpli CLI generator
  */
 @Provider
-class RequestLogger : ContainerResponseFilter, ReaderInterceptor {
+class RequestLogger : ContainerRequestFilter, ContainerResponseFilter, ReaderInterceptor {
+
+    companion object {
+        private val logger = LogManager.getLogger(RequestLogger::class.java)
+        private val requestMap = HashMap<HttpServletRequest?, RequestLog>()
+    }
 
     @Context
     var sr: HttpServletRequest? = null
 
-    override fun filter(request: ContainerRequestContext, response: ContainerResponseContext) {
-        if (Env.DETAILED_LOG) {
-            Logger.getLogger(RequestLogger::class.java.name).log(Level.INFO, """
-            REQUEST URI: ${request.uriInfo.requestUri}
-            REQUEST METHOD: ${sr?.method}
-            REQUEST IP: ${sr?.remoteAddr}
-            REQUEST HEADERS: ${request.headers}
-            ===== END OF REQUEST =====
-            """)
+    override fun filter(request: ContainerRequestContext?) {
+        requestMap[sr] = RequestLog(request, sr)
+    }
+
+    override fun filter(request: ContainerRequestContext?, response: ContainerResponseContext?) {
+        requestMap.remove(sr)?.apply {
+            // Health check is logged at TRACE level
+            if (this.uri?.contains(HealthCheckRouter.PATH) == true) {
+                logger.trace(this.toString())
+            } else {
+                logger.debug(this.toString())
+            }
         }
     }
 
-    override fun aroundReadFrom(context: ReaderInterceptorContext): Any {
-        val body = context.inputStream.reader(Charsets.UTF_8).readLines().joinToString("\n")
-
-        if (Env.DETAILED_LOG) {
-            Logger.getLogger(RequestLogger::class.java.name).log(Level.INFO, """
-            REQUEST BODY: $body
-            """)
+    override fun aroundReadFrom(context: ReaderInterceptorContext?): Any? {
+        if (logger.isDebugEnabled) {
+            requestMap[sr]?.addRequestBody(context)
         }
 
-        context.inputStream = ByteArrayInputStream(body.toByteArray(Charsets.UTF_8))
+        return context?.proceed()
+    }
 
-        return context.proceed()
+    private class RequestLog(request: ContainerRequestContext?, sr: HttpServletRequest?) {
+
+        val uri = request?.uriInfo?.requestUri?.toString()
+        val method = sr?.method
+        val ip = sr?.ip()
+        val forwarded = sr?.forwarded()
+        val headers = request?.headers
+
+        var request: Any? = null
+
+        fun addRequestBody(ctx: ReaderInterceptorContext?) {
+            request = ctx?.run {
+                val body = inputStream.reader(Charsets.UTF_8).readLines().joinToString("\n").also {
+                    inputStream = ByteArrayInputStream(it.toByteArray(Charsets.UTF_8))
+                }
+
+                try {
+                    Cast.pretty.fromJson(body, Any::class.java)
+                } catch (e: Exception) {
+                    // If unsuccessful, returns the raw body
+                    body
+                }
+            }
+        }
+
+        override fun toString(): String {
+            return try {
+                Cast.pretty.toJson(this, RequestLog::class.java)
+            } catch (e: JsonIOException) {
+                super.toString()
+            }
+        }
     }
 
 }

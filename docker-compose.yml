@@ -3,6 +3,7 @@ server:
   container_name: tomcat-container-usecase
   environment:
     ENVIRONMENT: beta
+    LOG_LEVEL: debug
     DB_URL: db
     DB_NAME: usecase
     DB_USER: root
