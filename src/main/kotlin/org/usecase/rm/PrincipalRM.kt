@@ -3,13 +3,15 @@ package org.usecase.rm
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.ResultBuilder
 import org.usecase.model.resource.Principal
+import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table principal
  * @author Simpli CLI generator
  */
 object PrincipalRM {
-    fun build(rb: ResultBuilder) = Principal().apply {
+    fun build(rs: ResultSet, alias: String = "principal", allowedColumns: Array<String> = selectFields(alias)) = Principal().apply {
+        val rb = ResultBuilder(allowedColumns, rs, alias)
         idPrincipalPk = rb.getLong("idPrincipalPk")
         textoObrigatorio = rb.getString("textoObrigatorio")
         textoFacultativo = rb.getString("textoFacultativo")

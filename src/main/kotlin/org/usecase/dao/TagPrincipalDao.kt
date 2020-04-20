@@ -4,7 +4,6 @@ import org.usecase.model.resource.Principal
 import org.usecase.model.resource.Tag
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
-import br.com.simpli.sql.ResultBuilder
 import org.usecase.rm.PrincipalRM
 
 /**
@@ -65,7 +64,7 @@ class TagPrincipalDao(val con: AbstractConnector) {
                 .whereEq("tag_principal.idTagFk", idTagFk)
 
         return con.getList(query) {
-            PrincipalRM.build(ResultBuilder(PrincipalRM.selectFields(), it, "principal"))
+            PrincipalRM.build(it)
         }
     }
 

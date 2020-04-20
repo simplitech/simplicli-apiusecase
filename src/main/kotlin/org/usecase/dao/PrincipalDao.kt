@@ -3,7 +3,6 @@ package org.usecase.dao
 import org.usecase.model.resource.Principal
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
-import br.com.simpli.sql.ResultBuilder
 import org.usecase.rm.PrincipalRM
 import org.usecase.model.filter.PrincipalListFilter
 
@@ -16,33 +15,25 @@ class PrincipalDao(val con: AbstractConnector) {
     fun getOne(idPrincipalPk: Long): Principal? {
         // TODO: review generated method
         val query = Query()
-                .selectFields(PrincipalRM.selectFields())
+                .selectPrincipal()
                 .from("principal")
                 .whereEq("idPrincipalPk", idPrincipalPk)
 
         return con.getOne(query) {
-            PrincipalRM.build(ResultBuilder(PrincipalRM.selectFields(), it, "principal"))
+            PrincipalRM.build(it)
         }
     }
 
     fun getList(filter: PrincipalListFilter): MutableList<Principal> {
         // TODO: review generated method
         val query = Query()
-                .selectFields(PrincipalRM.selectFields())
+                .selectPrincipal()
                 .from("principal")
-                .applyListFilter(filter)
-
-        PrincipalRM.orderMap()[filter.orderBy]?.also {
-            query.orderByAsc(it, filter.ascending)
-        }
-
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            query.limit(index, it)
-        }
+                .wherePrincipalFilter(filter)
+                .orderAndLimitPrincipal(filter)
 
         return con.getList(query) {
-            PrincipalRM.build(ResultBuilder(PrincipalRM.selectFields(), it, "principal"))
+            PrincipalRM.build(it)
         }
     }
 
@@ -51,7 +42,7 @@ class PrincipalDao(val con: AbstractConnector) {
         val query = Query()
                 .countRaw("DISTINCT idPrincipalPk")
                 .from("principal")
-                .applyListFilter(filter)
+                .wherePrincipalFilter(filter)
 
         return con.getFirstInt(query) ?: 0
     }
@@ -60,7 +51,7 @@ class PrincipalDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .updateTable("principal")
-                .updateSet(PrincipalRM.updateSet(principal))
+                .updatePrincipalSet(principal)
                 .whereEq("idPrincipalPk", principal.id)
 
         return con.execute(query).affectedRows
@@ -70,7 +61,7 @@ class PrincipalDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .insertInto("principal")
-                .insertValues(PrincipalRM.insertValues(principal))
+                .insertPrincipalValues(principal)
 
         return con.execute(query).key
     }
@@ -106,7 +97,13 @@ class PrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    private fun Query.applyListFilter(filter: PrincipalListFilter, alias: String = "principal"): Query {
+    private fun Query.selectPrincipal() = selectFields(PrincipalRM.selectFields())
+
+    private fun Query.updatePrincipalSet(principal: Principal) = updateSet(PrincipalRM.updateSet(principal))
+
+    private fun Query.insertPrincipalValues(principal: Principal) = insertValues(PrincipalRM.insertValues(principal))
+
+    private fun Query.wherePrincipalFilter(filter: PrincipalListFilter, alias: String = "principal"): Query {
         whereEq("$alias.ativo", true)
 
         filter.query?.also {
@@ -209,6 +206,19 @@ class PrincipalDao(val con: AbstractConnector) {
         }
         filter.maxPreco?.also {
             whereLtEq("$alias.preco", it)
+        }
+
+        return this
+    }
+
+    private fun Query.orderAndLimitPrincipal(filter: PrincipalListFilter, alias: String = "principal"): Query {
+        PrincipalRM.orderMap()[filter.orderBy]?.also {
+            orderByAsc(it, filter.ascending)
+        }
+
+        filter.limit?.also {
+            val index = (filter.page ?: 0) * it
+            limit(index, it)
         }
 
         return this
