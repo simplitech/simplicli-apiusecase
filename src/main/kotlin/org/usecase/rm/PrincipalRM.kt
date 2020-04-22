@@ -3,45 +3,48 @@ package org.usecase.rm
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.ResultBuilder
 import org.usecase.model.resource.Principal
+import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table principal
  * @author Simpli CLI generator
  */
 object PrincipalRM {
-    fun build(rb: ResultBuilder) = Principal().apply {
-        idPrincipalPk = rb.getLong("idPrincipalPk")
-        textoObrigatorio = rb.getString("textoObrigatorio")
-        textoFacultativo = rb.getString("textoFacultativo")
-        decimalObrigatorio = rb.getDouble("decimalObrigatorio")
-        decimalFacultativo = rb.getDoubleOrNull("decimalFacultativo")
-        inteiroObrigatorio = rb.getLong("inteiroObrigatorio")
-        inteiroFacultativo = rb.getLongOrNull("inteiroFacultativo")
-        booleanoObrigatorio = rb.getBoolean("booleanoObrigatorio")
-        booleanoFacultativo = rb.getBooleanOrNull("booleanoFacultativo")
-        dataObrigatoria = rb.getTimestamp("dataObrigatoria")
-        dataFacultativa = rb.getTimestamp("dataFacultativa")
-        datahoraObrigatoria = rb.getTimestamp("datahoraObrigatoria")
-        datahoraFacultativa = rb.getTimestamp("datahoraFacultativa")
-        ativo = rb.getBoolean("ativo")
-        email = rb.getString("email")
-        senha = rb.getString("senha")
-        urlImagem = rb.getString("urlImagem")
-        url = rb.getString("url")
-        idGrupoDoPrincipalFk = rb.getLong("idGrupoDoPrincipalFk")
-        idGrupoDoPrincipalFacultativoFk = rb.getLongOrNull("idGrupoDoPrincipalFacultativoFk")
-        unico = rb.getString("unico")
-        dataCriacao = rb.getTimestamp("dataCriacao")
-        dataAlteracao = rb.getTimestamp("dataAlteracao")
-        nome = rb.getString("nome")
-        titulo = rb.getString("titulo")
-        cpf = rb.getString("cpf")
-        cnpj = rb.getString("cnpj")
-        rg = rb.getString("rg")
-        celular = rb.getString("celular")
-        textoGrande = rb.getString("textoGrande")
-        snakeCase = rb.getString("snake_case")
-        preco = rb.getDoubleOrNull("preco")
+    fun build(rs: ResultSet, alias: String = "principal", allowedColumns: Array<String> = selectFields(alias)) = Principal().apply {
+        ResultBuilder(allowedColumns, rs, alias).run {
+            idPrincipalPk = getLong("idPrincipalPk")
+            textoObrigatorio = getString("textoObrigatorio")
+            textoFacultativo = getString("textoFacultativo")
+            decimalObrigatorio = getDouble("decimalObrigatorio")
+            decimalFacultativo = getDoubleOrNull("decimalFacultativo")
+            inteiroObrigatorio = getLong("inteiroObrigatorio")
+            inteiroFacultativo = getLongOrNull("inteiroFacultativo")
+            booleanoObrigatorio = getBoolean("booleanoObrigatorio")
+            booleanoFacultativo = getBooleanOrNull("booleanoFacultativo")
+            dataObrigatoria = getTimestamp("dataObrigatoria")
+            dataFacultativa = getTimestamp("dataFacultativa")
+            datahoraObrigatoria = getTimestamp("datahoraObrigatoria")
+            datahoraFacultativa = getTimestamp("datahoraFacultativa")
+            ativo = getBoolean("ativo")
+            email = getString("email")
+            senha = getString("senha")
+            urlImagem = getString("urlImagem")
+            url = getString("url")
+            idGrupoDoPrincipalFk = getLong("idGrupoDoPrincipalFk")
+            idGrupoDoPrincipalFacultativoFk = getLongOrNull("idGrupoDoPrincipalFacultativoFk")
+            unico = getString("unico")
+            dataCriacao = getTimestamp("dataCriacao")
+            dataAlteracao = getTimestamp("dataAlteracao")
+            nome = getString("nome")
+            titulo = getString("titulo")
+            cpf = getString("cpf")
+            cnpj = getString("cnpj")
+            rg = getString("rg")
+            celular = getString("celular")
+            textoGrande = getString("textoGrande")
+            snakeCase = getString("snake_case")
+            preco = getDoubleOrNull("preco")
+        }
     }
 
     fun updateSet(principal: Principal) = mapOf(
