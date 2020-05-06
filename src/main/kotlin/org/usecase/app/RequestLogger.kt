@@ -1,5 +1,6 @@
 package org.usecase.app
 
+import com.amazonaws.xray.AWSXRay
 import com.google.gson.JsonIOException
 import org.apache.logging.log4j.LogManager
 import org.glassfish.jersey.server.ContainerRequest
@@ -7,6 +8,7 @@ import org.usecase.app.Facade.Env
 import org.usecase.app.healthcheck.HealthCheckRouter
 import org.usecase.extension.forwarded
 import org.usecase.extension.ip
+import org.usecase.extension.isFailure
 import java.io.ByteArrayInputStream
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.container.ContainerRequestContext
@@ -31,6 +33,13 @@ class RequestLogger : ContainerRequestFilter, ContainerResponseFilter, ReaderInt
     companion object {
         private val logger = LogManager.getLogger(RequestLogger::class.java)
         private val requestMap = HashMap<HttpServletRequest?, RequestLog>()
+
+        const val XRAY_METADATA_NAMESPACE = "request"
+        const val XRAY_METADATA_KEY = "body"
+
+        fun logXRayException(e: Throwable) {
+            AWSXRay.getCurrentSegment()?.addException(e)
+        }
     }
 
     @Context
@@ -47,6 +56,14 @@ class RequestLogger : ContainerRequestFilter, ContainerResponseFilter, ReaderInt
                 logger.trace(this.toString())
             } else {
                 logger.debug(this.toString())
+            }
+
+            response?.let {
+                // If HTTP Status is not successful (1XX|2XX) or if logger is set to debug level or lower,
+                // adds metadata to current X-Ray segment
+                if (it.isFailure() || logger.isDebugEnabled) {
+                    AWSXRay.getCurrentSegment()?.putMetadata(XRAY_METADATA_NAMESPACE, XRAY_METADATA_KEY, this.request)
+                }
             }
         }
     }
@@ -68,6 +85,7 @@ class RequestLogger : ContainerRequestFilter, ContainerResponseFilter, ReaderInt
         val headers = request?.headers
 
         var request: Any? = null
+            private set
 
         fun addRequestBody(ctx: ReaderInterceptorContext?) {
             request = ctx?.run {
