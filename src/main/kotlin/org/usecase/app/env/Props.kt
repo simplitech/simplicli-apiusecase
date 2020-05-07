@@ -1,18 +1,21 @@
 package org.usecase.app.env
 
-import com.amazonaws.regions.Regions
 import org.usecase.enums.Lang
 import org.usecase.enums.Mode
 import org.usecase.locale.EnUs
 import org.usecase.locale.PtBr
+import com.amazonaws.regions.Regions
 
+/**
+ * Environment Variables - Base
+ * @author Simpli CLI generator
+ */
 abstract class Props(val MODE: Mode) {
     /**
      * Database DS name
      * Do not change it unless you know what you are doing
      */
     val DS_NAME = "jdbc/usecaseDS"
-
 
     /**
      * Default Web Application Origin
@@ -51,7 +54,7 @@ abstract class Props(val MODE: Mode) {
      * @warning DO NOT SHARE this hash in order to keep your project safe
      * Your are able to change it whenever you want, but all clients must login again
      */
-    val ENCRYPT_HASH = "382c63cc-6ce0-4625-982f-83c9104f481a"
+    val ENCRYPT_HASH = "d93d0169-d223-47ad-b114-1b5869452391"
 
     /**
      * Credentials used in Unit Test

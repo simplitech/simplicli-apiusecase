@@ -3,8 +3,9 @@ package org.usecase.user.router
 import org.usecase.user.context.AuthPipe
 import org.usecase.user.process.ExtensaoDoPrincipalProcess
 import org.usecase.wrapper.RouterWrapper
+import org.usecase.model.param.DefaultParam
+import org.usecase.model.param.AuthExtensaoDoPrincipalListParam
 import org.usecase.model.resource.ExtensaoDoPrincipal
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.BeanParam
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType
 @Path("/user/extensao-do-principal")
 @Produces(MediaType.APPLICATION_JSON)
 class ExtensaoDoPrincipalRouter : RouterWrapper() {
-
     @GET
     @Path("/{id}")
     @Operation(tags = ["ExtensaoDoPrincipal"], summary = "Gets a instance of a given ID of ExtensaoDoPrincipal")
@@ -36,7 +36,7 @@ class ExtensaoDoPrincipalRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["ExtensaoDoPrincipal"], summary = "Lists the instances of ExtensaoDoPrincipal")
-    fun listExtensaoDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ExtensaoDoPrincipal> {
+    fun listExtensaoDoPrincipal(@BeanParam param: AuthExtensaoDoPrincipalListParam): PageCollection<ExtensaoDoPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ExtensaoDoPrincipalProcess(context).list(param)
@@ -46,7 +46,7 @@ class ExtensaoDoPrincipalRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["ExtensaoDoPrincipal"], summary = "Lists the instances of ExtensaoDoPrincipal to export as a file")
-    fun listExportExtensaoDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ExtensaoDoPrincipal> {
+    fun listExportExtensaoDoPrincipal(@BeanParam param: AuthExtensaoDoPrincipalListParam): PageCollection<ExtensaoDoPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ExtensaoDoPrincipalProcess(context).list(param)
@@ -61,5 +61,4 @@ class ExtensaoDoPrincipalRouter : RouterWrapper() {
             ExtensaoDoPrincipalProcess(context).persist(model)
 		}
     }
-
 }

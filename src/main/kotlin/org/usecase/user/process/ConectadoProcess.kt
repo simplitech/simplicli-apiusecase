@@ -2,11 +2,12 @@ package org.usecase.user.process
 
 import org.usecase.user.context.RequestContext
 import org.usecase.dao.ConectadoDao
-import org.usecase.model.filter.ListFilter
+import org.usecase.model.filter.ConectadoListFilter
 import org.usecase.model.resource.Conectado
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import br.com.simpli.model.PageCollection
+import java.util.Date
 
 /**
  * Conectado business logic
@@ -23,7 +24,7 @@ class ConectadoProcess(val context: RequestContext) {
         return dao.getOne(id) ?: throw NotFoundException()
     }
 
-    fun list(filter: ListFilter): PageCollection<Conectado> {
+    fun list(filter: ConectadoListFilter): PageCollection<Conectado> {
         // TODO: review generated method
         val items = dao.getList(filter)
         val total = dao.count(filter)

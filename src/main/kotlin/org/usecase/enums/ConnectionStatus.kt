@@ -1,5 +1,10 @@
 package org.usecase.enums
 
+/**
+ * ConnectionStatus enum
+ * Represents the connection status of application
+ * @author Simpli CLI generator
+ */
 enum class ConnectionStatus {
     ESTABLISHED, LOST;
 

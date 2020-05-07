@@ -4,7 +4,7 @@ import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.Endereco
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.AuthEnderecoListParam
 import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -22,7 +22,7 @@ class EnderecoProcessTest : ProcessTest() {
     private val id = 1L
     private val model = Endereco()
 
-    private val listFilter = DefaultParam.AuthPaged()
+    private val listFilter = AuthEnderecoListParam()
 
     private val subject = EnderecoProcess(context)
 

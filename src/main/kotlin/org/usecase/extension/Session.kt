@@ -1,8 +1,8 @@
 package org.usecase.extension
 
-import com.google.gson.JsonObject
 import org.usecase.app.Cast
 import org.usecase.enums.ConnectionStatus
+import com.google.gson.JsonObject
 import javax.websocket.Session
 
 fun Session.jsonProperties(status: ConnectionStatus): String {

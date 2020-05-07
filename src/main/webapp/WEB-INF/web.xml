@@ -15,7 +15,7 @@
         <filter-class>com.amazonaws.xray.javax.servlet.AWSXRayServletFilter</filter-class>
         <init-param>
             <param-name>fixedName</param-name>
-            <param-value>usecase-api-${ENVIRONMENT}</param-value>
+            <param-value>simplicli-apiusecase-${ENVIRONMENT}</param-value>
         </init-param>
     </filter>
     <filter-mapping>

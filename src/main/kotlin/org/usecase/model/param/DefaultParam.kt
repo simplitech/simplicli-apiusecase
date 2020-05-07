@@ -1,4 +1,4 @@
-package org.usecase.param
+package org.usecase.model.param
 
 import org.usecase.model.filter.ListFilter
 import org.usecase.enums.Lang

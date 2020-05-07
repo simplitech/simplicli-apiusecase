@@ -3,8 +3,9 @@ package org.usecase.user.router
 import org.usecase.user.context.AuthPipe
 import org.usecase.user.process.EnderecoProcess
 import org.usecase.wrapper.RouterWrapper
+import org.usecase.model.param.DefaultParam
+import org.usecase.model.param.AuthEnderecoListParam
 import org.usecase.model.resource.Endereco
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.BeanParam
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType
 @Path("/user/endereco")
 @Produces(MediaType.APPLICATION_JSON)
 class EnderecoRouter : RouterWrapper() {
-
     @GET
     @Path("/{id}")
     @Operation(tags = ["Endereco"], summary = "Gets a instance of a given ID of Endereco")
@@ -36,7 +36,7 @@ class EnderecoRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["Endereco"], summary = "Lists the instances of Endereco")
-    fun listEndereco(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Endereco> {
+    fun listEndereco(@BeanParam param: AuthEnderecoListParam): PageCollection<Endereco> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             EnderecoProcess(context).list(param)
@@ -46,7 +46,7 @@ class EnderecoRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["Endereco"], summary = "Lists the instances of Endereco to export as a file")
-    fun listExportEndereco(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Endereco> {
+    fun listExportEndereco(@BeanParam param: AuthEnderecoListParam): PageCollection<Endereco> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             EnderecoProcess(context).list(param)
@@ -61,5 +61,4 @@ class EnderecoRouter : RouterWrapper() {
             EnderecoProcess(context).persist(model)
 		}
     }
-
 }

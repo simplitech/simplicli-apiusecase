@@ -4,7 +4,7 @@ import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.User
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.AuthUserListParam
 import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -22,7 +22,7 @@ class UserProcessTest : ProcessTest() {
     private val id = 1L
     private val model = User()
 
-    private val listFilter = DefaultParam.AuthPaged()
+    private val listFilter = AuthUserListParam()
 
     private val subject = UserProcess(context)
 

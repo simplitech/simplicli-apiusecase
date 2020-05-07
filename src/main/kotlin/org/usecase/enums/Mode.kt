@@ -1,5 +1,10 @@
 package org.usecase.enums
 
+/**
+ * Mode enum
+ * Represents the environment of application
+ * @author Simpli CLI generator
+ */
 enum class Mode {
     BETA, STAGING, PRODUCTION;
 

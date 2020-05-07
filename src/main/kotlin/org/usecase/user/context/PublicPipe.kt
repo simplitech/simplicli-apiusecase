@@ -1,6 +1,6 @@
 package org.usecase.user.context
 
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.DefaultParam
 import br.com.simpli.sql.AbstractConPipe
 
 /**

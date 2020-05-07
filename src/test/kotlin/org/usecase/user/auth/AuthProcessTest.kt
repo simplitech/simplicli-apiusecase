@@ -7,7 +7,7 @@ import org.usecase.app.Facade.Env
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.exception.response.UnauthorizedException
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.DefaultParam
 import br.com.simpli.tools.SecurityUtils.sha256
 import org.junit.Test
 import kotlin.test.assertEquals

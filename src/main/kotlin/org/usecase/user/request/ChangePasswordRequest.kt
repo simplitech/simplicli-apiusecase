@@ -2,7 +2,6 @@ package org.usecase.user.request
 
 import org.usecase.exception.response.BadRequestException
 import br.com.simpli.model.LanguageHolder
-import javax.xml.bind.annotation.XmlRootElement
 
 /**
  * Change Password Request Model

@@ -3,8 +3,9 @@ package org.usecase.user.router
 import org.usecase.user.context.AuthPipe
 import org.usecase.user.process.ItemDoPrincipalProcess
 import org.usecase.wrapper.RouterWrapper
+import org.usecase.model.param.DefaultParam
+import org.usecase.model.param.AuthItemDoPrincipalListParam
 import org.usecase.model.resource.ItemDoPrincipal
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.BeanParam
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType
 @Path("/user/item-do-principal")
 @Produces(MediaType.APPLICATION_JSON)
 class ItemDoPrincipalRouter : RouterWrapper() {
-
     @GET
     @Path("/{id}")
     @Operation(tags = ["ItemDoPrincipal"], summary = "Gets a instance of a given ID of ItemDoPrincipal")
@@ -36,7 +36,7 @@ class ItemDoPrincipalRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["ItemDoPrincipal"], summary = "Lists the instances of ItemDoPrincipal")
-    fun listItemDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ItemDoPrincipal> {
+    fun listItemDoPrincipal(@BeanParam param: AuthItemDoPrincipalListParam): PageCollection<ItemDoPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ItemDoPrincipalProcess(context).list(param)
@@ -46,7 +46,7 @@ class ItemDoPrincipalRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["ItemDoPrincipal"], summary = "Lists the instances of ItemDoPrincipal to export as a file")
-    fun listExportItemDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ItemDoPrincipal> {
+    fun listExportItemDoPrincipal(@BeanParam param: AuthItemDoPrincipalListParam): PageCollection<ItemDoPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ItemDoPrincipalProcess(context).list(param)
@@ -61,5 +61,4 @@ class ItemDoPrincipalRouter : RouterWrapper() {
             ItemDoPrincipalProcess(context).persist(model)
 		}
     }
-
 }

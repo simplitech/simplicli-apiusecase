@@ -1,22 +1,18 @@
 package org.usecase.user.socket
 
-import org.apache.logging.log4j.LogManager
 import org.usecase.user.context.AuthPipe
-import org.usecase.app.Facade.Env
-import org.usecase.app.RequestLogger
 import org.usecase.enums.ConnectionStatus
 import org.usecase.extension.jsonProperties
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.DefaultParam
 import org.usecase.wrapper.RouterWrapper
 import org.usecase.wrapper.SocketWrapper
-import java.util.logging.Level
-import java.util.logging.Logger
 import javax.websocket.OnClose
 import javax.websocket.OnError
 import javax.websocket.OnOpen
 import javax.websocket.Session
 import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
+import org.apache.logging.log4j.LogManager
 
 /**
  * Notification Web Socket
@@ -25,7 +21,6 @@ import javax.websocket.server.ServerEndpoint
  */
 @ServerEndpoint("/ws/user/notification/{token}")
 class NotificationSocket: RouterWrapper() {
-
     companion object {
         val socket = SocketWrapper<String>()
 
@@ -61,5 +56,4 @@ class NotificationSocket: RouterWrapper() {
     fun onError(e: Throwable) {
         toResponse(e)
     }
-
 }

@@ -1,15 +1,18 @@
 package org.usecase.app.healthcheck
 
-import io.swagger.v3.oas.annotations.Operation
 import org.usecase.wrapper.RouterWrapper
+import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 
+/**
+ * Routing the API address into HealthCheck
+ * @author Simpli CLI generator
+ */
 @Path(HealthCheckRouter.PATH)
 class HealthCheckRouter : RouterWrapper() {
-
     companion object {
-       const val PATH = "/healthcheck"
+        const val PATH = "/healthcheck"
     }
 
     @GET

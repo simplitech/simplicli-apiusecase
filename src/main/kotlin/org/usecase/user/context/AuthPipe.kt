@@ -2,7 +2,7 @@ package org.usecase.user.context
 
 import org.usecase.user.response.AuthResponse
 import org.usecase.user.auth.AuthProcess
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.DefaultParam
 import br.com.simpli.sql.AbstractConPipe
 
 /**

@@ -1,7 +1,8 @@
 package org.usecase.dao
 
-import org.usecase.model.filter.ListFilter
+import org.usecase.model.filter.TagListFilter
 import org.usecase.model.resource.Tag
+import org.usecase.model.rm.TagRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 
@@ -10,46 +11,37 @@ import br.com.simpli.sql.Query
  * @author Simpli CLI generator
  */
 class TagDao(val con: AbstractConnector) {
-
     fun getOne(idTagPk: Long): Tag? {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectTag()
                 .from("tag")
                 .whereEq("idTagPk", idTagPk)
 
         return con.getOne(query) {
-            Tag(it)
+            TagRM.build(it)
         }
     }
 
-    fun getList(filter: ListFilter): MutableList<Tag> {
+    fun getList(filter: TagListFilter): MutableList<Tag> {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectTag()
                 .from("tag")
-                .applyListFilter(filter)
-
-        Tag.orderMap[filter.orderBy]?.also {
-            query.orderByAsc(it, filter.ascending)
-        }
-
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            query.limit(index, it)
-        }
+                .whereTagFilter(filter)
+                .orderAndLimitTag(filter)
 
         return con.getList(query) {
-            Tag(it)
+            TagRM.build(it)
         }
     }
 
-    fun count(filter: ListFilter): Int {
+    fun count(filter: TagListFilter): Int {
         // TODO: review generated method
         val query = Query()
                 .countRaw("DISTINCT idTagPk")
                 .from("tag")
-                .applyListFilter(filter)
+                .whereTagFilter(filter)
 
         return con.getFirstInt(query) ?: 0
     }
@@ -58,7 +50,7 @@ class TagDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .updateTable("tag")
-                .updateSet(tag.updateSet())
+                .updateTagSet(tag)
                 .whereEq("idTagPk", tag.id)
 
         return con.execute(query).affectedRows
@@ -68,7 +60,7 @@ class TagDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .insertInto("tag")
-                .insertValues(tag.insertValues())
+                .insertTagValues(tag)
 
         return con.execute(query).key
     }
@@ -83,19 +75,32 @@ class TagDao(val con: AbstractConnector) {
         return con.exist(query)
     }
 
+    private fun Query.selectTag() = selectFields(TagRM.selectFields())
 
-    private fun Query.applyListFilter(filter: ListFilter): Query {
+    private fun Query.updateTagSet(tag: Tag) = updateSet(TagRM.updateSet(tag))
 
+    private fun Query.insertTagValues(tag: Tag) = insertValues(TagRM.insertValues(tag))
+
+    private fun Query.whereTagFilter(filter: TagListFilter, alias: String = "tag"): Query {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSome {
-                    whereLike("tag.idTagPk", "%$it%")
-                    whereLike("tag.titulo", "%$it%")
-                }
+                whereSomeLikeThis(TagRM.fieldsToSearch(alias), "%$it%")
             }
         }
 
         return this
     }
 
+    private fun Query.orderAndLimitTag(filter: TagListFilter, alias: String = "tag"): Query {
+        TagRM.orderMap(alias)[filter.orderBy]?.also {
+            orderByAsc(it, filter.ascending)
+        }
+
+        filter.limit?.also {
+            val index = (filter.page ?: 0) * it
+            limit(index, it)
+        }
+
+        return this
+    }
 }

@@ -1,7 +1,6 @@
 package org.usecase.model.resource
 
 import org.usecase.AppTest
-import org.usecase.dao.UserDao
 import org.usecase.exception.response.BadRequestException
 import org.usecase.locale.EnUs
 import java.util.Date

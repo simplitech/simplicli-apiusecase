@@ -4,7 +4,7 @@ import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.Principal
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.AuthPrincipalListParam
 import org.usecase.model.resource.Tag
 import java.util.Date
 import kotlin.test.assertFalse
@@ -14,7 +14,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
 import org.junit.Ignore
 import org.junit.Test
-import org.usecase.param.AuthPrincipalListFilter
 
 /**
  * Tests Principal business logic
@@ -24,7 +23,7 @@ class PrincipalProcessTest : ProcessTest() {
     private val id = 1L
     private val model = Principal()
 
-    private val listFilter = AuthPrincipalListFilter()
+    private val listFilter = AuthPrincipalListParam()
 
     private val subject = PrincipalProcess(context)
 

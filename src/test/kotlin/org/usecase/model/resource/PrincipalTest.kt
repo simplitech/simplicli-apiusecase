@@ -1,7 +1,6 @@
 package org.usecase.model.resource
 
 import org.usecase.AppTest
-import org.usecase.dao.PrincipalDao
 import org.usecase.exception.response.BadRequestException
 import org.usecase.locale.EnUs
 import java.util.Date
@@ -117,12 +116,12 @@ class PrincipalTest: AppTest() {
     }
 
     @Test
-    fun testSetGrupoDoPrincipal2Null() {
-        model.grupoDoPrincipal2 = GrupoDoPrincipal()
+    fun testSetGrupoDoPrincipalFacultativoNull() {
+        model.grupoDoPrincipalFacultativo = GrupoDoPrincipal()
         model.idGrupoDoPrincipalFacultativoFk = null
-        assertNull(model.grupoDoPrincipal2)
+        assertNull(model.grupoDoPrincipalFacultativo)
         model.idGrupoDoPrincipalFacultativoFk = 1L
-        assertNotNull(model.grupoDoPrincipal2)
+        assertNotNull(model.grupoDoPrincipalFacultativo)
     }
 
     @Test(expected = BadRequestException::class)

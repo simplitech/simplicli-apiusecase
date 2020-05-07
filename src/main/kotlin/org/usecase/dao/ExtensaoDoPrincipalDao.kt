@@ -1,7 +1,9 @@
 package org.usecase.dao
 
-import org.usecase.model.filter.ListFilter
+import org.usecase.model.filter.ExtensaoDoPrincipalListFilter
 import org.usecase.model.resource.ExtensaoDoPrincipal
+import org.usecase.model.rm.ExtensaoDoPrincipalRM
+import org.usecase.model.rm.PrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 
@@ -10,46 +12,40 @@ import br.com.simpli.sql.Query
  * @author Simpli CLI generator
  */
 class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
-
     fun getOne(idPrincipalFk: Long): ExtensaoDoPrincipal? {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectExtensaoDoPrincipal()
                 .from("extensao_do_principal")
                 .whereEq("idPrincipalFk", idPrincipalFk)
 
         return con.getOne(query) {
-            ExtensaoDoPrincipal(it)
+            ExtensaoDoPrincipalRM.build(it)
         }
     }
 
-    fun getList(filter: ListFilter): MutableList<ExtensaoDoPrincipal> {
+    fun getList(filter: ExtensaoDoPrincipalListFilter): MutableList<ExtensaoDoPrincipal> {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectFields(ExtensaoDoPrincipalRM.selectFields() + PrincipalRM.selectFields())
                 .from("extensao_do_principal")
-                .applyListFilter(filter)
-
-        ExtensaoDoPrincipal.orderMap[filter.orderBy]?.also {
-            query.orderByAsc(it, filter.ascending)
-        }
-
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            query.limit(index, it)
-        }
+                .innerJoin("principal", "principal.idprincipalpk", "extensao_do_principal.idPrincipalFk")
+                .whereExtensaoDoPrincipalFilter(filter)
+                .orderAndLimitExtensaoDoPrincipal(filter)
 
         return con.getList(query) {
-            ExtensaoDoPrincipal(it)
+            ExtensaoDoPrincipalRM.build(it).apply {
+                principal = PrincipalRM.build(it)
+            }
         }
     }
 
-    fun count(filter: ListFilter): Int {
+    fun count(filter: ExtensaoDoPrincipalListFilter): Int {
         // TODO: review generated method
         val query = Query()
                 .countRaw("DISTINCT idPrincipalFk")
                 .from("extensao_do_principal")
-                .applyListFilter(filter)
+                .whereExtensaoDoPrincipalFilter(filter)
 
         return con.getFirstInt(query) ?: 0
     }
@@ -58,7 +54,7 @@ class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .updateTable("extensao_do_principal")
-                .updateSet(extensaoDoPrincipal.updateSet())
+                .updateExtensaoDoPrincipalSet(extensaoDoPrincipal)
                 .whereEq("idPrincipalFk", extensaoDoPrincipal.id)
 
         return con.execute(query).affectedRows
@@ -68,7 +64,7 @@ class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .insertInto("extensao_do_principal")
-                .insertValues(extensaoDoPrincipal.insertValues())
+                .insertExtensaoDoPrincipalValues(extensaoDoPrincipal)
 
         return con.execute(query).key
     }
@@ -83,19 +79,32 @@ class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
         return con.exist(query)
     }
 
+    private fun Query.selectExtensaoDoPrincipal() = selectFields(ExtensaoDoPrincipalRM.selectFields())
 
-    private fun Query.applyListFilter(filter: ListFilter): Query {
+    private fun Query.updateExtensaoDoPrincipalSet(extensaoDoPrincipal: ExtensaoDoPrincipal) = updateSet(ExtensaoDoPrincipalRM.updateSet(extensaoDoPrincipal))
 
+    private fun Query.insertExtensaoDoPrincipalValues(extensaoDoPrincipal: ExtensaoDoPrincipal) = insertValues(ExtensaoDoPrincipalRM.insertValues(extensaoDoPrincipal))
+
+    private fun Query.whereExtensaoDoPrincipalFilter(filter: ExtensaoDoPrincipalListFilter, alias: String = "extensao_do_principal"): Query {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSome {
-                    whereLike("extensao_do_principal.idPrincipalFk", "%$it%")
-                    whereLike("extensao_do_principal.titulo", "%$it%")
-                }
+                whereSomeLikeThis(ExtensaoDoPrincipalRM.fieldsToSearch(alias), "%$it%")
             }
         }
 
         return this
     }
 
+    private fun Query.orderAndLimitExtensaoDoPrincipal(filter: ExtensaoDoPrincipalListFilter, alias: String = "extensao_do_principal"): Query {
+        ExtensaoDoPrincipalRM.orderMap(alias)[filter.orderBy]?.also {
+            orderByAsc(it, filter.ascending)
+        }
+
+        filter.limit?.also {
+            val index = (filter.page ?: 0) * it
+            limit(index, it)
+        }
+
+        return this
+    }
 }

@@ -1,7 +1,8 @@
 package org.usecase.dao
 
-import org.usecase.model.filter.ListFilter
+import org.usecase.model.filter.EnderecoListFilter
 import org.usecase.model.resource.Endereco
+import org.usecase.model.rm.EnderecoRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 
@@ -10,46 +11,37 @@ import br.com.simpli.sql.Query
  * @author Simpli CLI generator
  */
 class EnderecoDao(val con: AbstractConnector) {
-
     fun getOne(idEnderecoPk: Long): Endereco? {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectEndereco()
                 .from("endereco")
                 .whereEq("idEnderecoPk", idEnderecoPk)
 
         return con.getOne(query) {
-            Endereco(it)
+            EnderecoRM.build(it)
         }
     }
 
-    fun getList(filter: ListFilter): MutableList<Endereco> {
+    fun getList(filter: EnderecoListFilter): MutableList<Endereco> {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectEndereco()
                 .from("endereco")
-                .applyListFilter(filter)
-
-        Endereco.orderMap[filter.orderBy]?.also {
-            query.orderByAsc(it, filter.ascending)
-        }
-
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            query.limit(index, it)
-        }
+                .whereEnderecoFilter(filter)
+                .orderAndLimitEndereco(filter)
 
         return con.getList(query) {
-            Endereco(it)
+            EnderecoRM.build(it)
         }
     }
 
-    fun count(filter: ListFilter): Int {
+    fun count(filter: EnderecoListFilter): Int {
         // TODO: review generated method
         val query = Query()
                 .countRaw("DISTINCT idEnderecoPk")
                 .from("endereco")
-                .applyListFilter(filter)
+                .whereEnderecoFilter(filter)
 
         return con.getFirstInt(query) ?: 0
     }
@@ -58,7 +50,7 @@ class EnderecoDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .updateTable("endereco")
-                .updateSet(endereco.updateSet())
+                .updateEnderecoSet(endereco)
                 .whereEq("idEnderecoPk", endereco.id)
 
         return con.execute(query).affectedRows
@@ -68,7 +60,7 @@ class EnderecoDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .insertInto("endereco")
-                .insertValues(endereco.insertValues())
+                .insertEnderecoValues(endereco)
 
         return con.execute(query).key
     }
@@ -83,23 +75,53 @@ class EnderecoDao(val con: AbstractConnector) {
         return con.exist(query)
     }
 
+    private fun Query.selectEndereco() = selectFields(EnderecoRM.selectFields())
 
-    private fun Query.applyListFilter(filter: ListFilter): Query {
+    private fun Query.updateEnderecoSet(endereco: Endereco) = updateSet(EnderecoRM.updateSet(endereco))
 
+    private fun Query.insertEnderecoValues(endereco: Endereco) = insertValues(EnderecoRM.insertValues(endereco))
+
+    private fun Query.whereEnderecoFilter(filter: EnderecoListFilter, alias: String = "endereco"): Query {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSome {
-                    whereLike("endereco.idEnderecoPk", "%$it%")
-                    whereLike("endereco.cep", "%$it%")
-                    whereLike("endereco.zipcode", "%$it%")
-                    whereLike("endereco.rua", "%$it%")
-                    whereLike("endereco.cidade", "%$it%")
-                    whereLike("endereco.uf", "%$it%")
-                }
+                whereSomeLikeThis(EnderecoRM.fieldsToSearch(alias), "%$it%")
             }
+        }
+
+        filter.minNro?.also {
+            whereGtEq("$alias.nro", it)
+        }
+        filter.maxNro?.also {
+            whereLtEq("$alias.nro", it)
+        }
+
+        filter.minLatitude?.also {
+            whereGtEq("$alias.latitude", it)
+        }
+        filter.maxLatitude?.also {
+            whereLtEq("$alias.latitude", it)
+        }
+
+        filter.minLongitude?.also {
+            whereGtEq("$alias.longitude", it)
+        }
+        filter.maxLongitude?.also {
+            whereLtEq("$alias.longitude", it)
         }
 
         return this
     }
 
+    private fun Query.orderAndLimitEndereco(filter: EnderecoListFilter, alias: String = "endereco"): Query {
+        EnderecoRM.orderMap(alias)[filter.orderBy]?.also {
+            orderByAsc(it, filter.ascending)
+        }
+
+        filter.limit?.also {
+            val index = (filter.page ?: 0) * it
+            limit(index, it)
+        }
+
+        return this
+    }
 }

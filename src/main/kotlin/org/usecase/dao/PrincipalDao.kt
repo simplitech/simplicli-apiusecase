@@ -1,17 +1,17 @@
 package org.usecase.dao
 
+import org.usecase.model.filter.PrincipalListFilter
 import org.usecase.model.resource.Principal
+import org.usecase.model.rm.PrincipalRM
+import org.usecase.model.rm.GrupoDoPrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
-import org.usecase.rm.PrincipalRM
-import org.usecase.model.filter.PrincipalListFilter
 
 /**
  * Data Access Object of Principal from table principal
  * @author Simpli CLI generator
  */
 class PrincipalDao(val con: AbstractConnector) {
-
     fun getOne(idPrincipalPk: Long): Principal? {
         // TODO: review generated method
         val query = Query()
@@ -27,13 +27,18 @@ class PrincipalDao(val con: AbstractConnector) {
     fun getList(filter: PrincipalListFilter): MutableList<Principal> {
         // TODO: review generated method
         val query = Query()
-                .selectPrincipal()
+                .selectFields(PrincipalRM.selectFields() + GrupoDoPrincipalRM.selectFields() + GrupoDoPrincipalRM.selectFields("grupo_do_principal_facultativo"))
                 .from("principal")
+                .innerJoin("grupo_do_principal", "grupo_do_principal.idGrupoDoPrincipalPk", "principal.idGrupoDoPrincipalFk")
+                .leftJoin("grupo_do_principal AS grupo_do_principal_facultativo", "grupo_do_principal_facultativo.idGrupoDoPrincipalPk", "principal.idGrupoDoPrincipalFacultativoFk")
                 .wherePrincipalFilter(filter)
                 .orderAndLimitPrincipal(filter)
 
         return con.getList(query) {
-            PrincipalRM.build(it)
+            PrincipalRM.build(it).apply {
+                grupoDoPrincipal = GrupoDoPrincipalRM.build(it)
+                grupoDoPrincipalFacultativo = GrupoDoPrincipalRM.build(it, "grupo_do_principal_facultativo")
+            }
         }
     }
 
@@ -117,17 +122,53 @@ class PrincipalDao(val con: AbstractConnector) {
                 whereIn("$alias.idGrupoDoPrincipalFk", *it.toTypedArray())
             }
         }
+
         filter.idGrupoDoPrincipalFacultativoFk?.also {
             if (it.isNotEmpty()) {
                 whereIn("$alias.idGrupoDoPrincipalFacultativoFk", *it.toTypedArray())
             }
         }
 
-        filter.minInteiroObrigatorio?.also {
-            whereGtEq("$alias.inteiroObrigatorio", it)
+        filter.startDataObrigatoria?.also {
+            where("DATE($alias.dataObrigatoria) >= DATE(?)", it)
         }
-        filter.maxInteiroObrigatorio?.also {
-            whereLtEq("$alias.inteiroObrigatorio", it)
+        filter.endDataObrigatoria?.also {
+            where("DATE($alias.dataObrigatoria) <= DATE(?)", it)
+        }
+
+        filter.startDataFacultativa?.also {
+            where("DATE($alias.dataFacultativa) >= DATE(?)", it)
+        }
+        filter.endDataFacultativa?.also {
+            where("DATE($alias.dataFacultativa) <= DATE(?)", it)
+        }
+
+        filter.startDatahoraObrigatoria?.also {
+            where("DATE($alias.datahoraObrigatoria) >= DATE(?)", it)
+        }
+        filter.endDatahoraObrigatoria?.also {
+            where("DATE($alias.datahoraObrigatoria) <= DATE(?)", it)
+        }
+
+        filter.startDatahoraFacultativa?.also {
+            where("DATE($alias.datahoraFacultativa) >= DATE(?)", it)
+        }
+        filter.endDatahoraFacultativa?.also {
+            where("DATE($alias.datahoraFacultativa) <= DATE(?)", it)
+        }
+
+        filter.startDataCriacao?.also {
+            where("DATE($alias.dataCriacao) >= DATE(?)", it)
+        }
+        filter.endDataCriacao?.also {
+            where("DATE($alias.dataCriacao) <= DATE(?)", it)
+        }
+
+        filter.startDataAlteracao?.also {
+            where("DATE($alias.dataAlteracao) >= DATE(?)", it)
+        }
+        filter.endDataAlteracao?.also {
+            where("DATE($alias.dataAlteracao) <= DATE(?)", it)
         }
 
         filter.minDecimalObrigatorio?.also {
@@ -137,29 +178,18 @@ class PrincipalDao(val con: AbstractConnector) {
             whereLtEq("$alias.decimalObrigatorio", it)
         }
 
-        filter.booleanoObrigatorio?.also {
-            whereEq("$alias.booleanoObrigatorio", it)
+        filter.minDecimalFacultativo?.also {
+            whereGtEq("$alias.decimalFacultativo", it)
+        }
+        filter.maxDecimalFacultativo?.also {
+            whereLtEq("$alias.decimalFacultativo", it)
         }
 
-        filter.minDataObrigatoria?.also {
-            whereGtEq("$alias.dataObrigatoria", it)
+        filter.minInteiroObrigatorio?.also {
+            whereGtEq("$alias.inteiroObrigatorio", it)
         }
-        filter.maxDataObrigatoria?.also {
-            whereLtEq("$alias.dataObrigatoria", it)
-        }
-
-        filter.minDatahoraObrigatoria?.also {
-            whereGtEq("$alias.datahoraObrigatoria", it)
-        }
-        filter.maxDatahoraObrigatoria?.also {
-            whereLtEq("$alias.datahoraObrigatoria", it)
-        }
-
-        filter.minDataCriacao?.also {
-            whereGtEq("$alias.dataCriacao", it)
-        }
-        filter.maxDataCriacao?.also {
-            whereLtEq("$alias.dataCriacao", it)
+        filter.maxInteiroObrigatorio?.also {
+            whereLtEq("$alias.inteiroObrigatorio", it)
         }
 
         filter.minInteiroFacultativo?.also {
@@ -169,38 +199,6 @@ class PrincipalDao(val con: AbstractConnector) {
             whereLtEq("$alias.inteiroFacultativo", it)
         }
 
-        filter.minDecimalFacultativo?.also {
-            whereGtEq("$alias.decimalFacultativo", it)
-        }
-        filter.maxDecimalFacultativo?.also {
-            whereLtEq("$alias.decimalFacultativo", it)
-        }
-
-        filter.booleanoFacultativo?.also {
-            whereEq("$alias.booleanoFacultativo", it)
-        }
-
-        filter.minDataFacultativa?.also {
-            whereGtEq("$alias.dataFacultativa", it)
-        }
-        filter.maxDataFacultativa?.also {
-            whereLtEq("$alias.dataFacultativa", it)
-        }
-
-        filter.minDatahoraFacultativa?.also {
-            whereGtEq("$alias.datahoraFacultativa", it)
-        }
-        filter.maxDatahoraFacultativa?.also {
-            whereLtEq("$alias.datahoraFacultativa", it)
-        }
-
-        filter.minDataAlteracao?.also {
-            whereGtEq("$alias.dataAlteracao", it)
-        }
-        filter.maxDataAlteracao?.also {
-            whereLtEq("$alias.dataAlteracao", it)
-        }
-
         filter.minPreco?.also {
             whereGtEq("$alias.preco", it)
         }
@@ -208,11 +206,19 @@ class PrincipalDao(val con: AbstractConnector) {
             whereLtEq("$alias.preco", it)
         }
 
+        filter.booleanoObrigatorio?.also {
+            whereEq("$alias.booleanoObrigatorio", it)
+        }
+
+        filter.booleanoFacultativo?.also {
+            whereEq("$alias.booleanoFacultativo", it)
+        }
+
         return this
     }
 
     private fun Query.orderAndLimitPrincipal(filter: PrincipalListFilter, alias: String = "principal"): Query {
-        PrincipalRM.orderMap()[filter.orderBy]?.also {
+        PrincipalRM.orderMap(alias)[filter.orderBy]?.also {
             orderByAsc(it, filter.ascending)
         }
 
@@ -223,5 +229,4 @@ class PrincipalDao(val con: AbstractConnector) {
 
         return this
     }
-
 }

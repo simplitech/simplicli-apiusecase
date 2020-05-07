@@ -4,7 +4,7 @@ import org.usecase.app.Facade.Env
 import org.usecase.enums.Lang
 import org.usecase.locale.EnUs
 import org.usecase.model.filter.ListFilter
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.DefaultParam
 import br.com.simpli.model.LanguageHolder
 import br.com.simpli.sql.AbstractConnector
 

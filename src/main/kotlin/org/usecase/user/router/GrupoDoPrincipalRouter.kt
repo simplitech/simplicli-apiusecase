@@ -3,8 +3,9 @@ package org.usecase.user.router
 import org.usecase.user.context.AuthPipe
 import org.usecase.user.process.GrupoDoPrincipalProcess
 import org.usecase.wrapper.RouterWrapper
+import org.usecase.model.param.DefaultParam
+import org.usecase.model.param.AuthGrupoDoPrincipalListParam
 import org.usecase.model.resource.GrupoDoPrincipal
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.BeanParam
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType
 @Path("/user/grupo-do-principal")
 @Produces(MediaType.APPLICATION_JSON)
 class GrupoDoPrincipalRouter : RouterWrapper() {
-
     @GET
     @Path("/{id}")
     @Operation(tags = ["GrupoDoPrincipal"], summary = "Gets a instance of a given ID of GrupoDoPrincipal")
@@ -36,7 +36,7 @@ class GrupoDoPrincipalRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["GrupoDoPrincipal"], summary = "Lists the instances of GrupoDoPrincipal")
-    fun listGrupoDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<GrupoDoPrincipal> {
+    fun listGrupoDoPrincipal(@BeanParam param: AuthGrupoDoPrincipalListParam): PageCollection<GrupoDoPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             GrupoDoPrincipalProcess(context).list(param)
@@ -46,7 +46,7 @@ class GrupoDoPrincipalRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["GrupoDoPrincipal"], summary = "Lists the instances of GrupoDoPrincipal to export as a file")
-    fun listExportGrupoDoPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<GrupoDoPrincipal> {
+    fun listExportGrupoDoPrincipal(@BeanParam param: AuthGrupoDoPrincipalListParam): PageCollection<GrupoDoPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             GrupoDoPrincipalProcess(context).list(param)
@@ -61,5 +61,4 @@ class GrupoDoPrincipalRouter : RouterWrapper() {
             GrupoDoPrincipalProcess(context).persist(model)
 		}
     }
-
 }

@@ -18,7 +18,7 @@ ENV DB_PASS=$DB_PASS
 
 USER root
 RUN rm -rf /usr/local/tomcat/webapps/
-COPY ./target/Usecase.war /usr/local/tomcat/webapps/ROOT.war
+COPY ./target/UsecaseServer.war /usr/local/tomcat/webapps/ROOT.war
 
 RUN echo "export JAVA_OPTS=\"\$JAVA_OPTS -DENVIRONMENT=\$ENVIRONMENT -DLOG_LEVEL=\$LOG_LEVEL -DDB_URL=\$DB_URL -DDB_NAME=\$DB_NAME -DDB_USER=\$DB_USER -DDB_PASS=\$DB_PASS\"" > $CATALINA_HOME/bin/setenv.sh
 

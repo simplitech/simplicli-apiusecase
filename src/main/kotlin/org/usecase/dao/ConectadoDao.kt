@@ -1,7 +1,8 @@
 package org.usecase.dao
 
-import org.usecase.model.filter.ListFilter
+import org.usecase.model.filter.ConectadoListFilter
 import org.usecase.model.resource.Conectado
+import org.usecase.model.rm.ConectadoRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 
@@ -10,46 +11,37 @@ import br.com.simpli.sql.Query
  * @author Simpli CLI generator
  */
 class ConectadoDao(val con: AbstractConnector) {
-
     fun getOne(idConectadoPk: Long): Conectado? {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectConectado()
                 .from("conectado")
                 .whereEq("idConectadoPk", idConectadoPk)
 
         return con.getOne(query) {
-            Conectado(it)
+            ConectadoRM.build(it)
         }
     }
 
-    fun getList(filter: ListFilter): MutableList<Conectado> {
+    fun getList(filter: ConectadoListFilter): MutableList<Conectado> {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectConectado()
                 .from("conectado")
-                .applyListFilter(filter)
-
-        Conectado.orderMap[filter.orderBy]?.also {
-            query.orderByAsc(it, filter.ascending)
-        }
-
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            query.limit(index, it)
-        }
+                .whereConectadoFilter(filter)
+                .orderAndLimitConectado(filter)
 
         return con.getList(query) {
-            Conectado(it)
+            ConectadoRM.build(it)
         }
     }
 
-    fun count(filter: ListFilter): Int {
+    fun count(filter: ConectadoListFilter): Int {
         // TODO: review generated method
         val query = Query()
                 .countRaw("DISTINCT idConectadoPk")
                 .from("conectado")
-                .applyListFilter(filter)
+                .whereConectadoFilter(filter)
 
         return con.getFirstInt(query) ?: 0
     }
@@ -58,7 +50,7 @@ class ConectadoDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .updateTable("conectado")
-                .updateSet(conectado.updateSet())
+                .updateConectadoSet(conectado)
                 .whereEq("idConectadoPk", conectado.id)
 
         return con.execute(query).affectedRows
@@ -68,7 +60,7 @@ class ConectadoDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .insertInto("conectado")
-                .insertValues(conectado.insertValues())
+                .insertConectadoValues(conectado)
 
         return con.execute(query).key
     }
@@ -83,19 +75,32 @@ class ConectadoDao(val con: AbstractConnector) {
         return con.exist(query)
     }
 
+    private fun Query.selectConectado() = selectFields(ConectadoRM.selectFields())
 
-    private fun Query.applyListFilter(filter: ListFilter): Query {
+    private fun Query.updateConectadoSet(conectado: Conectado) = updateSet(ConectadoRM.updateSet(conectado))
 
+    private fun Query.insertConectadoValues(conectado: Conectado) = insertValues(ConectadoRM.insertValues(conectado))
+
+    private fun Query.whereConectadoFilter(filter: ConectadoListFilter, alias: String = "conectado"): Query {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSome {
-                    whereLike("conectado.idConectadoPk", "%$it%")
-                    whereLike("conectado.titulo", "%$it%")
-                }
+                whereSomeLikeThis(ConectadoRM.fieldsToSearch(alias), "%$it%")
             }
         }
 
         return this
     }
 
+    private fun Query.orderAndLimitConectado(filter: ConectadoListFilter, alias: String = "conectado"): Query {
+        ConectadoRM.orderMap(alias)[filter.orderBy]?.also {
+            orderByAsc(it, filter.ascending)
+        }
+
+        filter.limit?.also {
+            val index = (filter.page ?: 0) * it
+            limit(index, it)
+        }
+
+        return this
+    }
 }

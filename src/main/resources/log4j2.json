@@ -2,9 +2,9 @@
   "configuration": {
     "name": "LoggerConfig",
     "ThresholdFilter":
-      {
-        "level": "${sys:LOG_LEVEL:-info}"
-      },
+    {
+      "level": "${sys:LOG_LEVEL:-info}"
+    },
     "appenders": {
       "appender": [
         {

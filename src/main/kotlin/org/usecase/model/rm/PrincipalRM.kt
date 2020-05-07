@@ -1,8 +1,8 @@
-package org.usecase.rm
+package org.usecase.model.rm
 
+import org.usecase.model.resource.Principal
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.ResultBuilder
-import org.usecase.model.resource.Principal
 import java.sql.ResultSet
 
 /**
@@ -46,6 +46,90 @@ object PrincipalRM {
             preco = getDoubleOrNull("preco")
         }
     }
+
+    fun selectFields(alias: String = "principal") = arrayOf(
+            "$alias.idPrincipalPk",
+            "$alias.textoObrigatorio",
+            "$alias.textoFacultativo",
+            "$alias.decimalObrigatorio",
+            "$alias.decimalFacultativo",
+            "$alias.inteiroObrigatorio",
+            "$alias.inteiroFacultativo",
+            "$alias.booleanoObrigatorio",
+            "$alias.booleanoFacultativo",
+            "$alias.dataObrigatoria",
+            "$alias.dataFacultativa",
+            "$alias.datahoraObrigatoria",
+            "$alias.datahoraFacultativa",
+            "$alias.ativo",
+            "$alias.email",
+            "$alias.urlImagem",
+            "$alias.url",
+            "$alias.idGrupoDoPrincipalFk",
+            "$alias.idGrupoDoPrincipalFacultativoFk",
+            "$alias.unico",
+            "$alias.dataCriacao",
+            "$alias.dataAlteracao",
+            "$alias.nome",
+            "$alias.titulo",
+            "$alias.cpf",
+            "$alias.cnpj",
+            "$alias.rg",
+            "$alias.celular",
+            "$alias.textoGrande",
+            "$alias.snake_case",
+            "$alias.preco"
+    )
+
+    fun fieldsToSearch(alias: String = "principal") = arrayOf(
+            "$alias.idPrincipalPk",
+            "$alias.textoObrigatorio",
+            "$alias.textoFacultativo",
+            "$alias.email",
+            "$alias.unico",
+            "$alias.nome",
+            "$alias.titulo",
+            "$alias.cpf",
+            "$alias.cnpj",
+            "$alias.rg",
+            "$alias.celular",
+            "$alias.textoGrande",
+            "$alias.snake_case"
+    )
+
+    fun orderMap(alias: String = "principal") = mapOf(
+            "grupoDoPrincipal" to "$alias.idGrupoDoPrincipalFk",
+            "grupoDoPrincipalFacultativo" to "$alias.idGrupoDoPrincipalFacultativoFk",
+            "idPrincipalPk" to "$alias.idPrincipalPk",
+            "textoObrigatorio" to "$alias.textoObrigatorio",
+            "textoFacultativo" to "$alias.textoFacultativo",
+            "decimalObrigatorio" to "$alias.decimalObrigatorio",
+            "decimalFacultativo" to "$alias.decimalFacultativo",
+            "inteiroObrigatorio" to "$alias.inteiroObrigatorio",
+            "inteiroFacultativo" to "$alias.inteiroFacultativo",
+            "booleanoObrigatorio" to "$alias.booleanoObrigatorio",
+            "booleanoFacultativo" to "$alias.booleanoFacultativo",
+            "dataObrigatoria" to "$alias.dataObrigatoria",
+            "dataFacultativa" to "$alias.dataFacultativa",
+            "datahoraObrigatoria" to "$alias.datahoraObrigatoria",
+            "datahoraFacultativa" to "$alias.datahoraFacultativa",
+            "ativo" to "$alias.ativo",
+            "email" to "$alias.email",
+            "urlImagem" to "$alias.urlImagem",
+            "url" to "$alias.url",
+            "unico" to "$alias.unico",
+            "dataCriacao" to "$alias.dataCriacao",
+            "dataAlteracao" to "$alias.dataAlteracao",
+            "nome" to "$alias.nome",
+            "titulo" to "$alias.titulo",
+            "cpf" to "$alias.cpf",
+            "cnpj" to "$alias.cnpj",
+            "rg" to "$alias.rg",
+            "celular" to "$alias.celular",
+            "textoGrande" to "$alias.textoGrande",
+            "snakeCase" to "$alias.snake_case",
+            "preco" to "$alias.preco"
+    )
 
     fun updateSet(principal: Principal) = mapOf(
             "textoObrigatorio" to principal.textoObrigatorio,
@@ -111,89 +195,5 @@ object PrincipalRM {
             "textoGrande" to principal.textoGrande,
             "snake_case" to principal.snakeCase,
             "preco" to principal.preco
-    )
-
-    fun selectFields(alias: String = "principal") = arrayOf(
-            "$alias.idPrincipalPk",
-            "$alias.textoObrigatorio",
-            "$alias.textoFacultativo",
-            "$alias.decimalObrigatorio",
-            "$alias.decimalFacultativo",
-            "$alias.inteiroObrigatorio",
-            "$alias.inteiroFacultativo",
-            "$alias.booleanoObrigatorio",
-            "$alias.booleanoFacultativo",
-            "$alias.dataObrigatoria",
-            "$alias.dataFacultativa",
-            "$alias.datahoraObrigatoria",
-            "$alias.datahoraFacultativa",
-            "$alias.ativo",
-            "$alias.email",
-            "$alias.urlImagem",
-            "$alias.url",
-            "$alias.idGrupoDoPrincipalFk",
-            "$alias.idGrupoDoPrincipalFacultativoFk",
-            "$alias.unico",
-            "$alias.dataCriacao",
-            "$alias.dataAlteracao",
-            "$alias.nome",
-            "$alias.titulo",
-            "$alias.cpf",
-            "$alias.cnpj",
-            "$alias.rg",
-            "$alias.celular",
-            "$alias.textoGrande",
-            "$alias.snake_case",
-            "$alias.preco"
-    )
-
-    fun fieldsToSearch(alias: String = "principal") = arrayOf(
-            "$alias.textoObrigatorio",
-            "$alias.textoFacultativo",
-            "$alias.email",
-            "$alias.urlImagem",
-            "$alias.url",
-            "$alias.nome",
-            "$alias.titulo",
-            "$alias.cpf",
-            "$alias.cnpj",
-            "$alias.rg",
-            "$alias.celular",
-            "$alias.textoGrande",
-            "$alias.snake_case"
-    )
-
-    fun orderMap(alias: String = "principal") = mapOf(
-            "idPrincipalPk" to "$alias.idPrincipalPk",
-            "textoObrigatorio" to "$alias.textoObrigatorio",
-            "textoFacultativo" to "$alias.textoFacultativo",
-            "decimalObrigatorio" to "$alias.decimalObrigatorio",
-            "decimalFacultativo" to "$alias.decimalFacultativo",
-            "inteiroObrigatorio" to "$alias.inteiroObrigatorio",
-            "inteiroFacultativo" to "$alias.inteiroFacultativo",
-            "booleanoObrigatorio" to "$alias.booleanoObrigatorio",
-            "booleanoFacultativo" to "$alias.booleanoFacultativo",
-            "dataObrigatoria" to "$alias.dataObrigatoria",
-            "dataFacultativa" to "$alias.dataFacultativa",
-            "datahoraObrigatoria" to "$alias.datahoraObrigatoria",
-            "datahoraFacultativa" to "$alias.datahoraFacultativa",
-            "ativo" to "$alias.ativo",
-            "email" to "$alias.email",
-            "urlImagem" to "$alias.urlImagem",
-            "url" to "$alias.url",
-            "idGrupoDoPrincipalFk" to "$alias.idGrupoDoPrincipalFk",
-            "idGrupoDoPrincipalFacultativoFk" to "$alias.idGrupoDoPrincipalFacultativoFk",
-            "unico" to "$alias.unico",
-            "dataCriacao" to "$alias.dataCriacao",
-            "dataAlteracao" to "$alias.dataAlteracao",
-            "nome" to "$alias.nome",
-            "titulo" to "$alias.titulo",
-            "cpf" to "$alias.cpf",
-            "cnpj" to "$alias.cnpj",
-            "rg" to "$alias.rg",
-            "celular" to "$alias.celular",
-            "textoGrande" to "$alias.textoGrande",
-            "snakeCase" to "$alias.snake_case",
-            "preco" to "$alias.preco"
     )
 }

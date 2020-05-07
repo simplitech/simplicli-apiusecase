@@ -3,7 +3,6 @@ package org.usecase.user.request
 import br.com.simpli.model.LanguageHolder
 import br.com.simpli.tools.Validator
 import io.swagger.v3.oas.annotations.media.Schema
-import javax.xml.bind.annotation.XmlRootElement
 import org.usecase.user.auth.AuthProcess
 import org.usecase.exception.response.BadRequestException
 

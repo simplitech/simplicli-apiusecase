@@ -1,11 +1,12 @@
 package org.usecase.model.resource
 
 import org.usecase.exception.response.BadRequestException
+import org.usecase.model.param.DefaultParam
 import br.com.simpli.model.LanguageHolder
 import br.com.simpli.tools.Validator
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.Date
-import javax.xml.bind.annotation.XmlRootElement
+import javax.ws.rs.PathParam
 
 /**
  * Reference model of table principal
@@ -15,23 +16,20 @@ import javax.xml.bind.annotation.XmlRootElement
  */
 @Schema(description = "the main model of generator usecase")
 class Principal {
-    @Schema(required = true, maxLength = 11)
-    var idPrincipalPk: Long = 0
+    @Schema(required = true) var idPrincipalPk: Long = 0
 
-    var grupoDoPrincipal1: GrupoDoPrincipal? = null
-    var grupoDoPrincipal2: GrupoDoPrincipal? = null
+    var grupoDoPrincipal: GrupoDoPrincipal? = null
+    var grupoDoPrincipalFacultativo: GrupoDoPrincipal? = null
     var tagPrincipal: MutableList<Tag>? = null
 
     @Schema(required = true, maxLength = 160, description = "principal’s mandatory text")
     var textoObrigatorio: String? = null
 
-    @Schema(required = true, maxLength = 11)
-    var inteiroObrigatorio: Long? = null
-
     @Schema(required = true, maxLength = 40)
     var unico: String? = null
 
     @Schema(required = true) var decimalObrigatorio: Double? = null
+    @Schema(required = true) var inteiroObrigatorio: Long? = null
     @Schema(required = true) var booleanoObrigatorio: Boolean? = null
     @Schema(required = true) var dataObrigatoria: Date? = null
     @Schema(required = true) var datahoraObrigatoria: Date? = null
@@ -39,7 +37,6 @@ class Principal {
     @Schema(required = true) var dataCriacao: Date? = null
 
     @Schema(maxLength = 45) var textoFacultativo: String? = null
-    @Schema(maxLength = 11) var inteiroFacultativo: Long? = null
     @Schema(maxLength = 200) var email: String? = null
     @Schema(maxLength = 200) var urlImagem: String? = null
     @Schema(maxLength = 200) var url: String? = null
@@ -53,6 +50,7 @@ class Principal {
     @Schema(maxLength = 200) var snakeCase: String? = null
 
     var decimalFacultativo: Double? = null
+    var inteiroFacultativo: Long? = null
     var booleanoFacultativo: Boolean? = null
     var dataFacultativa: Date? = null
     var datahoraFacultativa: Date? = null
@@ -69,31 +67,30 @@ class Principal {
         }
 
     var idGrupoDoPrincipalFk: Long
-        @Schema(required = true, maxLength = 11)
-        get() = grupoDoPrincipal1?.idGrupoDoPrincipalPk ?: 0
+        @Schema(required = true)
+        get() = grupoDoPrincipal?.idGrupoDoPrincipalPk ?: 0
         set(value) {
             if (value == 0L) {
-                grupoDoPrincipal1 = null
+                grupoDoPrincipal = null
                 return
             }
-            if (grupoDoPrincipal1 == null) {
-                grupoDoPrincipal1 = GrupoDoPrincipal()
+            if (grupoDoPrincipal == null) {
+                grupoDoPrincipal = GrupoDoPrincipal()
             }
-            grupoDoPrincipal1?.idGrupoDoPrincipalPk = value
+            grupoDoPrincipal?.idGrupoDoPrincipalPk = value
         }
 
     var idGrupoDoPrincipalFacultativoFk: Long?
-        @Schema(maxLength = 11)
-        get() = grupoDoPrincipal2?.idGrupoDoPrincipalPk
+        get() = grupoDoPrincipalFacultativo?.idGrupoDoPrincipalPk
         set(value) {
             if (value == null || value == 0L) {
-                grupoDoPrincipal2 = null
+                grupoDoPrincipalFacultativo = null
                 return
             }
-            if (grupoDoPrincipal2 == null) {
-                grupoDoPrincipal2 = GrupoDoPrincipal()
+            if (grupoDoPrincipalFacultativo == null) {
+                grupoDoPrincipalFacultativo = GrupoDoPrincipal()
             }
-            grupoDoPrincipal2?.idGrupoDoPrincipalPk = value
+            grupoDoPrincipalFacultativo?.idGrupoDoPrincipalPk = value
         }
 
     fun validate(lang: LanguageHolder) {

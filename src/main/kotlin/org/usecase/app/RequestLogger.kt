@@ -1,14 +1,12 @@
 package org.usecase.app
 
-import com.amazonaws.xray.AWSXRay
-import com.google.gson.JsonIOException
-import org.apache.logging.log4j.LogManager
-import org.glassfish.jersey.server.ContainerRequest
-import org.usecase.app.Facade.Env
 import org.usecase.app.healthcheck.HealthCheckRouter
 import org.usecase.extension.forwarded
 import org.usecase.extension.ip
 import org.usecase.extension.isFailure
+import com.amazonaws.xray.AWSXRay
+import com.google.gson.JsonIOException
+import org.apache.logging.log4j.LogManager
 import java.io.ByteArrayInputStream
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.container.ContainerRequestContext
@@ -18,8 +16,6 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.ext.ReaderInterceptor
 import javax.ws.rs.ext.ReaderInterceptorContext
-import java.util.logging.Level
-import java.util.logging.Logger
 import javax.ws.rs.container.ContainerRequestFilter
 
 /**
@@ -29,7 +25,6 @@ import javax.ws.rs.container.ContainerRequestFilter
  */
 @Provider
 class RequestLogger : ContainerRequestFilter, ContainerResponseFilter, ReaderInterceptor {
-
     companion object {
         private val logger = LogManager.getLogger(RequestLogger::class.java)
         private val requestMap = HashMap<HttpServletRequest?, RequestLog>()
@@ -77,12 +72,11 @@ class RequestLogger : ContainerRequestFilter, ContainerResponseFilter, ReaderInt
     }
 
     private class RequestLog(request: ContainerRequestContext?, sr: HttpServletRequest?) {
-
         val uri = request?.uriInfo?.requestUri?.toString()
-        val method = sr?.method
-        val ip = sr?.ip()
-        val forwarded = sr?.forwarded()
-        val headers = request?.headers
+        // val method = sr?.method
+        // val ip = sr?.ip()
+        // val forwarded = sr?.forwarded()
+        // val headers = request?.headers
 
         var request: Any? = null
             private set
@@ -110,5 +104,4 @@ class RequestLogger : ContainerRequestFilter, ContainerResponseFilter, ReaderInt
             }
         }
     }
-
 }

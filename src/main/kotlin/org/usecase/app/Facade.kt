@@ -1,17 +1,17 @@
 package org.usecase.app
 
-import org.apache.logging.log4j.LogManager
-import org.usecase.app.env.*
+import org.usecase.app.env.Props
+import org.usecase.app.env.PropsBeta
+import org.usecase.app.env.PropsProduction
+import org.usecase.app.env.PropsStaging
 import org.usecase.enums.Mode
-import java.util.logging.Level
-import java.util.logging.Logger
+import org.apache.logging.log4j.LogManager
 
 /**
- * Environment Variables
+ * Facade
  * @author Simpli CLI generator
  */
 object Facade {
-
     private val logger = LogManager.getLogger(Facade::class.java)
 
     /**

@@ -1,5 +1,6 @@
 package org.usecase.app
 
+import org.usecase.app.Facade.Env
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -9,7 +10,6 @@ import com.google.gson.JsonSerializer
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonSerializationContext
 import org.joda.time.DateTime
-import org.usecase.app.Facade.Env
 import java.lang.reflect.Type
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -21,7 +21,6 @@ import javax.ws.rs.WebApplicationException
  * @author Simpli CLI generator
  */
 object Cast {
-
     val builder: Gson = GsonBuilder()
             .setDateFormat(Env.DATE_FORMAT)
             .registerTypeAdapter(DateTime::class.java, DateTimeTypeAdapter())
@@ -68,5 +67,4 @@ object Cast {
             return JsonPrimitive(stringDate)
         }
     }
-
 }

@@ -3,7 +3,6 @@ package org.usecase.user.response
 import org.usecase.model.resource.User
 import org.usecase.user.socket.NotificationSocket
 import io.swagger.v3.oas.annotations.media.Schema
-import javax.xml.bind.annotation.XmlRootElement
 
 /**
  * Authentication Response Model

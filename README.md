@@ -6,7 +6,7 @@
   <a href="https://www.npmjs.com/package/@simpli/cli"><img src="https://img.shields.io/npm/l/@simpli/cli.svg"></a>
 </p>
 
-### Simpli CLI - API Usecase
+### Simpli CLI - API UsecaseServer
 
 Make sure the port 8080 is not in use.
 
@@ -47,6 +47,7 @@ Make sure your database is used for testing because the command `simpli server:s
 ## Contribute
 To generate an exact copy of this:
 - Run test/resources/database/create.sql
-- `node <simpli-cli folder>/packages/@simpli/cli/bin/simpli.js new:project <simplicli-apiusecase folder> --debug
-- Choose server name: Usecase
-- Choose module name: User
+- `npm install -g @simpli/cli`
+- `simpli new:project <project_name>`
+- Choose `Web Server project (backend)`
+- Choose `usecase` for database

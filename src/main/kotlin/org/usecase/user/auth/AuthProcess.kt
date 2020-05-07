@@ -2,10 +2,10 @@ package org.usecase.user.auth
 
 import org.usecase.app.Cast
 import org.usecase.app.Facade.Env
-import org.usecase.param.DefaultParam
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.exception.response.UnauthorizedException
+import org.usecase.model.param.DefaultParam
 import org.usecase.model.resource.User
 import org.usecase.user.context.RequestContext
 import org.usecase.user.mail.RecoverPasswordMail
@@ -24,7 +24,6 @@ import java.util.Calendar
  * @author Simpli CLI generator
  */
 class AuthProcess(val context: RequestContext) {
-
     val dao = AuthDao(context.con)
 
     /**

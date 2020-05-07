@@ -1,8 +1,8 @@
 package org.usecase.app
 
 import org.usecase.app.Cast.builder
-import com.google.gson.Gson
 import org.usecase.app.Facade.Env
+import com.google.gson.Gson
 import java.lang.reflect.Type
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -23,7 +23,6 @@ import javax.ws.rs.ext.Provider
  */
 @Provider
 class AppProvider : ParamConverterProvider, ContextResolver<Gson>, ContainerResponseFilter {
-
     override fun <T : Any?> getConverter(rawType: Class<T>?, genericType: Type?, annotations: Array<out Annotation>?): ParamConverter<T>? {
         return when (rawType) {
             is Date, Date::class.java -> DateParameterConverter() as ParamConverter<T>
@@ -56,5 +55,4 @@ class AppProvider : ParamConverterProvider, ContextResolver<Gson>, ContainerResp
             return simpleDateFormat.format(date)
         }
     }
-
 }

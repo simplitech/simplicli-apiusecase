@@ -1,15 +1,18 @@
 package org.usecase.app.healthcheck
 
-import br.com.simpli.sql.AbstractConnector
-import kotlinx.coroutines.*
 import org.usecase.exception.response.InternalServerErrorException
+import br.com.simpli.sql.AbstractConnector
+import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.runBlocking
 
 /**
  * Health check logic
  * @author Simpli CLI generator
  */
 class HealthCheckProcess(val con: AbstractConnector) {
-
     val dao = HealthCheckDao(con)
 
     fun check(): Boolean {
@@ -43,6 +46,4 @@ class HealthCheckProcess(val con: AbstractConnector) {
     private fun checkUnconfinedDispatcher(): Boolean {
         return runBlocking { CoroutineScope(Dispatchers.Unconfined).async { true }.await() }
     }
-
-
 }

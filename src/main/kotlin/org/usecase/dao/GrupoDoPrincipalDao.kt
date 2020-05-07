@@ -1,7 +1,8 @@
 package org.usecase.dao
 
-import org.usecase.model.filter.ListFilter
+import org.usecase.model.filter.GrupoDoPrincipalListFilter
 import org.usecase.model.resource.GrupoDoPrincipal
+import org.usecase.model.rm.GrupoDoPrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 
@@ -10,46 +11,37 @@ import br.com.simpli.sql.Query
  * @author Simpli CLI generator
  */
 class GrupoDoPrincipalDao(val con: AbstractConnector) {
-
     fun getOne(idGrupoDoPrincipalPk: Long): GrupoDoPrincipal? {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectGrupoDoPrincipal()
                 .from("grupo_do_principal")
                 .whereEq("idGrupoDoPrincipalPk", idGrupoDoPrincipalPk)
 
         return con.getOne(query) {
-            GrupoDoPrincipal(it)
+            GrupoDoPrincipalRM.build(it)
         }
     }
 
-    fun getList(filter: ListFilter): MutableList<GrupoDoPrincipal> {
+    fun getList(filter: GrupoDoPrincipalListFilter): MutableList<GrupoDoPrincipal> {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectGrupoDoPrincipal()
                 .from("grupo_do_principal")
-                .applyListFilter(filter)
-
-        GrupoDoPrincipal.orderMap[filter.orderBy]?.also {
-            query.orderByAsc(it, filter.ascending)
-        }
-
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            query.limit(index, it)
-        }
+                .whereGrupoDoPrincipalFilter(filter)
+                .orderAndLimitGrupoDoPrincipal(filter)
 
         return con.getList(query) {
-            GrupoDoPrincipal(it)
+            GrupoDoPrincipalRM.build(it)
         }
     }
 
-    fun count(filter: ListFilter): Int {
+    fun count(filter: GrupoDoPrincipalListFilter): Int {
         // TODO: review generated method
         val query = Query()
                 .countRaw("DISTINCT idGrupoDoPrincipalPk")
                 .from("grupo_do_principal")
-                .applyListFilter(filter)
+                .whereGrupoDoPrincipalFilter(filter)
 
         return con.getFirstInt(query) ?: 0
     }
@@ -58,7 +50,7 @@ class GrupoDoPrincipalDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .updateTable("grupo_do_principal")
-                .updateSet(grupoDoPrincipal.updateSet())
+                .updateGrupoDoPrincipalSet(grupoDoPrincipal)
                 .whereEq("idGrupoDoPrincipalPk", grupoDoPrincipal.id)
 
         return con.execute(query).affectedRows
@@ -68,7 +60,7 @@ class GrupoDoPrincipalDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .insertInto("grupo_do_principal")
-                .insertValues(grupoDoPrincipal.insertValues())
+                .insertGrupoDoPrincipalValues(grupoDoPrincipal)
 
         return con.execute(query).key
     }
@@ -83,19 +75,32 @@ class GrupoDoPrincipalDao(val con: AbstractConnector) {
         return con.exist(query)
     }
 
+    private fun Query.selectGrupoDoPrincipal() = selectFields(GrupoDoPrincipalRM.selectFields())
 
-    private fun Query.applyListFilter(filter: ListFilter): Query {
+    private fun Query.updateGrupoDoPrincipalSet(grupoDoPrincipal: GrupoDoPrincipal) = updateSet(GrupoDoPrincipalRM.updateSet(grupoDoPrincipal))
 
+    private fun Query.insertGrupoDoPrincipalValues(grupoDoPrincipal: GrupoDoPrincipal) = insertValues(GrupoDoPrincipalRM.insertValues(grupoDoPrincipal))
+
+    private fun Query.whereGrupoDoPrincipalFilter(filter: GrupoDoPrincipalListFilter, alias: String = "grupo_do_principal"): Query {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSome {
-                    whereLike("grupo_do_principal.idGrupoDoPrincipalPk", "%$it%")
-                    whereLike("grupo_do_principal.titulo", "%$it%")
-                }
+                whereSomeLikeThis(GrupoDoPrincipalRM.fieldsToSearch(alias), "%$it%")
             }
         }
 
         return this
     }
 
+    private fun Query.orderAndLimitGrupoDoPrincipal(filter: GrupoDoPrincipalListFilter, alias: String = "grupo_do_principal"): Query {
+        GrupoDoPrincipalRM.orderMap(alias)[filter.orderBy]?.also {
+            orderByAsc(it, filter.ascending)
+        }
+
+        filter.limit?.also {
+            val index = (filter.page ?: 0) * it
+            limit(index, it)
+        }
+
+        return this
+    }
 }

@@ -3,8 +3,9 @@ package org.usecase.user.router
 import org.usecase.user.context.AuthPipe
 import org.usecase.user.process.ConectorPrincipalProcess
 import org.usecase.wrapper.RouterWrapper
+import org.usecase.model.param.DefaultParam
+import org.usecase.model.param.AuthConectorPrincipalListParam
 import org.usecase.model.resource.ConectorPrincipal
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.BeanParam
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType
 @Path("/user/conector-principal")
 @Produces(MediaType.APPLICATION_JSON)
 class ConectorPrincipalRouter : RouterWrapper() {
-
     @GET
     @Path("/{id1}/{id2}")
     @Operation(tags = ["ConectorPrincipal"], summary = "Gets a instance of a given ID of ConectorPrincipal")
@@ -36,7 +36,7 @@ class ConectorPrincipalRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["ConectorPrincipal"], summary = "Lists the instances of ConectorPrincipal")
-    fun listConectorPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ConectorPrincipal> {
+    fun listConectorPrincipal(@BeanParam param: AuthConectorPrincipalListParam): PageCollection<ConectorPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ConectorPrincipalProcess(context).list(param)
@@ -46,7 +46,7 @@ class ConectorPrincipalRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["ConectorPrincipal"], summary = "Lists the instances of ConectorPrincipal to export as a file")
-    fun listExportConectorPrincipal(@BeanParam param: DefaultParam.AuthPaged): PageCollection<ConectorPrincipal> {
+    fun listExportConectorPrincipal(@BeanParam param: AuthConectorPrincipalListParam): PageCollection<ConectorPrincipal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ConectorPrincipalProcess(context).list(param)
@@ -61,5 +61,4 @@ class ConectorPrincipalRouter : RouterWrapper() {
             ConectorPrincipalProcess(context).persist(model)
 		}
     }
-
 }

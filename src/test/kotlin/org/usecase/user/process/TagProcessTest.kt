@@ -4,7 +4,7 @@ import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.Tag
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.AuthTagListParam
 import org.usecase.model.resource.Principal
 import java.util.Date
 import kotlin.test.assertFalse
@@ -23,7 +23,7 @@ class TagProcessTest : ProcessTest() {
     private val id = 1L
     private val model = Tag()
 
-    private val listFilter = DefaultParam.AuthPaged()
+    private val listFilter = AuthTagListParam()
 
     private val subject = TagProcess(context)
 

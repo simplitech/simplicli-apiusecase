@@ -3,17 +3,18 @@ package org.usecase.user.router
 import org.usecase.user.context.AuthPipe
 import org.usecase.user.process.PrincipalProcess
 import org.usecase.wrapper.RouterWrapper
+import org.usecase.model.param.DefaultParam
+import org.usecase.model.param.AuthPrincipalListParam
 import org.usecase.model.resource.Principal
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
-import org.usecase.param.AuthPrincipalListFilter
 import javax.ws.rs.BeanParam
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.POST
+import javax.ws.rs.PUT
 import javax.ws.rs.core.MediaType
 
 /**
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType
 @Path("/user/principal")
 @Produces(MediaType.APPLICATION_JSON)
 class PrincipalRouter : RouterWrapper() {
-
     @GET
     @Path("/{id}")
     @Operation(tags = ["Principal"], summary = "Gets a instance of a given ID of Principal")
@@ -36,7 +36,7 @@ class PrincipalRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["Principal"], summary = "Lists the instances of Principal")
-    fun listPrincipal(@BeanParam param: AuthPrincipalListFilter): PageCollection<Principal> {
+    fun listPrincipal(@BeanParam param: AuthPrincipalListParam): PageCollection<Principal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             PrincipalProcess(context).list(param)
@@ -46,7 +46,7 @@ class PrincipalRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["Principal"], summary = "Lists the instances of Principal to export as a file")
-    fun listExportPrincipal(@BeanParam param: AuthPrincipalListFilter): PageCollection<Principal> {
+    fun listExportPrincipal(@BeanParam param: AuthPrincipalListParam): PageCollection<Principal> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             PrincipalProcess(context).list(param)
@@ -71,5 +71,4 @@ class PrincipalRouter : RouterWrapper() {
             PrincipalProcess(context).remove(param.id)
 		}
     }
-
 }

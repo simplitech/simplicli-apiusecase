@@ -2,11 +2,12 @@ package org.usecase.user.process
 
 import org.usecase.user.context.RequestContext
 import org.usecase.dao.ConectorPrincipalDao
-import org.usecase.model.filter.ListFilter
+import org.usecase.model.filter.ConectorPrincipalListFilter
 import org.usecase.model.resource.ConectorPrincipal
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import br.com.simpli.model.PageCollection
+import java.util.Date
 
 /**
  * ConectorPrincipal business logic
@@ -24,7 +25,7 @@ class ConectorPrincipalProcess(val context: RequestContext) {
         return dao.getOne(id1, id2) ?: throw NotFoundException()
     }
 
-    fun list(filter: ListFilter): PageCollection<ConectorPrincipal> {
+    fun list(filter: ConectorPrincipalListFilter): PageCollection<ConectorPrincipal> {
         // TODO: review generated method
         val items = dao.getList(filter)
         val total = dao.count(filter)

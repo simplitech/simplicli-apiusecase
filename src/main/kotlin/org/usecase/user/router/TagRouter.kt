@@ -3,8 +3,9 @@ package org.usecase.user.router
 import org.usecase.user.context.AuthPipe
 import org.usecase.user.process.TagProcess
 import org.usecase.wrapper.RouterWrapper
+import org.usecase.model.param.DefaultParam
+import org.usecase.model.param.AuthTagListParam
 import org.usecase.model.resource.Tag
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.BeanParam
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType
 @Path("/user/tag")
 @Produces(MediaType.APPLICATION_JSON)
 class TagRouter : RouterWrapper() {
-
     @GET
     @Path("/{id}")
     @Operation(tags = ["Tag"], summary = "Gets a instance of a given ID of Tag")
@@ -36,7 +36,7 @@ class TagRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["Tag"], summary = "Lists the instances of Tag")
-    fun listTag(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Tag> {
+    fun listTag(@BeanParam param: AuthTagListParam): PageCollection<Tag> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             TagProcess(context).list(param)
@@ -46,7 +46,7 @@ class TagRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["Tag"], summary = "Lists the instances of Tag to export as a file")
-    fun listExportTag(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Tag> {
+    fun listExportTag(@BeanParam param: AuthTagListParam): PageCollection<Tag> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             TagProcess(context).list(param)
@@ -61,5 +61,4 @@ class TagRouter : RouterWrapper() {
             TagProcess(context).persist(model)
 		}
     }
-
 }

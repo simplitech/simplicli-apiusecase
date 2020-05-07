@@ -2,44 +2,49 @@ package org.usecase.model.filter
 
 import java.util.Date
 
+/**
+ * Principal List Filter
+ * @author Simpli CLI generator
+ */
 interface PrincipalListFilter : ListFilter {
     var idGrupoDoPrincipalFk: List<Long>?
+
     var idGrupoDoPrincipalFacultativoFk: List<Long>?
 
-    var minInteiroObrigatorio: Long?
-    var maxInteiroObrigatorio: Long?
+    var startDataObrigatoria: Date?
+    var endDataObrigatoria: Date?
+
+    var startDataFacultativa: Date?
+    var endDataFacultativa: Date?
+
+    var startDatahoraObrigatoria: Date?
+    var endDatahoraObrigatoria: Date?
+
+    var startDatahoraFacultativa: Date?
+    var endDatahoraFacultativa: Date?
+
+    var startDataCriacao: Date?
+    var endDataCriacao: Date?
+
+    var startDataAlteracao: Date?
+    var endDataAlteracao: Date?
 
     var minDecimalObrigatorio: Double?
     var maxDecimalObrigatorio: Double?
 
-    var booleanoObrigatorio: Boolean?
+    var minDecimalFacultativo: Double?
+    var maxDecimalFacultativo: Double?
 
-    var minDataObrigatoria: Date?
-    var maxDataObrigatoria: Date?
-
-    var minDatahoraObrigatoria: Date?
-    var maxDatahoraObrigatoria: Date?
-
-    var minDataCriacao: Date?
-    var maxDataCriacao: Date?
+    var minInteiroObrigatorio: Long?
+    var maxInteiroObrigatorio: Long?
 
     var minInteiroFacultativo: Long?
     var maxInteiroFacultativo: Long?
 
-    var minDecimalFacultativo: Double?
-    var maxDecimalFacultativo: Double?
-
-    var booleanoFacultativo: Boolean?
-
-    var minDataFacultativa: Date?
-    var maxDataFacultativa: Date?
-
-    var minDatahoraFacultativa: Date?
-    var maxDatahoraFacultativa: Date?
-
-    var minDataAlteracao: Date?
-    var maxDataAlteracao: Date?
-
     var minPreco: Double?
     var maxPreco: Double?
+
+    var booleanoObrigatorio: Boolean?
+
+    var booleanoFacultativo: Boolean?
 }

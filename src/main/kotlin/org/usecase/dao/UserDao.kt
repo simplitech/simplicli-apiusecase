@@ -1,7 +1,8 @@
 package org.usecase.dao
 
-import org.usecase.model.filter.ListFilter
+import org.usecase.model.filter.UserListFilter
 import org.usecase.model.resource.User
+import org.usecase.model.rm.UserRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 
@@ -10,46 +11,37 @@ import br.com.simpli.sql.Query
  * @author Simpli CLI generator
  */
 class UserDao(val con: AbstractConnector) {
-
     fun getOne(idUserPk: Long): User? {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectUser()
                 .from("user")
                 .whereEq("idUserPk", idUserPk)
 
         return con.getOne(query) {
-            User(it)
+            UserRM.build(it)
         }
     }
 
-    fun getList(filter: ListFilter): MutableList<User> {
+    fun getList(filter: UserListFilter): MutableList<User> {
         // TODO: review generated method
         val query = Query()
-                .selectAll()
+                .selectUser()
                 .from("user")
-                .applyListFilter(filter)
-
-        User.orderMap[filter.orderBy]?.also {
-            query.orderByAsc(it, filter.ascending)
-        }
-
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            query.limit(index, it)
-        }
+                .whereUserFilter(filter)
+                .orderAndLimitUser(filter)
 
         return con.getList(query) {
-            User(it)
+            UserRM.build(it)
         }
     }
 
-    fun count(filter: ListFilter): Int {
+    fun count(filter: UserListFilter): Int {
         // TODO: review generated method
         val query = Query()
                 .countRaw("DISTINCT idUserPk")
                 .from("user")
-                .applyListFilter(filter)
+                .whereUserFilter(filter)
 
         return con.getFirstInt(query) ?: 0
     }
@@ -58,7 +50,7 @@ class UserDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .updateTable("user")
-                .updateSet(user.updateSet())
+                .updateUserSet(user)
                 .whereEq("idUserPk", user.id)
 
         return con.execute(query).affectedRows
@@ -68,7 +60,7 @@ class UserDao(val con: AbstractConnector) {
         // TODO: review generated method
         val query = Query()
                 .insertInto("user")
-                .insertValues(user.insertValues())
+                .insertUserValues(user)
 
         return con.execute(query).key
     }
@@ -83,19 +75,32 @@ class UserDao(val con: AbstractConnector) {
         return con.exist(query)
     }
 
+    private fun Query.selectUser() = selectFields(UserRM.selectFields())
 
-    private fun Query.applyListFilter(filter: ListFilter): Query {
+    private fun Query.updateUserSet(user: User) = updateSet(UserRM.updateSet(user))
 
+    private fun Query.insertUserValues(user: User) = insertValues(UserRM.insertValues(user))
+
+    private fun Query.whereUserFilter(filter: UserListFilter, alias: String = "user"): Query {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSome {
-                    whereLike("user.idUserPk", "%$it%")
-                    whereLike("user.email", "%$it%")
-                }
+                whereSomeLikeThis(UserRM.fieldsToSearch(alias), "%$it%")
             }
         }
 
         return this
     }
 
+    private fun Query.orderAndLimitUser(filter: UserListFilter, alias: String = "user"): Query {
+        UserRM.orderMap(alias)[filter.orderBy]?.also {
+            orderByAsc(it, filter.ascending)
+        }
+
+        filter.limit?.also {
+            val index = (filter.page ?: 0) * it
+            limit(index, it)
+        }
+
+        return this
+    }
 }

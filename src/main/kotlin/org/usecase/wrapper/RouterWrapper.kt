@@ -1,11 +1,11 @@
 package org.usecase.wrapper
 
 import org.usecase.app.Facade.Env
+import org.usecase.app.RequestLogger
 import org.usecase.exception.HttpException
 import br.com.simpli.sql.ReadConPipe
 import br.com.simpli.sql.TransacConPipe
 import org.apache.logging.log4j.LogManager
-import org.usecase.app.RequestLogger
 import javax.ws.rs.NotFoundException
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -25,14 +25,12 @@ abstract class RouterWrapper : ExceptionMapper<Throwable> {
     }
 
     override fun toResponse(e: Throwable): Response {
-
         // Adds exception too XRay segment
         RequestLogger.logXRayException(e)
 
         return when (e) {
             is NotFoundException,
             is HttpException -> {
-
                 // Logging
                 logger.apply {
                     if (isDebugEnabled) {

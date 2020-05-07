@@ -7,8 +7,8 @@ import org.usecase.user.request.ChangePasswordRequest
 import org.usecase.user.request.ResetPasswordRequest
 import org.usecase.user.request.RecoverPasswordByMailRequest
 import org.usecase.user.response.AuthResponse
+import org.usecase.model.param.DefaultParam
 import org.usecase.wrapper.RouterWrapper
-import org.usecase.param.DefaultParam
 import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.BeanParam
 import javax.ws.rs.Path
@@ -25,7 +25,6 @@ import javax.ws.rs.core.MediaType
 @Path("user/auth")
 @Produces(MediaType.APPLICATION_JSON)
 class AuthRouter : RouterWrapper() {
-
     @GET
     @Operation(tags = ["AuthRequest"], summary = "Gets the user authentication")
     fun authenticate(@BeanParam param: DefaultParam.Auth): AuthResponse {

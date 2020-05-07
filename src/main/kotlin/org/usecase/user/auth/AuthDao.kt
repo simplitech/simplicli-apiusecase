@@ -1,6 +1,7 @@
 package org.usecase.user.auth
 
 import org.usecase.model.resource.User
+import org.usecase.model.rm.UserRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 
@@ -9,7 +10,6 @@ import br.com.simpli.sql.Query
  * @author Simpli CLI generator
  */
 class AuthDao(val con: AbstractConnector) {
-
     fun getIdOfUser(email: String, senha: String): Long? {
         val query = Query()
                 .select("idUserPk")
@@ -27,7 +27,7 @@ class AuthDao(val con: AbstractConnector) {
                 .whereEq("idUserPk", idUserPk)
 
         return con.getOne(query) {
-            User(it)
+            UserRM.build(it)
         }
     }
 
@@ -38,7 +38,7 @@ class AuthDao(val con: AbstractConnector) {
                 .whereEq("email", email)
 
         return con.getOne(query) {
-            User(it)
+            UserRM.build(it)
         }
     }
 
@@ -52,5 +52,4 @@ class AuthDao(val con: AbstractConnector) {
 
         return con.execute(query).affectedRows
     }
-
 }

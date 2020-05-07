@@ -2,11 +2,12 @@ package org.usecase.user.process
 
 import org.usecase.user.context.RequestContext
 import org.usecase.dao.UserDao
-import org.usecase.model.filter.ListFilter
+import org.usecase.model.filter.UserListFilter
 import org.usecase.model.resource.User
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import br.com.simpli.model.PageCollection
+import java.util.Date
 
 /**
  * User business logic
@@ -23,7 +24,7 @@ class UserProcess(val context: RequestContext) {
         return dao.getOne(id) ?: throw NotFoundException()
     }
 
-    fun list(filter: ListFilter): PageCollection<User> {
+    fun list(filter: UserListFilter): PageCollection<User> {
         // TODO: review generated method
         val items = dao.getList(filter)
         val total = dao.count(filter)

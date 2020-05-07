@@ -3,8 +3,9 @@ package org.usecase.user.router
 import org.usecase.user.context.AuthPipe
 import org.usecase.user.process.ConectadoProcess
 import org.usecase.wrapper.RouterWrapper
+import org.usecase.model.param.DefaultParam
+import org.usecase.model.param.AuthConectadoListParam
 import org.usecase.model.resource.Conectado
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.BeanParam
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType
 @Path("/user/conectado")
 @Produces(MediaType.APPLICATION_JSON)
 class ConectadoRouter : RouterWrapper() {
-
     @GET
     @Path("/{id}")
     @Operation(tags = ["Conectado"], summary = "Gets a instance of a given ID of Conectado")
@@ -36,7 +36,7 @@ class ConectadoRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["Conectado"], summary = "Lists the instances of Conectado")
-    fun listConectado(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Conectado> {
+    fun listConectado(@BeanParam param: AuthConectadoListParam): PageCollection<Conectado> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ConectadoProcess(context).list(param)
@@ -46,7 +46,7 @@ class ConectadoRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["Conectado"], summary = "Lists the instances of Conectado to export as a file")
-    fun listExportConectado(@BeanParam param: DefaultParam.AuthPaged): PageCollection<Conectado> {
+    fun listExportConectado(@BeanParam param: AuthConectadoListParam): PageCollection<Conectado> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             ConectadoProcess(context).list(param)
@@ -61,5 +61,4 @@ class ConectadoRouter : RouterWrapper() {
             ConectadoProcess(context).persist(model)
 		}
     }
-
 }

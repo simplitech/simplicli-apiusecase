@@ -4,7 +4,7 @@ import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.ConectorPrincipal
-import org.usecase.param.DefaultParam
+import org.usecase.model.param.AuthConectorPrincipalListParam
 import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -23,7 +23,7 @@ class ConectorPrincipalProcessTest : ProcessTest() {
     private val id2 = 1L
     private val model = ConectorPrincipal()
 
-    private val listFilter = DefaultParam.AuthPaged()
+    private val listFilter = AuthConectorPrincipalListParam()
 
     private val subject = ConectorPrincipalProcess(context)
 

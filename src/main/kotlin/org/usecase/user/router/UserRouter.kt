@@ -3,8 +3,9 @@ package org.usecase.user.router
 import org.usecase.user.context.AuthPipe
 import org.usecase.user.process.UserProcess
 import org.usecase.wrapper.RouterWrapper
+import org.usecase.model.param.DefaultParam
+import org.usecase.model.param.AuthUserListParam
 import org.usecase.model.resource.User
-import org.usecase.param.DefaultParam
 import br.com.simpli.model.PageCollection
 import io.swagger.v3.oas.annotations.Operation
 import javax.ws.rs.BeanParam
@@ -23,7 +24,6 @@ import javax.ws.rs.core.MediaType
 @Path("/user/user")
 @Produces(MediaType.APPLICATION_JSON)
 class UserRouter : RouterWrapper() {
-
     @GET
     @Path("/{id}")
     @Operation(tags = ["User"], summary = "Gets a instance of a given ID of User")
@@ -36,7 +36,7 @@ class UserRouter : RouterWrapper() {
 
     @GET
     @Operation(tags = ["User"], summary = "Lists the instances of User")
-    fun listUser(@BeanParam param: DefaultParam.AuthPaged): PageCollection<User> {
+    fun listUser(@BeanParam param: AuthUserListParam): PageCollection<User> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             UserProcess(context).list(param)
@@ -46,7 +46,7 @@ class UserRouter : RouterWrapper() {
     @GET
     @Path("/export")
     @Operation(tags = ["User"], summary = "Lists the instances of User to export as a file")
-    fun listExportUser(@BeanParam param: DefaultParam.AuthPaged): PageCollection<User> {
+    fun listExportUser(@BeanParam param: AuthUserListParam): PageCollection<User> {
         // TODO: review generated method
         return AuthPipe.handle(connectionPipe, param) { context, _ ->
             UserProcess(context).list(param)
@@ -61,5 +61,4 @@ class UserRouter : RouterWrapper() {
             UserProcess(context).persist(model)
 		}
     }
-
 }
