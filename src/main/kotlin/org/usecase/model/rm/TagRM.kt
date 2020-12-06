@@ -1,42 +1,59 @@
 package org.usecase.model.rm
 
 import org.usecase.model.resource.Tag
-import br.com.simpli.sql.Query
-import br.com.simpli.sql.ResultBuilder
+import br.com.simpli.sql.RelationalMapper
+import br.com.simpli.sql.VirtualColumn
+import org.usecase.model.resource.TagPrincipal
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.TAG_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.TAG_READ_ALL
+import org.usecase.user.context.Permission.Companion.TAG_UPDATE_ALL
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table tag
  * @author Simpli CLI generator
  */
-object TagRM {
-    fun build(rs: ResultSet, alias: String = "tag", allowedColumns: Array<String> = selectFields(alias)) = Tag().apply {
-        ResultBuilder(allowedColumns, rs, alias).run {
-            idTagPk = getLong("idTagPk")
-            titulo = getString("titulo")
+class TagRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<Tag>() {
+    override val table = "tag"
+
+    val idTagPk = col("idTagPk",
+            { idTagPk },
+            { idTagPk = it.value() })
+
+    val titulo = col("titulo",
+            { titulo },
+            { titulo = it.value() })
+
+    fun build(rs: ResultSet) = Tag().apply {
+        selectFields.forEach { col ->
+            col.build(this, rs)
         }
     }
 
-    fun selectFields(alias: String = "tag") = arrayOf(
-            "$alias.idTagPk",
-            "$alias.titulo"
-    )
+    val selectFields: Array<VirtualColumn<Tag>>
+        get() = permission.buildArray {
+            add(TAG_READ_ALL, idTagPk)
+            add(TAG_READ_ALL, titulo)
+        }
 
-    fun fieldsToSearch(alias: String = "tag") = arrayOf(
-            "$alias.idTagPk",
-            "$alias.titulo"
-    )
+    val fieldsToSearch: Array<VirtualColumn<Tag>>
+        get() = permission.buildArray {
+            add(TAG_READ_ALL, idTagPk)
+            add(TAG_READ_ALL, titulo)
+        }
 
-    fun orderMap(alias: String = "tag") = mapOf(
-            "idTagPk" to "$alias.idTagPk",
-            "titulo" to "$alias.titulo"
-    )
+    val orderMap: Map<String, VirtualColumn<Tag>>
+        get() = permission.buildMap {
+            add(TAG_READ_ALL, "idTagPk" to idTagPk)
+            add(TAG_READ_ALL, "titulo" to titulo)
+        }
 
-    fun updateSet(tag: Tag) = mapOf(
-            "titulo" to tag.titulo
-    )
+    fun updateSet(tag: Tag) = colsToMap(tag, *permission.buildArray {
+        add(TAG_UPDATE_ALL, titulo)
+    })
 
-    fun insertValues(tag: Tag) = mapOf(
-            "titulo" to tag.titulo
-    )
+    fun insertValues(tag: Tag) = colsToMap(tag, *permission.buildArray {
+        add(TAG_INSERT_ALL, titulo)
+    })
 }

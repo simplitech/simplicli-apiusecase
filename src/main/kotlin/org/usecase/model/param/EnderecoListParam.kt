@@ -9,7 +9,7 @@ import javax.ws.rs.QueryParam
  * Authenticated Endereco Param
  * @author Simpli CLI generator
  */
-open class AuthEnderecoListParam: DefaultParam.AuthPaged(), EnderecoListFilter {
+open class EnderecoListParam: DefaultParam.Paged(), EnderecoListFilter {
     @QueryParam("minNro")
     @Schema
     override var minNro: Long? = null

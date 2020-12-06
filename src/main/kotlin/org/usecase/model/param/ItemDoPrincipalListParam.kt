@@ -9,7 +9,7 @@ import javax.ws.rs.QueryParam
  * Authenticated ItemDoPrincipal Param
  * @author Simpli CLI generator
  */
-open class AuthItemDoPrincipalListParam: DefaultParam.AuthPaged(), ItemDoPrincipalListFilter {
+open class ItemDoPrincipalListParam: DefaultParam.Paged(), ItemDoPrincipalListFilter {
     @QueryParam("idPrincipalFk")
     @Schema
     override var idPrincipalFk: List<Long>? = null

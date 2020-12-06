@@ -5,122 +5,116 @@ import org.usecase.model.resource.Endereco
 import org.usecase.model.rm.EnderecoRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.VirtualSelect
+import org.usecase.user.context.Permission
 
 /**
  * Data Access Object of Endereco from table endereco
  * @author Simpli CLI generator
  */
 class EnderecoDao(val con: AbstractConnector) {
-    fun getOne(idEnderecoPk: Long): Endereco? {
-        // TODO: review generated method
-        val query = Query()
-                .selectEndereco()
-                .from("endereco")
-                .whereEq("idEnderecoPk", idEnderecoPk)
+    fun getOne(idEnderecoPk: Long, permission: Permission): Endereco? {
+        val enderecoRm = EnderecoRM(permission)
 
-        return con.getOne(query) {
-            EnderecoRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(enderecoRm.selectFields)
+                .from(enderecoRm)
+                .whereEq(enderecoRm.idEnderecoPk, idEnderecoPk)
+
+        return con.getOne(vs.toQuery()) {
+            enderecoRm.build(it)
         }
     }
 
-    fun getList(filter: EnderecoListFilter): MutableList<Endereco> {
-        // TODO: review generated method
-        val query = Query()
-                .selectEndereco()
-                .from("endereco")
-                .whereEnderecoFilter(filter)
-                .orderAndLimitEndereco(filter)
+    fun getList(filter: EnderecoListFilter, permission: Permission): MutableList<Endereco> {
+        val enderecoRm = EnderecoRM(permission)
 
-        return con.getList(query) {
-            EnderecoRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(enderecoRm.selectFields)
+                .from(enderecoRm)
+                .whereEnderecoFilter(enderecoRm, filter)
+                .orderAndLimitEndereco(enderecoRm, filter)
+
+        return con.getList(vs.toQuery()) {
+            enderecoRm.build(it)
         }
     }
 
-    fun count(filter: EnderecoListFilter): Int {
-        // TODO: review generated method
-        val query = Query()
-                .countRaw("DISTINCT idEnderecoPk")
-                .from("endereco")
-                .whereEnderecoFilter(filter)
+    fun count(filter: EnderecoListFilter, permission: Permission): Int {
+        val enderecoRm = EnderecoRM(permission)
 
-        return con.getFirstInt(query) ?: 0
+        val vs = VirtualSelect()
+                .selectRaw("COUNT(DISTINCT %s)", enderecoRm.idEnderecoPk)
+                .from(enderecoRm)
+                .whereEnderecoFilter(enderecoRm, filter)
+
+        return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(endereco: Endereco): Int {
-        // TODO: review generated method
+    fun update(endereco: Endereco, permission: Permission): Int {
+        val enderecoRm = EnderecoRM(permission)
         val query = Query()
-                .updateTable("endereco")
-                .updateEnderecoSet(endereco)
-                .whereEq("idEnderecoPk", endereco.id)
+                .updateTable(enderecoRm.table)
+                .updateSet(enderecoRm.updateSet(endereco))
+                .whereEq(enderecoRm.idEnderecoPk.column, endereco.id)
 
         return con.execute(query).affectedRows
     }
 
-    fun insert(endereco: Endereco): Long {
-        // TODO: review generated method
+    fun insert(endereco: Endereco, permission: Permission): Long {
+        val enderecoRm = EnderecoRM(permission)
         val query = Query()
-                .insertInto("endereco")
-                .insertEnderecoValues(endereco)
+                .insertInto(enderecoRm.table)
+                .insertValues(enderecoRm.insertValues(endereco))
 
         return con.execute(query).key
     }
 
-    fun exist(idEnderecoPk: Long): Boolean {
-        // TODO: review generated method
-        val query = Query()
-                .select("idEnderecoPk")
-                .from("endereco")
-                .whereEq("idEnderecoPk", idEnderecoPk)
+    fun exist(idEnderecoPk: Long, permission: Permission): Boolean {
+        val enderecoRm = EnderecoRM(permission)
+        val vs = VirtualSelect()
+                .select(enderecoRm.idEnderecoPk)
+                .from(enderecoRm)
+                .whereEq(enderecoRm.idEnderecoPk, idEnderecoPk)
 
-        return con.exist(query)
+        return con.exist(vs.toQuery())
     }
 
-    private fun Query.selectEndereco() = selectFields(EnderecoRM.selectFields())
-
-    private fun Query.updateEnderecoSet(endereco: Endereco) = updateSet(EnderecoRM.updateSet(endereco))
-
-    private fun Query.insertEnderecoValues(endereco: Endereco) = insertValues(EnderecoRM.insertValues(endereco))
-
-    private fun Query.whereEnderecoFilter(filter: EnderecoListFilter, alias: String = "endereco"): Query {
+    private fun VirtualSelect.whereEnderecoFilter(enderecoRm: EnderecoRM, filter: EnderecoListFilter): VirtualSelect {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSomeLikeThis(EnderecoRM.fieldsToSearch(alias), "%$it%")
+                whereSomeLikeThis(enderecoRm.fieldsToSearch, "%$it%")
             }
         }
 
         filter.minNro?.also {
-            whereGtEq("$alias.nro", it)
+            whereGtEq(enderecoRm.nro, it)
         }
         filter.maxNro?.also {
-            whereLtEq("$alias.nro", it)
+            whereLtEq(enderecoRm.nro, it)
         }
 
         filter.minLatitude?.also {
-            whereGtEq("$alias.latitude", it)
+            whereGtEq(enderecoRm.latitude, it)
         }
         filter.maxLatitude?.also {
-            whereLtEq("$alias.latitude", it)
+            whereLtEq(enderecoRm.latitude, it)
         }
 
         filter.minLongitude?.also {
-            whereGtEq("$alias.longitude", it)
+            whereGtEq(enderecoRm.longitude, it)
         }
         filter.maxLongitude?.also {
-            whereLtEq("$alias.longitude", it)
+            whereLtEq(enderecoRm.longitude, it)
         }
 
         return this
     }
 
-    private fun Query.orderAndLimitEndereco(filter: EnderecoListFilter, alias: String = "endereco"): Query {
-        EnderecoRM.orderMap(alias)[filter.orderBy]?.also {
-            orderByAsc(it, filter.ascending)
-        }
+    private fun VirtualSelect.orderAndLimitEndereco(enderecoRm: EnderecoRM, filter: EnderecoListFilter): VirtualSelect {
+        orderBy(enderecoRm.orderMap, filter.orderBy to filter.ascending)
 
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            limit(index, it)
-        }
+        limitByPage(filter.page, filter.limit)
 
         return this
     }

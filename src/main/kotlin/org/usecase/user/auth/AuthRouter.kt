@@ -27,8 +27,8 @@ import javax.ws.rs.core.MediaType
 class AuthRouter : RouterWrapper() {
     @GET
     @Operation(tags = ["AuthRequest"], summary = "Gets the user authentication")
-    fun authenticate(@BeanParam param: DefaultParam.Auth): AuthResponse {
-        return PublicPipe.handle(connectionPipe, param) { context ->
+    fun authenticate(@BeanParam param: DefaultParam): AuthResponse {
+        return PublicPipe().handle(readPipe, param) { context ->
             AuthProcess(context).authenticate(param)
         }
     }
@@ -36,7 +36,7 @@ class AuthRouter : RouterWrapper() {
     @POST
     @Operation(tags = ["AuthRequest"], summary = "Submits the user authentication")
     fun signIn(@BeanParam param: DefaultParam, request: AuthRequest): AuthResponse {
-        return PublicPipe.handle(connectionPipe, param) { context ->
+        return PublicPipe().handle(readPipe, param) { context ->
             AuthProcess(context).signIn(request)
         }
     }
@@ -45,7 +45,7 @@ class AuthRouter : RouterWrapper() {
     @Path("/password")
     @Operation(tags = ["RecoverPasswordByMailRequest"], summary = "Sends an email requesting to change the password")
     fun recoverPasswordByMail(@BeanParam param: DefaultParam, request: RecoverPasswordByMailRequest): Long {
-        return PublicPipe.handle(connectionPipe, param) { context ->
+        return PublicPipe().handle(readPipe, param) { context ->
             AuthProcess(context).recoverPasswordByMail(request)
         }
     }
@@ -54,7 +54,7 @@ class AuthRouter : RouterWrapper() {
     @Path("/password")
     @Operation(tags = ["ResetPasswordRequest"], summary = "Recovers the password with a given hash")
     fun resetPassword(@BeanParam param: DefaultParam, request: ResetPasswordRequest): String {
-        return PublicPipe.handle(transactionPipe, param) { context ->
+        return PublicPipe().handle(transactionPipe, param) { context ->
             AuthProcess(context).resetPassword(request)
         }
     }
@@ -62,9 +62,9 @@ class AuthRouter : RouterWrapper() {
     @POST
     @Path("/me/password")
     @Operation(tags = ["ChangePasswordRequest"], summary = "Changes the password with a given new password")
-    fun changePassword(@BeanParam param: DefaultParam.Auth, request: ChangePasswordRequest): Long {
-        return AuthPipe.handle(transactionPipe, param) { context, auth ->
-            AuthProcess(context).changePassword(request, auth)
+    fun changePassword(@BeanParam param: DefaultParam, request: ChangePasswordRequest): Long {
+        return AuthPipe().handle(transactionPipe, param) { context ->
+            AuthProcess(context).changePassword(request)
         }
     }
 }

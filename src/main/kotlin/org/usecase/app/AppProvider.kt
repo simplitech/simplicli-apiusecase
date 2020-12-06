@@ -43,9 +43,9 @@ class AppProvider : ParamConverterProvider, ContextResolver<Gson>, ContainerResp
     internal class DateParameterConverter : ParamConverter<Date> {
         private val simpleDateFormat = SimpleDateFormat(Env.DATE_FORMAT)
 
-        override fun fromString(str: String): Date? {
+        override fun fromString(str: String?): Date? {
             try {
-                return if (str.isNotBlank()) simpleDateFormat.parse(str) else null
+                return if (!str.isNullOrBlank()) simpleDateFormat.parse(str) else null
             } catch (ex: ParseException) {
                 throw WebApplicationException(ex)
             }

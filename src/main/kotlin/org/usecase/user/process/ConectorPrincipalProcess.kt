@@ -7,7 +7,13 @@ import org.usecase.model.resource.ConectorPrincipal
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import br.com.simpli.model.PageCollection
-import java.util.Date
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.CONECTOR_PRINCIPAL_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.CONECTOR_PRINCIPAL_READ_ALL
+import org.usecase.user.context.Permission.Companion.CONECTOR_PRINCIPAL_UPDATE_ALL
+import org.valiktor.functions.hasSize
+import org.valiktor.functions.isNotBlank
+import org.valiktor.validate
 
 /**
  * ConectorPrincipal business logic
@@ -17,27 +23,26 @@ class ConectorPrincipalProcess(val context: RequestContext) {
 
     val dao = ConectorPrincipalDao(context.con)
 
-    fun get(id1: Long?, id2: Long?): ConectorPrincipal {
-        // TODO: review generated method
-        if (id1 == null) throw BadRequestException()
-        if (id2 == null) throw BadRequestException()
+    fun get(idPrincipalFk: Long?, idConectadoFk: Long?): ConectorPrincipal {
+        if (idPrincipalFk == null) throw BadRequestException()
+        if (idConectadoFk == null) throw BadRequestException()
+        val permission = Permission(CONECTOR_PRINCIPAL_READ_ALL)
 
-        return dao.getOne(id1, id2) ?: throw NotFoundException()
+        return dao.getOne(idPrincipalFk, idConectadoFk, permission) ?: throw NotFoundException()
     }
 
     fun list(filter: ConectorPrincipalListFilter): PageCollection<ConectorPrincipal> {
-        // TODO: review generated method
-        val items = dao.getList(filter)
-        val total = dao.count(filter)
+        val permission = Permission(CONECTOR_PRINCIPAL_READ_ALL)
+
+        val items = dao.getList(filter, permission)
+        val total = dao.count(filter, permission)
 
         return PageCollection(items, total)
     }
 
-    /**
-     * Use this to handle similarities between create and update
-     */
     fun persist(model: ConectorPrincipal): Long {
-        val exist = dao.exist(model.id1, model.id2)
+        val permission = Permission(CONECTOR_PRINCIPAL_READ_ALL)
+        val exist = dao.exist(model.idPrincipalFk, model.idConectadoFk, permission)
 
         if (exist) {
             update(model)
@@ -45,43 +50,27 @@ class ConectorPrincipalProcess(val context: RequestContext) {
             create(model)
         }
 
-        return model.id1
+        return model.idPrincipalFk
     }
 
-    fun create(model: ConectorPrincipal): Long {
-        // TODO: review generated method
-        model.apply {
-            validate(context.lang)
-        }
-
-        dao.run {
-            validate(model, updating = false)
-            insert(model)
-        }
+    private fun create(model: ConectorPrincipal): Long {
+        val permission = Permission(CONECTOR_PRINCIPAL_INSERT_ALL)
+        validateConectorPrincipal(model, updating = false)
+        dao.insert(model, permission)
 
         return 1L
     }
 
-    fun update(model: ConectorPrincipal): Int {
-        // TODO: review generated method
-        model.apply {
-            validate(context.lang)
-        }
-
-        return dao.run {
-            validate(model, updating = true)
-            update(model)
-        }
+    private fun update(model: ConectorPrincipal): Int {
+        val permission = Permission(CONECTOR_PRINCIPAL_UPDATE_ALL)
+        validateConectorPrincipal(model, updating = true)
+        return dao.update(model, permission)
     }
 
-    private fun ConectorPrincipalDao.validate(model: ConectorPrincipal, updating: Boolean) {
-        if (updating) {
-            if (!exist(model.id1, model.id2)) {
-                throw BadRequestException(context.lang["does_not_exist"])
-            }
-        } else {
-            if (exist(model.id1, model.id2)) {
-                throw BadRequestException(context.lang["already_exists"])
+    fun validateConectorPrincipal(model: ConectorPrincipal, updating: Boolean) {
+        context.lang.handleValidation("modelConectorPrincipal") {
+            validate(model) {
+                validate(ConectorPrincipal::titulo).isNotBlank().hasSize(max = 45)
             }
         }
     }

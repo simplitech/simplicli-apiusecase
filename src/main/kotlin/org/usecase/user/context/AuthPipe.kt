@@ -1,6 +1,5 @@
 package org.usecase.user.context
 
-import org.usecase.user.response.AuthResponse
 import org.usecase.user.auth.AuthProcess
 import org.usecase.model.param.DefaultParam
 import br.com.simpli.sql.AbstractConPipe
@@ -10,16 +9,20 @@ import br.com.simpli.sql.AbstractConPipe
  * Responsible to control the authentication data and validates it
  * @author Simpli CLI generator
  */
-object AuthPipe {
+open class AuthPipe(private val public: Boolean = false) {
     fun <T> handle(
             conPipe: AbstractConPipe,
-            param: DefaultParam.Auth,
-            callback: (context: RequestContext, auth: AuthResponse) -> T
+            param: DefaultParam,
+            callback: (context: RequestContext) -> T
     ): T {
         return conPipe.handle {
             val context = RequestContext(it, param)
-            val auth = AuthProcess(context).authenticate(param)
-            callback(context, auth)
+            if (!public || param.authorization != null) {
+                context.auth = AuthProcess(context).authenticate(param)
+            }
+            callback(context)
         }
     }
 }
+
+class PublicPipe : AuthPipe(true)

@@ -1,48 +1,68 @@
 package org.usecase.model.rm
 
+import br.com.simpli.sql.RelationalMapper
+import br.com.simpli.sql.VirtualColumn
+import org.usecase.model.resource.Conectado
 import org.usecase.model.resource.ConectorPrincipal
-import br.com.simpli.sql.Query
-import br.com.simpli.sql.ResultBuilder
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.CONECTOR_PRINCIPAL_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.CONECTOR_PRINCIPAL_READ_ALL
+import org.usecase.user.context.Permission.Companion.CONECTOR_PRINCIPAL_UPDATE_ALL
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table conector_principal
  * @author Simpli CLI generator
  */
-object ConectorPrincipalRM {
-    fun build(rs: ResultSet, alias: String = "conector_principal", allowedColumns: Array<String> = selectFields(alias)) = ConectorPrincipal().apply {
-        ResultBuilder(allowedColumns, rs, alias).run {
-            idPrincipalFk = getLong("idPrincipalFk")
-            idConectadoFk = getLong("idConectadoFk")
-            titulo = getString("titulo")
+class ConectorPrincipalRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<ConectorPrincipal>() {
+    override val table = "conector_principal"
+
+    val idPrincipalFk = col("idPrincipalFk",
+            { idPrincipalFk },
+            { idPrincipalFk = it.value() })
+
+    val idConectadoFk = col("idConectadoFk",
+            { idConectadoFk },
+            { idConectadoFk = it.value() })
+
+    val titulo = col("titulo",
+            { titulo },
+            { titulo = it.value() })
+
+    fun build(rs: ResultSet) = ConectorPrincipal().apply {
+        selectFields.forEach { col ->
+            col.build(this, rs)
         }
     }
 
-    fun selectFields(alias: String = "conector_principal") = arrayOf(
-            "$alias.idPrincipalFk",
-            "$alias.idConectadoFk",
-            "$alias.titulo"
-    )
+    val selectFields: Array<VirtualColumn<ConectorPrincipal>>
+        get() = permission.buildArray {
+            add(CONECTOR_PRINCIPAL_READ_ALL, idPrincipalFk)
+            add(CONECTOR_PRINCIPAL_READ_ALL, idConectadoFk)
+            add(CONECTOR_PRINCIPAL_READ_ALL, titulo)
+        }
 
-    fun fieldsToSearch(alias: String = "conector_principal") = arrayOf(
-            "$alias.idPrincipalFk",
-            "$alias.idConectadoFk",
-            "$alias.titulo"
-    )
+    val fieldsToSearch: Array<VirtualColumn<ConectorPrincipal>>
+        get() = permission.buildArray {
+            add(CONECTOR_PRINCIPAL_READ_ALL, idPrincipalFk)
+            add(CONECTOR_PRINCIPAL_READ_ALL, idConectadoFk)
+            add(CONECTOR_PRINCIPAL_READ_ALL, titulo)
+        }
 
-    fun orderMap(alias: String = "conector_principal") = mapOf(
-            "conectado" to "$alias.idConectadoFk",
-            "principal" to "$alias.idPrincipalFk",
-            "titulo" to "$alias.titulo"
-    )
+    val orderMap: Map<String, VirtualColumn<ConectorPrincipal>>
+        get() = permission.buildMap {
+            add(CONECTOR_PRINCIPAL_READ_ALL, "idPrincipalFk" to idPrincipalFk)
+            add(CONECTOR_PRINCIPAL_READ_ALL, "idConectadoFk" to idConectadoFk)
+            add(CONECTOR_PRINCIPAL_READ_ALL, "titulo" to titulo)
+        }
 
-    fun updateSet(conectorPrincipal: ConectorPrincipal) = mapOf(
-            "titulo" to conectorPrincipal.titulo
-    )
+    fun updateSet(conectorPrincipal: ConectorPrincipal) = colsToMap(conectorPrincipal, *permission.buildArray {
+        add(CONECTOR_PRINCIPAL_UPDATE_ALL, titulo)
+    })
 
-    fun insertValues(conectorPrincipal: ConectorPrincipal) = mapOf(
-            "idPrincipalFk" to conectorPrincipal.idPrincipalFk,
-            "idConectadoFk" to conectorPrincipal.idConectadoFk,
-            "titulo" to conectorPrincipal.titulo
-    )
+    fun insertValues(conectorPrincipal: ConectorPrincipal) = colsToMap(conectorPrincipal, *permission.buildArray {
+        add(CONECTOR_PRINCIPAL_INSERT_ALL, idPrincipalFk)
+        add(CONECTOR_PRINCIPAL_INSERT_ALL, idConectadoFk)
+        add(CONECTOR_PRINCIPAL_INSERT_ALL, titulo)
+    })
 }

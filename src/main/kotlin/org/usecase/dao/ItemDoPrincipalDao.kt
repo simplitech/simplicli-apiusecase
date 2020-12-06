@@ -3,113 +3,116 @@ package org.usecase.dao
 import org.usecase.model.filter.ItemDoPrincipalListFilter
 import org.usecase.model.resource.ItemDoPrincipal
 import org.usecase.model.rm.ItemDoPrincipalRM
-import org.usecase.model.rm.PrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.VirtualSelect
+import org.usecase.model.rm.PrincipalRM
+import org.usecase.user.context.Permission
 
 /**
  * Data Access Object of ItemDoPrincipal from table item_do_principal
  * @author Simpli CLI generator
  */
 class ItemDoPrincipalDao(val con: AbstractConnector) {
-    fun getOne(idItemDoPrincipalPk: Long): ItemDoPrincipal? {
-        // TODO: review generated method
-        val query = Query()
-                .selectItemDoPrincipal()
-                .from("item_do_principal")
-                .whereEq("idItemDoPrincipalPk", idItemDoPrincipalPk)
+    fun getOne(idItemDoPrincipalPk: Long, permission: Permission): ItemDoPrincipal? {
+        val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
+        val principalRm = PrincipalRM(permission)
 
-        return con.getOne(query) {
-            ItemDoPrincipalRM.build(it)
-        }
-    }
+        val vs = VirtualSelect()
+                .selectFields(itemDoPrincipalRm.selectFields)
+                .selectFields(principalRm.selectFields)
+                .from(itemDoPrincipalRm)
+                .innerJoin(principalRm, principalRm.idPrincipalPk, itemDoPrincipalRm.idPrincipalFk)
+                .whereEq(itemDoPrincipalRm.idItemDoPrincipalPk, idItemDoPrincipalPk)
 
-    fun getList(filter: ItemDoPrincipalListFilter): MutableList<ItemDoPrincipal> {
-        // TODO: review generated method
-        val query = Query()
-                .selectFields(ItemDoPrincipalRM.selectFields() + PrincipalRM.selectFields())
-                .from("item_do_principal")
-                .innerJoin("principal", "principal.idprincipalpk", "item_do_principal.idPrincipalFk")
-                .whereItemDoPrincipalFilter(filter)
-                .orderAndLimitItemDoPrincipal(filter)
-
-        return con.getList(query) {
-            ItemDoPrincipalRM.build(it).apply {
-                principal = PrincipalRM.build(it)
+        return con.getOne(vs.toQuery()) {
+            itemDoPrincipalRm.build(it).apply {
+                principal = principalRm.build(it)
             }
         }
     }
 
-    fun count(filter: ItemDoPrincipalListFilter): Int {
-        // TODO: review generated method
-        val query = Query()
-                .countRaw("DISTINCT idItemDoPrincipalPk")
-                .from("item_do_principal")
-                .whereItemDoPrincipalFilter(filter)
+    fun getList(filter: ItemDoPrincipalListFilter, permission: Permission): MutableList<ItemDoPrincipal> {
+        val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
+        val principalRm = PrincipalRM(permission)
 
-        return con.getFirstInt(query) ?: 0
+        val vs = VirtualSelect()
+                .selectFields(itemDoPrincipalRm.selectFields)
+                .selectFields(principalRm.selectFields)
+                .from(itemDoPrincipalRm)
+                .innerJoin(principalRm, principalRm.idPrincipalPk, itemDoPrincipalRm.idPrincipalFk)
+                .whereItemDoPrincipalFilter(itemDoPrincipalRm, filter)
+                .orderAndLimitItemDoPrincipal(itemDoPrincipalRm, filter)
+
+        return con.getList(vs.toQuery()) {
+            itemDoPrincipalRm.build(it).apply {
+                principal = principalRm.build(it)
+            }
+        }
     }
 
-    fun update(itemDoPrincipal: ItemDoPrincipal): Int {
-        // TODO: review generated method
+    fun count(filter: ItemDoPrincipalListFilter, permission: Permission): Int {
+        val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
+        val principalRm = PrincipalRM(permission)
+
+        val vs = VirtualSelect()
+                .selectRaw("COUNT(DISTINCT %s)", itemDoPrincipalRm.idItemDoPrincipalPk)
+                .from(itemDoPrincipalRm)
+                .innerJoin(principalRm, principalRm.idPrincipalPk, itemDoPrincipalRm.idPrincipalFk)
+                .whereItemDoPrincipalFilter(itemDoPrincipalRm, filter)
+
+        return con.getFirstInt(vs.toQuery()) ?: 0
+    }
+
+    fun update(itemDoPrincipal: ItemDoPrincipal, permission: Permission): Int {
+        val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
         val query = Query()
-                .updateTable("item_do_principal")
-                .updateItemDoPrincipalSet(itemDoPrincipal)
-                .whereEq("idItemDoPrincipalPk", itemDoPrincipal.id)
+                .updateTable(itemDoPrincipalRm.table)
+                .updateSet(itemDoPrincipalRm.updateSet(itemDoPrincipal))
+                .whereEq(itemDoPrincipalRm.idItemDoPrincipalPk.column, itemDoPrincipal.id)
 
         return con.execute(query).affectedRows
     }
 
-    fun insert(itemDoPrincipal: ItemDoPrincipal): Long {
-        // TODO: review generated method
+    fun insert(itemDoPrincipal: ItemDoPrincipal, permission: Permission): Long {
+        val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
         val query = Query()
-                .insertInto("item_do_principal")
-                .insertItemDoPrincipalValues(itemDoPrincipal)
+                .insertInto(itemDoPrincipalRm.table)
+                .insertValues(itemDoPrincipalRm.insertValues(itemDoPrincipal))
 
         return con.execute(query).key
     }
 
-    fun exist(idItemDoPrincipalPk: Long): Boolean {
-        // TODO: review generated method
-        val query = Query()
-                .select("idItemDoPrincipalPk")
-                .from("item_do_principal")
-                .whereEq("idItemDoPrincipalPk", idItemDoPrincipalPk)
+    fun exist(idItemDoPrincipalPk: Long, permission: Permission): Boolean {
+        val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
+        val vs = VirtualSelect()
+                .select(itemDoPrincipalRm.idItemDoPrincipalPk)
+                .from(itemDoPrincipalRm)
+                .whereEq(itemDoPrincipalRm.idItemDoPrincipalPk, idItemDoPrincipalPk)
 
-        return con.exist(query)
+        return con.exist(vs.toQuery())
     }
 
-    private fun Query.selectItemDoPrincipal() = selectFields(ItemDoPrincipalRM.selectFields())
-
-    private fun Query.updateItemDoPrincipalSet(itemDoPrincipal: ItemDoPrincipal) = updateSet(ItemDoPrincipalRM.updateSet(itemDoPrincipal))
-
-    private fun Query.insertItemDoPrincipalValues(itemDoPrincipal: ItemDoPrincipal) = insertValues(ItemDoPrincipalRM.insertValues(itemDoPrincipal))
-
-    private fun Query.whereItemDoPrincipalFilter(filter: ItemDoPrincipalListFilter, alias: String = "item_do_principal"): Query {
+    private fun VirtualSelect.whereItemDoPrincipalFilter(itemDoPrincipalRm: ItemDoPrincipalRM, filter: ItemDoPrincipalListFilter): VirtualSelect {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSomeLikeThis(ItemDoPrincipalRM.fieldsToSearch(alias), "%$it%")
+                whereSomeLikeThis(itemDoPrincipalRm.fieldsToSearch, "%$it%")
             }
         }
 
         filter.idPrincipalFk?.also {
             if (it.isNotEmpty()) {
-                whereIn("$alias.idPrincipalFk", *it.toTypedArray())
+                whereIn(itemDoPrincipalRm.idPrincipalFk, *it.toTypedArray())
             }
         }
 
         return this
     }
 
-    private fun Query.orderAndLimitItemDoPrincipal(filter: ItemDoPrincipalListFilter, alias: String = "item_do_principal"): Query {
-        ItemDoPrincipalRM.orderMap(alias)[filter.orderBy]?.also {
-            orderByAsc(it, filter.ascending)
-        }
+    private fun VirtualSelect.orderAndLimitItemDoPrincipal(itemDoPrincipalRm: ItemDoPrincipalRM, filter: ItemDoPrincipalListFilter): VirtualSelect {
+        orderBy(itemDoPrincipalRm.orderMap, filter.orderBy to filter.ascending)
 
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            limit(index, it)
-        }
+        limitByPage(filter.page, filter.limit)
 
         return this
     }

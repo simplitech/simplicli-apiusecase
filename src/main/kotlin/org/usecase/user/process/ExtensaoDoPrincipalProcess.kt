@@ -7,7 +7,12 @@ import org.usecase.model.resource.ExtensaoDoPrincipal
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import br.com.simpli.model.PageCollection
-import java.util.Date
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.EXTENSAO_DO_PRINCIPAL_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.EXTENSAO_DO_PRINCIPAL_READ_ALL
+import org.usecase.user.context.Permission.Companion.EXTENSAO_DO_PRINCIPAL_UPDATE_ALL
+import org.valiktor.functions.hasSize
+import org.valiktor.functions.isNotBlank
 
 /**
  * ExtensaoDoPrincipal business logic
@@ -18,25 +23,23 @@ class ExtensaoDoPrincipalProcess(val context: RequestContext) {
     val dao = ExtensaoDoPrincipalDao(context.con)
 
     fun get(id: Long?): ExtensaoDoPrincipal {
-        // TODO: review generated method
         if (id == null) throw BadRequestException()
+        val permission = Permission(EXTENSAO_DO_PRINCIPAL_READ_ALL)
 
-        return dao.getOne(id) ?: throw NotFoundException()
+        return dao.getOne(id, permission) ?: throw NotFoundException()
     }
 
     fun list(filter: ExtensaoDoPrincipalListFilter): PageCollection<ExtensaoDoPrincipal> {
-        // TODO: review generated method
-        val items = dao.getList(filter)
-        val total = dao.count(filter)
+        val permission = Permission(EXTENSAO_DO_PRINCIPAL_READ_ALL)
+        val items = dao.getList(filter, permission)
+        val total = dao.count(filter, permission)
 
         return PageCollection(items, total)
     }
 
-    /**
-     * Use this to handle similarities between create and update
-     */
     fun persist(model: ExtensaoDoPrincipal): Long {
-        if (model.id > 0) {
+        val permission = Permission(EXTENSAO_DO_PRINCIPAL_READ_ALL)
+        if (dao.exist(model.id, permission)) {
             update(model)
         } else {
             create(model)
@@ -45,40 +48,26 @@ class ExtensaoDoPrincipalProcess(val context: RequestContext) {
         return model.id
     }
 
-    fun create(model: ExtensaoDoPrincipal): Long {
-        // TODO: review generated method
-        model.apply {
-            validate(context.lang)
-        }
+    private fun create(model: ExtensaoDoPrincipal): Long {
+        validateExtensaoDoPrincipal(model, updating = false)
 
-        model.id = dao.run {
-            validate(model, updating = false)
-            insert(model)
-        }
+        val permission = Permission(EXTENSAO_DO_PRINCIPAL_INSERT_ALL)
+        dao.insert(model, permission)
 
         return model.id
     }
 
-    fun update(model: ExtensaoDoPrincipal): Int {
-        // TODO: review generated method
-        model.apply {
-            validate(context.lang)
-        }
+    private fun update(model: ExtensaoDoPrincipal): Int {
+        validateExtensaoDoPrincipal(model, updating = true)
 
-        return dao.run {
-            validate(model, updating = true)
-            update(model)
-        }
+        val permission = Permission(EXTENSAO_DO_PRINCIPAL_UPDATE_ALL)
+        return dao.update(model, permission)
     }
 
-    private fun ExtensaoDoPrincipalDao.validate(model: ExtensaoDoPrincipal, updating: Boolean) {
-        if (updating) {
-            if (!exist(model.id)) {
-                throw BadRequestException(context.lang["does_not_exist"])
-            }
-        } else {
-            if (exist(model.id)) {
-                throw BadRequestException(context.lang["already_exists"])
+    fun validateExtensaoDoPrincipal(model: ExtensaoDoPrincipal, updating: Boolean = false) {
+        context.lang.handleValidation("modelExtensaoDoPrincipal") {
+            org.valiktor.validate(model) {
+                validate(ExtensaoDoPrincipal::titulo).isNotBlank().hasSize(max = 45)
             }
         }
     }

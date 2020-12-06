@@ -2,9 +2,8 @@ package org.usecase.app.env
 
 import org.usecase.enums.Lang
 import org.usecase.enums.Mode
-import org.usecase.locale.EnUs
-import org.usecase.locale.PtBr
 import com.amazonaws.regions.Regions
+import org.usecase.locale.LangDefinition
 
 /**
  * Environment Variables - Base
@@ -26,8 +25,8 @@ abstract class Props(val MODE: Mode) {
      * Available Languages
      */
     val AVAILABLE_LANGUAGES = hashMapOf(
-        Lang.EN_US to EnUs(),
-        Lang.PT_BR to PtBr()
+        Lang.EN_US to LangDefinition("pt_BR"),
+        Lang.PT_BR to LangDefinition("en_US")
     )
 
     /**

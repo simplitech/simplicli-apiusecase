@@ -5,101 +5,95 @@ import org.usecase.model.resource.Conectado
 import org.usecase.model.rm.ConectadoRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.VirtualSelect
+import org.usecase.user.context.Permission
 
 /**
  * Data Access Object of Conectado from table conectado
  * @author Simpli CLI generator
  */
 class ConectadoDao(val con: AbstractConnector) {
-    fun getOne(idConectadoPk: Long): Conectado? {
-        // TODO: review generated method
-        val query = Query()
-                .selectConectado()
-                .from("conectado")
-                .whereEq("idConectadoPk", idConectadoPk)
+    fun getOne(idConectadoPk: Long, permission: Permission): Conectado? {
+        val conectadoRm = ConectadoRM(permission)
 
-        return con.getOne(query) {
-            ConectadoRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(conectadoRm.selectFields)
+                .from(conectadoRm)
+                .whereEq(conectadoRm.idConectadoPk, idConectadoPk)
+
+        return con.getOne(vs.toQuery()) {
+            conectadoRm.build(it)
         }
     }
 
-    fun getList(filter: ConectadoListFilter): MutableList<Conectado> {
-        // TODO: review generated method
-        val query = Query()
-                .selectConectado()
-                .from("conectado")
-                .whereConectadoFilter(filter)
-                .orderAndLimitConectado(filter)
+    fun getList(filter: ConectadoListFilter, permission: Permission): MutableList<Conectado> {
+        val conectadoRm = ConectadoRM(permission)
 
-        return con.getList(query) {
-            ConectadoRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(conectadoRm.selectFields)
+                .from(conectadoRm)
+                .whereConectadoFilter(conectadoRm, filter)
+                .orderAndLimitConectado(conectadoRm, filter)
+
+        return con.getList(vs.toQuery()) {
+            conectadoRm.build(it)
         }
     }
 
-    fun count(filter: ConectadoListFilter): Int {
-        // TODO: review generated method
-        val query = Query()
-                .countRaw("DISTINCT idConectadoPk")
-                .from("conectado")
-                .whereConectadoFilter(filter)
+    fun count(filter: ConectadoListFilter, permission: Permission): Int {
+        val conectadoRm = ConectadoRM(permission)
 
-        return con.getFirstInt(query) ?: 0
+        val vs = VirtualSelect()
+                .selectRaw("COUNT(DISTINCT %s)", conectadoRm.idConectadoPk)
+                .from(conectadoRm)
+                .whereConectadoFilter(conectadoRm, filter)
+
+        return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(conectado: Conectado): Int {
-        // TODO: review generated method
+    fun update(conectado: Conectado, permission: Permission): Int {
+        val conectadoRm = ConectadoRM(permission)
         val query = Query()
-                .updateTable("conectado")
-                .updateConectadoSet(conectado)
-                .whereEq("idConectadoPk", conectado.id)
+                .updateTable(conectadoRm.table)
+                .updateSet(conectadoRm.updateSet(conectado))
+                .whereEq(conectadoRm.idConectadoPk.column, conectado.id)
 
         return con.execute(query).affectedRows
     }
 
-    fun insert(conectado: Conectado): Long {
-        // TODO: review generated method
+    fun insert(conectado: Conectado, permission: Permission): Long {
+        val conectadoRm = ConectadoRM(permission)
         val query = Query()
-                .insertInto("conectado")
-                .insertConectadoValues(conectado)
+                .insertInto(conectadoRm.table)
+                .insertValues(conectadoRm.insertValues(conectado))
 
         return con.execute(query).key
     }
 
-    fun exist(idConectadoPk: Long): Boolean {
-        // TODO: review generated method
-        val query = Query()
-                .select("idConectadoPk")
-                .from("conectado")
-                .whereEq("idConectadoPk", idConectadoPk)
+    fun exist(idConectadoPk: Long, permission: Permission): Boolean {
+        val conectadoRm = ConectadoRM(permission)
+        val vs = VirtualSelect()
+                .select(conectadoRm.idConectadoPk)
+                .from(conectadoRm)
+                .whereEq(conectadoRm.idConectadoPk, idConectadoPk)
 
-        return con.exist(query)
+        return con.exist(vs.toQuery())
     }
 
-    private fun Query.selectConectado() = selectFields(ConectadoRM.selectFields())
-
-    private fun Query.updateConectadoSet(conectado: Conectado) = updateSet(ConectadoRM.updateSet(conectado))
-
-    private fun Query.insertConectadoValues(conectado: Conectado) = insertValues(ConectadoRM.insertValues(conectado))
-
-    private fun Query.whereConectadoFilter(filter: ConectadoListFilter, alias: String = "conectado"): Query {
+    private fun VirtualSelect.whereConectadoFilter(conectadoRm: ConectadoRM, filter: ConectadoListFilter): VirtualSelect {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSomeLikeThis(ConectadoRM.fieldsToSearch(alias), "%$it%")
+                whereSomeLikeThis(conectadoRm.fieldsToSearch, "%$it%")
             }
         }
 
         return this
     }
 
-    private fun Query.orderAndLimitConectado(filter: ConectadoListFilter, alias: String = "conectado"): Query {
-        ConectadoRM.orderMap(alias)[filter.orderBy]?.also {
-            orderByAsc(it, filter.ascending)
-        }
+    private fun VirtualSelect.orderAndLimitConectado(conectadoRm: ConectadoRM, filter: ConectadoListFilter): VirtualSelect {
+        orderBy(conectadoRm.orderMap, filter.orderBy to filter.ascending)
 
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            limit(index, it)
-        }
+        limitByPage(filter.page, filter.limit)
 
         return this
     }

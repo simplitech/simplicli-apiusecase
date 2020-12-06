@@ -1,81 +1,119 @@
 package org.usecase.model.rm
 
 import org.usecase.model.resource.Endereco
-import br.com.simpli.sql.Query
-import br.com.simpli.sql.ResultBuilder
+import br.com.simpli.sql.RelationalMapper
+import br.com.simpli.sql.VirtualColumn
+import org.usecase.model.resource.Conectado
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.ENDERECO_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.ENDERECO_READ_ALL
+import org.usecase.user.context.Permission.Companion.ENDERECO_UPDATE_ALL
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table endereco
  * @author Simpli CLI generator
  */
-object EnderecoRM {
-    fun build(rs: ResultSet, alias: String = "endereco", allowedColumns: Array<String> = selectFields(alias)) = Endereco().apply {
-        ResultBuilder(allowedColumns, rs, alias).run {
-            idEnderecoPk = getLong("idEnderecoPk")
-            cep = getString("cep")
-            zipcode = getString("zipcode")
-            rua = getString("rua")
-            nro = getLongOrNull("nro")
-            cidade = getString("cidade")
-            uf = getString("uf")
-            latitude = getDoubleOrNull("latitude")
-            longitude = getDoubleOrNull("longitude")
+class EnderecoRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<Endereco>() {
+    override val table = "endereco"
+
+    val idEnderecoPk = col("idEnderecoPk",
+            { idEnderecoPk },
+            { idEnderecoPk = it.value() })
+
+    val cep = col("cep",
+            { cep },
+            { cep = it.value() })
+
+    val zipcode = col("zipcode",
+            { zipcode },
+            { zipcode = it.value() })
+
+    val rua = col("rua",
+            { rua },
+            { rua = it.value() })
+
+    val nro = col("nro",
+            { nro },
+            { nro = it.value() })
+
+    val cidade = col("cidade",
+            { cidade },
+            { cidade = it.value() })
+
+    val uf = col("uf",
+            { uf },
+            { uf = it.value() })
+
+    val latitude = col("latitude",
+            { latitude },
+            { latitude = it.value() })
+
+    val longitude = col("longitude",
+            { longitude },
+            { longitude = it.value() })
+
+    fun build(rs: ResultSet) = Endereco().apply {
+        selectFields.forEach { col ->
+            col.build(this, rs)
         }
     }
 
-    fun selectFields(alias: String = "endereco") = arrayOf(
-            "$alias.idEnderecoPk",
-            "$alias.cep",
-            "$alias.zipcode",
-            "$alias.rua",
-            "$alias.nro",
-            "$alias.cidade",
-            "$alias.uf",
-            "$alias.latitude",
-            "$alias.longitude"
-    )
+    val selectFields: Array<VirtualColumn<Endereco>>
+        get() = permission.buildArray {
+            add(ENDERECO_READ_ALL, idEnderecoPk)
+            add(ENDERECO_READ_ALL, cep)
+            add(ENDERECO_READ_ALL, zipcode)
+            add(ENDERECO_READ_ALL, rua)
+            add(ENDERECO_READ_ALL, nro)
+            add(ENDERECO_READ_ALL, cidade)
+            add(ENDERECO_READ_ALL, uf)
+            add(ENDERECO_READ_ALL, latitude)
+            add(ENDERECO_READ_ALL, longitude)
+        }
 
-    fun fieldsToSearch(alias: String = "endereco") = arrayOf(
-            "$alias.idEnderecoPk",
-            "$alias.cep",
-            "$alias.zipcode",
-            "$alias.rua",
-            "$alias.cidade",
-            "$alias.uf"
-    )
+    val fieldsToSearch: Array<VirtualColumn<Endereco>>
+        get() = permission.buildArray {
+            add(ENDERECO_READ_ALL, idEnderecoPk)
+            add(ENDERECO_READ_ALL, cep)
+            add(ENDERECO_READ_ALL, zipcode)
+            add(ENDERECO_READ_ALL, rua)
+            add(ENDERECO_READ_ALL, cidade)
+            add(ENDERECO_READ_ALL, uf)
+        }
 
-    fun orderMap(alias: String = "endereco") = mapOf(
-            "idEnderecoPk" to "$alias.idEnderecoPk",
-            "cep" to "$alias.cep",
-            "zipcode" to "$alias.zipcode",
-            "rua" to "$alias.rua",
-            "nro" to "$alias.nro",
-            "cidade" to "$alias.cidade",
-            "uf" to "$alias.uf",
-            "latitude" to "$alias.latitude",
-            "longitude" to "$alias.longitude"
-    )
+    val orderMap: Map<String, VirtualColumn<Endereco>>
+        get() = permission.buildMap {
+            add(ENDERECO_READ_ALL, "idEnderecoPk" to idEnderecoPk)
+            add(ENDERECO_READ_ALL, "cep" to cep)
+            add(ENDERECO_READ_ALL, "zipcode" to zipcode)
+            add(ENDERECO_READ_ALL, "rua" to rua)
+            add(ENDERECO_READ_ALL, "nro" to nro)
+            add(ENDERECO_READ_ALL, "cidade" to cidade)
+            add(ENDERECO_READ_ALL, "uf" to uf)
+            add(ENDERECO_READ_ALL, "latitude" to latitude)
+            add(ENDERECO_READ_ALL, "longitude" to longitude)
+        }
 
-    fun updateSet(endereco: Endereco) = mapOf(
-            "cep" to endereco.cep,
-            "zipcode" to endereco.zipcode,
-            "rua" to endereco.rua,
-            "nro" to endereco.nro,
-            "cidade" to endereco.cidade,
-            "uf" to endereco.uf,
-            "latitude" to endereco.latitude,
-            "longitude" to endereco.longitude
-    )
+    fun updateSet(endereco: Endereco) = colsToMap(endereco, *permission.buildArray {
+        add(ENDERECO_UPDATE_ALL, cep)
+        add(ENDERECO_UPDATE_ALL, zipcode)
+        add(ENDERECO_UPDATE_ALL, rua)
+        add(ENDERECO_UPDATE_ALL, nro)
+        add(ENDERECO_UPDATE_ALL, cidade)
+        add(ENDERECO_UPDATE_ALL, uf)
+        add(ENDERECO_UPDATE_ALL, latitude)
+        add(ENDERECO_UPDATE_ALL, longitude)
+    })
 
-    fun insertValues(endereco: Endereco) = mapOf(
-            "cep" to endereco.cep,
-            "zipcode" to endereco.zipcode,
-            "rua" to endereco.rua,
-            "nro" to endereco.nro,
-            "cidade" to endereco.cidade,
-            "uf" to endereco.uf,
-            "latitude" to endereco.latitude,
-            "longitude" to endereco.longitude
-    )
+    fun insertValues(endereco: Endereco) = colsToMap(endereco, *permission.buildArray {
+        add(ENDERECO_INSERT_ALL, cep)
+        add(ENDERECO_INSERT_ALL, zipcode)
+        add(ENDERECO_INSERT_ALL, rua)
+        add(ENDERECO_INSERT_ALL, nro)
+        add(ENDERECO_INSERT_ALL, cidade)
+        add(ENDERECO_INSERT_ALL, uf)
+        add(ENDERECO_INSERT_ALL, latitude)
+        add(ENDERECO_INSERT_ALL, longitude)
+    })
 }

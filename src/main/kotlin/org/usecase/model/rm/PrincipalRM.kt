@@ -1,199 +1,306 @@
 package org.usecase.model.rm
 
+import br.com.simpli.sql.RelationalMapper
+import br.com.simpli.sql.VirtualColumn
 import org.usecase.model.resource.Principal
-import br.com.simpli.sql.Query
-import br.com.simpli.sql.ResultBuilder
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.PRINCIPAL_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.PRINCIPAL_READ_ALL
+import org.usecase.user.context.Permission.Companion.PRINCIPAL_UPDATE_ALL
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table principal
  * @author Simpli CLI generator
  */
-object PrincipalRM {
-    fun build(rs: ResultSet, alias: String = "principal", allowedColumns: Array<String> = selectFields(alias)) = Principal().apply {
-        ResultBuilder(allowedColumns, rs, alias).run {
-            idPrincipalPk = getLong("idPrincipalPk")
-            textoObrigatorio = getString("textoObrigatorio")
-            textoFacultativo = getString("textoFacultativo")
-            decimalObrigatorio = getDouble("decimalObrigatorio")
-            decimalFacultativo = getDoubleOrNull("decimalFacultativo")
-            inteiroObrigatorio = getLong("inteiroObrigatorio")
-            inteiroFacultativo = getLongOrNull("inteiroFacultativo")
-            booleanoObrigatorio = getBoolean("booleanoObrigatorio")
-            booleanoFacultativo = getBooleanOrNull("booleanoFacultativo")
-            dataObrigatoria = getTimestamp("dataObrigatoria")
-            dataFacultativa = getTimestamp("dataFacultativa")
-            datahoraObrigatoria = getTimestamp("datahoraObrigatoria")
-            datahoraFacultativa = getTimestamp("datahoraFacultativa")
-            ativo = getBoolean("ativo")
-            email = getString("email")
-            senha = getString("senha")
-            urlImagem = getString("urlImagem")
-            url = getString("url")
-            idGrupoDoPrincipalFk = getLong("idGrupoDoPrincipalFk")
-            idGrupoDoPrincipalFacultativoFk = getLongOrNull("idGrupoDoPrincipalFacultativoFk")
-            unico = getString("unico")
-            dataCriacao = getTimestamp("dataCriacao")
-            dataAlteracao = getTimestamp("dataAlteracao")
-            nome = getString("nome")
-            titulo = getString("titulo")
-            cpf = getString("cpf")
-            cnpj = getString("cnpj")
-            rg = getString("rg")
-            celular = getString("celular")
-            textoGrande = getString("textoGrande")
-            snakeCase = getString("snake_case")
-            preco = getDoubleOrNull("preco")
+class PrincipalRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<Principal>() {
+    override val table = "principal"
+
+    val idPrincipalPk = col("idPrincipalPk",
+            { idPrincipalPk },
+            { idPrincipalPk = it.value() })
+
+    val textoObrigatorio = col("textoObrigatorio",
+            { textoObrigatorio },
+            { textoObrigatorio = it.value() })
+
+    val textoFacultativo = col("textoFacultativo",
+            { textoFacultativo },
+            { textoFacultativo = it.value() })
+
+    val decimalObrigatorio = col("decimalObrigatorio",
+            { decimalObrigatorio },
+            { decimalObrigatorio = it.value() })
+
+    val decimalFacultativo = col("decimalFacultativo",
+            { decimalFacultativo },
+            { decimalFacultativo = it.value() })
+
+    val inteiroObrigatorio = col("inteiroObrigatorio",
+            { inteiroObrigatorio },
+            { inteiroObrigatorio = it.value() })
+
+    val inteiroFacultativo = col("inteiroFacultativo",
+            { inteiroFacultativo },
+            { inteiroFacultativo = it.value() })
+
+    val booleanoObrigatorio = col("booleanoObrigatorio",
+            { booleanoObrigatorio },
+            { booleanoObrigatorio = it.value() })
+
+    val booleanoFacultativo = col("booleanoFacultativo",
+            { booleanoFacultativo },
+            { booleanoFacultativo = it.value() })
+
+    val dataObrigatoria = col("dataObrigatoria",
+            { dataObrigatoria },
+            { dataObrigatoria = it.value() })
+
+    val dataFacultativa = col("dataFacultativa",
+            { dataFacultativa },
+            { dataFacultativa = it.value() })
+
+    val datahoraObrigatoria = col("datahoraObrigatoria",
+            { datahoraObrigatoria },
+            { datahoraObrigatoria = it.value() })
+
+    val datahoraFacultativa = col("datahoraFacultativa",
+            { datahoraFacultativa },
+            { datahoraFacultativa = it.value() })
+
+    val ativo = col("ativo",
+            { ativo },
+            { ativo = it.value() })
+
+    val email = col("email",
+            { email },
+            { email = it.value() })
+
+    val senha = col("senha",
+            { senha },
+            { senha = it.value() })
+
+    val urlImagem = col("urlImagem",
+            { urlImagem },
+            { urlImagem = it.value() })
+
+    val url = col("url",
+            { url },
+            { url = it.value() })
+
+    val idGrupoDoPrincipalFk = col("idGrupoDoPrincipalFk",
+            { idGrupoDoPrincipalFk },
+            { idGrupoDoPrincipalFk = it.value() })
+
+    val idGrupoDoPrincipalFacultativoFk = col("idGrupoDoPrincipalFacultativoFk",
+            { idGrupoDoPrincipalFacultativoFk },
+            { idGrupoDoPrincipalFacultativoFk = it.value() })
+
+    val unico = col("unico",
+            { unico },
+            { unico = it.value() })
+
+    val dataCriacao = col("dataCriacao",
+            { dataCriacao },
+            { dataCriacao = it.value() })
+
+    val dataAlteracao = col("dataAlteracao",
+            { dataAlteracao },
+            { dataAlteracao = it.value() })
+
+    val nome = col("nome",
+            { nome },
+            { nome = it.value() })
+
+    val titulo = col("titulo",
+            { titulo },
+            { titulo = it.value() })
+
+    val cpf = col("cpf",
+            { cpf },
+            { cpf = it.value() })
+
+    val cnpj = col("cnpj",
+            { cnpj },
+            { cnpj = it.value() })
+
+    val rg = col("rg",
+            { rg },
+            { rg = it.value() })
+
+    val celular = col("celular",
+            { celular },
+            { celular = it.value() })
+
+    val textoGrande = col("textoGrande",
+            { textoGrande },
+            { textoGrande = it.value() })
+
+    val snakeCase = col("snake_case",
+            { snakeCase },
+            { snakeCase = it.value() })
+
+    val preco = col("preco",
+            { preco },
+            { preco = it.value() })
+
+
+    fun build(rs: ResultSet) = Principal().apply {
+        selectFields.forEach { col ->
+            col.build(this, rs)
         }
     }
 
-    fun selectFields(alias: String = "principal") = arrayOf(
-            "$alias.idPrincipalPk",
-            "$alias.textoObrigatorio",
-            "$alias.textoFacultativo",
-            "$alias.decimalObrigatorio",
-            "$alias.decimalFacultativo",
-            "$alias.inteiroObrigatorio",
-            "$alias.inteiroFacultativo",
-            "$alias.booleanoObrigatorio",
-            "$alias.booleanoFacultativo",
-            "$alias.dataObrigatoria",
-            "$alias.dataFacultativa",
-            "$alias.datahoraObrigatoria",
-            "$alias.datahoraFacultativa",
-            "$alias.ativo",
-            "$alias.email",
-            "$alias.urlImagem",
-            "$alias.url",
-            "$alias.idGrupoDoPrincipalFk",
-            "$alias.idGrupoDoPrincipalFacultativoFk",
-            "$alias.unico",
-            "$alias.dataCriacao",
-            "$alias.dataAlteracao",
-            "$alias.nome",
-            "$alias.titulo",
-            "$alias.cpf",
-            "$alias.cnpj",
-            "$alias.rg",
-            "$alias.celular",
-            "$alias.textoGrande",
-            "$alias.snake_case",
-            "$alias.preco"
-    )
+    val selectFields: Array<VirtualColumn<Principal>>
+        get() = permission.buildArray {
+            add(PRINCIPAL_READ_ALL, idPrincipalPk)
+            add(PRINCIPAL_READ_ALL, textoObrigatorio)
+            add(PRINCIPAL_READ_ALL, textoFacultativo)
+            add(PRINCIPAL_READ_ALL, decimalObrigatorio)
+            add(PRINCIPAL_READ_ALL, decimalFacultativo)
+            add(PRINCIPAL_READ_ALL, inteiroObrigatorio)
+            add(PRINCIPAL_READ_ALL, inteiroFacultativo)
+            add(PRINCIPAL_READ_ALL, booleanoObrigatorio)
+            add(PRINCIPAL_READ_ALL, booleanoFacultativo)
+            add(PRINCIPAL_READ_ALL, dataObrigatoria)
+            add(PRINCIPAL_READ_ALL, dataFacultativa)
+            add(PRINCIPAL_READ_ALL, datahoraObrigatoria)
+            add(PRINCIPAL_READ_ALL, datahoraFacultativa)
+            add(PRINCIPAL_READ_ALL, ativo)
+            add(PRINCIPAL_READ_ALL, email)
+            add(PRINCIPAL_READ_ALL, urlImagem)
+            add(PRINCIPAL_READ_ALL, url)
+            add(PRINCIPAL_READ_ALL, idGrupoDoPrincipalFk)
+            add(PRINCIPAL_READ_ALL, idGrupoDoPrincipalFacultativoFk)
+            add(PRINCIPAL_READ_ALL, unico)
+            add(PRINCIPAL_READ_ALL, dataCriacao)
+            add(PRINCIPAL_READ_ALL, dataAlteracao)
+            add(PRINCIPAL_READ_ALL, nome)
+            add(PRINCIPAL_READ_ALL, titulo)
+            add(PRINCIPAL_READ_ALL, cpf)
+            add(PRINCIPAL_READ_ALL, cnpj)
+            add(PRINCIPAL_READ_ALL, rg)
+            add(PRINCIPAL_READ_ALL, celular)
+            add(PRINCIPAL_READ_ALL, textoGrande)
+            add(PRINCIPAL_READ_ALL, snakeCase)
+            add(PRINCIPAL_READ_ALL, preco)
+        }
 
-    fun fieldsToSearch(alias: String = "principal") = arrayOf(
-            "$alias.idPrincipalPk",
-            "$alias.textoObrigatorio",
-            "$alias.textoFacultativo",
-            "$alias.email",
-            "$alias.unico",
-            "$alias.nome",
-            "$alias.titulo",
-            "$alias.cpf",
-            "$alias.cnpj",
-            "$alias.rg",
-            "$alias.celular",
-            "$alias.textoGrande",
-            "$alias.snake_case"
-    )
+    val fieldsToSearch: Array<VirtualColumn<Principal>>
+        get() = permission.buildArray {
+            add(PRINCIPAL_READ_ALL, idPrincipalPk)
+            add(PRINCIPAL_READ_ALL, textoObrigatorio)
+            add(PRINCIPAL_READ_ALL, textoFacultativo)
+            add(PRINCIPAL_READ_ALL, email)
+            add(PRINCIPAL_READ_ALL, unico)
+            add(PRINCIPAL_READ_ALL, nome)
+            add(PRINCIPAL_READ_ALL, titulo)
+            add(PRINCIPAL_READ_ALL, cpf)
+            add(PRINCIPAL_READ_ALL, cnpj)
+            add(PRINCIPAL_READ_ALL, rg)
+            add(PRINCIPAL_READ_ALL, celular)
+            add(PRINCIPAL_READ_ALL, textoGrande)
+            add(PRINCIPAL_READ_ALL, snakeCase)
+        }
 
-    fun orderMap(alias: String = "principal") = mapOf(
-            "grupoDoPrincipal" to "$alias.idGrupoDoPrincipalFk",
-            "grupoDoPrincipalFacultativo" to "$alias.idGrupoDoPrincipalFacultativoFk",
-            "idPrincipalPk" to "$alias.idPrincipalPk",
-            "textoObrigatorio" to "$alias.textoObrigatorio",
-            "textoFacultativo" to "$alias.textoFacultativo",
-            "decimalObrigatorio" to "$alias.decimalObrigatorio",
-            "decimalFacultativo" to "$alias.decimalFacultativo",
-            "inteiroObrigatorio" to "$alias.inteiroObrigatorio",
-            "inteiroFacultativo" to "$alias.inteiroFacultativo",
-            "booleanoObrigatorio" to "$alias.booleanoObrigatorio",
-            "booleanoFacultativo" to "$alias.booleanoFacultativo",
-            "dataObrigatoria" to "$alias.dataObrigatoria",
-            "dataFacultativa" to "$alias.dataFacultativa",
-            "datahoraObrigatoria" to "$alias.datahoraObrigatoria",
-            "datahoraFacultativa" to "$alias.datahoraFacultativa",
-            "ativo" to "$alias.ativo",
-            "email" to "$alias.email",
-            "urlImagem" to "$alias.urlImagem",
-            "url" to "$alias.url",
-            "unico" to "$alias.unico",
-            "dataCriacao" to "$alias.dataCriacao",
-            "dataAlteracao" to "$alias.dataAlteracao",
-            "nome" to "$alias.nome",
-            "titulo" to "$alias.titulo",
-            "cpf" to "$alias.cpf",
-            "cnpj" to "$alias.cnpj",
-            "rg" to "$alias.rg",
-            "celular" to "$alias.celular",
-            "textoGrande" to "$alias.textoGrande",
-            "snakeCase" to "$alias.snake_case",
-            "preco" to "$alias.preco"
-    )
+    val orderMap: Map<String, VirtualColumn<Principal>>
+        get() = permission.buildMap {
+            add(PRINCIPAL_READ_ALL, "grupoDoPrincipal" to idGrupoDoPrincipalFk)
+            add(PRINCIPAL_READ_ALL, "grupoDoPrincipalFacultativo" to idGrupoDoPrincipalFacultativoFk)
+            add(PRINCIPAL_READ_ALL, "idPrincipalPk" to idPrincipalPk)
+            add(PRINCIPAL_READ_ALL, "textoObrigatorio" to textoObrigatorio)
+            add(PRINCIPAL_READ_ALL, "textoFacultativo" to textoFacultativo)
+            add(PRINCIPAL_READ_ALL, "decimalObrigatorio" to decimalObrigatorio)
+            add(PRINCIPAL_READ_ALL, "decimalFacultativo" to decimalFacultativo)
+            add(PRINCIPAL_READ_ALL, "inteiroObrigatorio" to inteiroObrigatorio)
+            add(PRINCIPAL_READ_ALL, "inteiroFacultativo" to inteiroFacultativo)
+            add(PRINCIPAL_READ_ALL, "booleanoObrigatorio" to booleanoObrigatorio)
+            add(PRINCIPAL_READ_ALL, "booleanoFacultativo" to booleanoFacultativo)
+            add(PRINCIPAL_READ_ALL, "dataObrigatoria" to dataObrigatoria)
+            add(PRINCIPAL_READ_ALL, "dataFacultativa" to dataFacultativa)
+            add(PRINCIPAL_READ_ALL, "datahoraObrigatoria" to datahoraObrigatoria)
+            add(PRINCIPAL_READ_ALL, "datahoraFacultativa" to datahoraFacultativa)
+            add(PRINCIPAL_READ_ALL, "ativo" to ativo)
+            add(PRINCIPAL_READ_ALL, "email" to email)
+            add(PRINCIPAL_READ_ALL, "urlImagem" to urlImagem)
+            add(PRINCIPAL_READ_ALL, "url" to url)
+            add(PRINCIPAL_READ_ALL, "unico" to unico)
+            add(PRINCIPAL_READ_ALL, "dataCriacao" to dataCriacao)
+            add(PRINCIPAL_READ_ALL, "dataAlteracao" to dataAlteracao)
+            add(PRINCIPAL_READ_ALL, "nome" to nome)
+            add(PRINCIPAL_READ_ALL, "titulo" to titulo)
+            add(PRINCIPAL_READ_ALL, "cpf" to cpf)
+            add(PRINCIPAL_READ_ALL, "cnpj" to cnpj)
+            add(PRINCIPAL_READ_ALL, "rg" to rg)
+            add(PRINCIPAL_READ_ALL, "celular" to celular)
+            add(PRINCIPAL_READ_ALL, "textoGrande" to textoGrande)
+            add(PRINCIPAL_READ_ALL, "snakeCase" to snakeCase)
+            add(PRINCIPAL_READ_ALL, "preco" to preco)
+        }
 
-    fun updateSet(principal: Principal) = mapOf(
-            "textoObrigatorio" to principal.textoObrigatorio,
-            "textoFacultativo" to principal.textoFacultativo,
-            "decimalObrigatorio" to principal.decimalObrigatorio,
-            "decimalFacultativo" to principal.decimalFacultativo,
-            "inteiroObrigatorio" to principal.inteiroObrigatorio,
-            "inteiroFacultativo" to principal.inteiroFacultativo,
-            "booleanoObrigatorio" to principal.booleanoObrigatorio,
-            "booleanoFacultativo" to principal.booleanoFacultativo,
-            "dataObrigatoria" to principal.dataObrigatoria,
-            "dataFacultativa" to principal.dataFacultativa,
-            "datahoraObrigatoria" to principal.datahoraObrigatoria,
-            "datahoraFacultativa" to principal.datahoraFacultativa,
-            "ativo" to principal.ativo,
-            "email" to principal.email,
-            "senha" to Query("IF(? IS NOT NULL, SHA2(?, 256), senha)", principal.senha, principal.senha),
-            "urlImagem" to principal.urlImagem,
-            "url" to principal.url,
-            "idGrupoDoPrincipalFk" to principal.idGrupoDoPrincipalFk,
-            "idGrupoDoPrincipalFacultativoFk" to principal.idGrupoDoPrincipalFacultativoFk,
-            "unico" to principal.unico,
-            "dataAlteracao" to principal.dataAlteracao,
-            "nome" to principal.nome,
-            "titulo" to principal.titulo,
-            "cpf" to principal.cpf,
-            "cnpj" to principal.cnpj,
-            "rg" to principal.rg,
-            "celular" to principal.celular,
-            "textoGrande" to principal.textoGrande,
-            "snake_case" to principal.snakeCase,
-            "preco" to principal.preco
-    )
+    fun updateSet(principal: Principal) = colsToMap(principal, *permission.buildArray {
+        add(PRINCIPAL_UPDATE_ALL, textoObrigatorio)
+        add(PRINCIPAL_UPDATE_ALL, textoFacultativo)
+        add(PRINCIPAL_UPDATE_ALL, decimalObrigatorio)
+        add(PRINCIPAL_UPDATE_ALL, decimalFacultativo)
+        add(PRINCIPAL_UPDATE_ALL, inteiroObrigatorio)
+        add(PRINCIPAL_UPDATE_ALL, inteiroFacultativo)
+        add(PRINCIPAL_UPDATE_ALL, booleanoObrigatorio)
+        add(PRINCIPAL_UPDATE_ALL, booleanoFacultativo)
+        add(PRINCIPAL_UPDATE_ALL, dataObrigatoria)
+        add(PRINCIPAL_UPDATE_ALL, dataFacultativa)
+        add(PRINCIPAL_UPDATE_ALL, datahoraObrigatoria)
+        add(PRINCIPAL_UPDATE_ALL, datahoraFacultativa)
+        add(PRINCIPAL_UPDATE_ALL, ativo)
+        add(PRINCIPAL_UPDATE_ALL, email)
+        add(PRINCIPAL_UPDATE_ALL, senha)
+        add(PRINCIPAL_UPDATE_ALL, urlImagem)
+        add(PRINCIPAL_UPDATE_ALL, url)
+        add(PRINCIPAL_UPDATE_ALL, idGrupoDoPrincipalFk)
+        add(PRINCIPAL_UPDATE_ALL, idGrupoDoPrincipalFacultativoFk)
+        add(PRINCIPAL_UPDATE_ALL, unico)
+        add(PRINCIPAL_UPDATE_ALL, dataAlteracao)
+        add(PRINCIPAL_UPDATE_ALL, nome)
+        add(PRINCIPAL_UPDATE_ALL, titulo)
+        add(PRINCIPAL_UPDATE_ALL, cpf)
+        add(PRINCIPAL_UPDATE_ALL, cnpj)
+        add(PRINCIPAL_UPDATE_ALL, rg)
+        add(PRINCIPAL_UPDATE_ALL, celular)
+        add(PRINCIPAL_UPDATE_ALL, textoGrande)
+        add(PRINCIPAL_UPDATE_ALL, snakeCase)
+        add(PRINCIPAL_UPDATE_ALL, preco)
+    })
 
-    fun insertValues(principal: Principal) = mapOf(
-            "textoObrigatorio" to principal.textoObrigatorio,
-            "textoFacultativo" to principal.textoFacultativo,
-            "decimalObrigatorio" to principal.decimalObrigatorio,
-            "decimalFacultativo" to principal.decimalFacultativo,
-            "inteiroObrigatorio" to principal.inteiroObrigatorio,
-            "inteiroFacultativo" to principal.inteiroFacultativo,
-            "booleanoObrigatorio" to principal.booleanoObrigatorio,
-            "booleanoFacultativo" to principal.booleanoFacultativo,
-            "dataObrigatoria" to principal.dataObrigatoria,
-            "dataFacultativa" to principal.dataFacultativa,
-            "datahoraObrigatoria" to principal.datahoraObrigatoria,
-            "datahoraFacultativa" to principal.datahoraFacultativa,
-            "ativo" to principal.ativo,
-            "email" to principal.email,
-            "senha" to Query("SHA2(?, 256)", principal.senha),
-            "urlImagem" to principal.urlImagem,
-            "url" to principal.url,
-            "idGrupoDoPrincipalFk" to principal.idGrupoDoPrincipalFk,
-            "idGrupoDoPrincipalFacultativoFk" to principal.idGrupoDoPrincipalFacultativoFk,
-            "unico" to principal.unico,
-            "dataCriacao" to principal.dataCriacao,
-            "nome" to principal.nome,
-            "titulo" to principal.titulo,
-            "cpf" to principal.cpf,
-            "cnpj" to principal.cnpj,
-            "rg" to principal.rg,
-            "celular" to principal.celular,
-            "textoGrande" to principal.textoGrande,
-            "snake_case" to principal.snakeCase,
-            "preco" to principal.preco
-    )
+    fun insertValues(principal: Principal) = colsToMap(principal, *permission.buildArray {
+        add(PRINCIPAL_INSERT_ALL, textoObrigatorio)
+        add(PRINCIPAL_INSERT_ALL, textoFacultativo)
+        add(PRINCIPAL_INSERT_ALL, decimalObrigatorio)
+        add(PRINCIPAL_INSERT_ALL, decimalFacultativo)
+        add(PRINCIPAL_INSERT_ALL, inteiroObrigatorio)
+        add(PRINCIPAL_INSERT_ALL, inteiroFacultativo)
+        add(PRINCIPAL_INSERT_ALL, booleanoObrigatorio)
+        add(PRINCIPAL_INSERT_ALL, booleanoFacultativo)
+        add(PRINCIPAL_INSERT_ALL, dataObrigatoria)
+        add(PRINCIPAL_INSERT_ALL, dataFacultativa)
+        add(PRINCIPAL_INSERT_ALL, datahoraObrigatoria)
+        add(PRINCIPAL_INSERT_ALL, datahoraFacultativa)
+        add(PRINCIPAL_INSERT_ALL, ativo)
+        add(PRINCIPAL_INSERT_ALL, email)
+        add(PRINCIPAL_INSERT_ALL, senha)
+        add(PRINCIPAL_INSERT_ALL, urlImagem)
+        add(PRINCIPAL_INSERT_ALL, url)
+        add(PRINCIPAL_INSERT_ALL, idGrupoDoPrincipalFk)
+        add(PRINCIPAL_INSERT_ALL, idGrupoDoPrincipalFacultativoFk)
+        add(PRINCIPAL_INSERT_ALL, unico)
+        add(PRINCIPAL_INSERT_ALL, dataCriacao)
+        add(PRINCIPAL_INSERT_ALL, nome)
+        add(PRINCIPAL_INSERT_ALL, titulo)
+        add(PRINCIPAL_INSERT_ALL, cpf)
+        add(PRINCIPAL_INSERT_ALL, cnpj)
+        add(PRINCIPAL_INSERT_ALL, rg)
+        add(PRINCIPAL_INSERT_ALL, celular)
+        add(PRINCIPAL_INSERT_ALL, textoGrande)
+        add(PRINCIPAL_INSERT_ALL, snakeCase)
+        add(PRINCIPAL_INSERT_ALL, preco)
+    })
 }

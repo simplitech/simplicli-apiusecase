@@ -1,42 +1,58 @@
 package org.usecase.model.rm
 
 import org.usecase.model.resource.Conectado
-import br.com.simpli.sql.Query
-import br.com.simpli.sql.ResultBuilder
+import br.com.simpli.sql.RelationalMapper
+import br.com.simpli.sql.VirtualColumn
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.CONECTADO_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.CONECTADO_READ_ALL
+import org.usecase.user.context.Permission.Companion.CONECTADO_UPDATE_ALL
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table conectado
  * @author Simpli CLI generator
  */
-object ConectadoRM {
-    fun build(rs: ResultSet, alias: String = "conectado", allowedColumns: Array<String> = selectFields(alias)) = Conectado().apply {
-        ResultBuilder(allowedColumns, rs, alias).run {
-            idConectadoPk = getLong("idConectadoPk")
-            titulo = getString("titulo")
+class ConectadoRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<Conectado>() {
+    override val table = "conectado"
+
+    val idConectadoPk = col("idConectadoPk",
+            { idConectadoPk },
+            { idConectadoPk = it.value() })
+
+    val titulo = col("titulo",
+            { titulo },
+            { titulo = it.value() })
+
+    fun build(rs: ResultSet) = Conectado().apply {
+        selectFields.forEach { col ->
+            col.build(this, rs)
         }
     }
 
-    fun selectFields(alias: String = "conectado") = arrayOf(
-            "$alias.idConectadoPk",
-            "$alias.titulo"
-    )
+    val selectFields: Array<VirtualColumn<Conectado>>
+        get() = permission.buildArray {
+            add(CONECTADO_READ_ALL, idConectadoPk)
+            add(CONECTADO_READ_ALL, titulo)
+        }
 
-    fun fieldsToSearch(alias: String = "conectado") = arrayOf(
-            "$alias.idConectadoPk",
-            "$alias.titulo"
-    )
+    val fieldsToSearch: Array<VirtualColumn<Conectado>>
+        get() = permission.buildArray {
+            add(CONECTADO_READ_ALL, idConectadoPk)
+            add(CONECTADO_READ_ALL, titulo)
+        }
 
-    fun orderMap(alias: String = "conectado") = mapOf(
-            "idConectadoPk" to "$alias.idConectadoPk",
-            "titulo" to "$alias.titulo"
-    )
+    val orderMap: Map<String, VirtualColumn<Conectado>>
+        get() = permission.buildMap {
+            add(CONECTADO_READ_ALL, "idConectadoPk" to idConectadoPk)
+            add(CONECTADO_READ_ALL, "titulo" to titulo)
+        }
 
-    fun updateSet(conectado: Conectado) = mapOf(
-            "titulo" to conectado.titulo
-    )
+    fun updateSet(conectado: Conectado) = colsToMap(conectado, *permission.buildArray {
+        add(CONECTADO_UPDATE_ALL, titulo)
+    })
 
-    fun insertValues(conectado: Conectado) = mapOf(
-            "titulo" to conectado.titulo
-    )
+    fun insertValues(conectado: Conectado) = colsToMap(conectado, *permission.buildArray {
+        add(CONECTADO_INSERT_ALL, titulo)
+    })
 }

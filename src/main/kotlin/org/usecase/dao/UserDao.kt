@@ -5,101 +5,121 @@ import org.usecase.model.resource.User
 import org.usecase.model.rm.UserRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.VirtualSelect
+import org.usecase.user.context.Permission
 
 /**
  * Data Access Object of User from table user
  * @author Simpli CLI generator
  */
 class UserDao(val con: AbstractConnector) {
-    fun getOne(idUserPk: Long): User? {
-        // TODO: review generated method
-        val query = Query()
-                .selectUser()
-                .from("user")
-                .whereEq("idUserPk", idUserPk)
+    fun getOne(idUserPk: Long, permission: Permission): User? {
+        val userRm = UserRM(permission)
 
-        return con.getOne(query) {
-            UserRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(userRm.selectFields)
+                .from(userRm)
+                .whereEq(userRm.idUserPk, idUserPk)
+
+        return con.getOne(vs.toQuery()) {
+            userRm.build(it)
         }
     }
 
-    fun getList(filter: UserListFilter): MutableList<User> {
-        // TODO: review generated method
-        val query = Query()
-                .selectUser()
-                .from("user")
-                .whereUserFilter(filter)
-                .orderAndLimitUser(filter)
+    fun getList(filter: UserListFilter, permission: Permission): MutableList<User> {
+        val userRm = UserRM(permission)
 
-        return con.getList(query) {
-            UserRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(userRm.selectFields)
+                .from(userRm)
+                .whereUserFilter(userRm, filter)
+                .orderAndLimitUser(userRm, filter)
+
+        return con.getList(vs.toQuery()) {
+            userRm.build(it)
         }
     }
 
-    fun count(filter: UserListFilter): Int {
-        // TODO: review generated method
-        val query = Query()
-                .countRaw("DISTINCT idUserPk")
-                .from("user")
-                .whereUserFilter(filter)
+    fun count(filter: UserListFilter, permission: Permission): Int {
+        val userRm = UserRM(permission)
 
-        return con.getFirstInt(query) ?: 0
+        val vs = VirtualSelect()
+                .selectRaw("COUNT(DISTINCT %s)", userRm.idUserPk)
+                .from(userRm)
+                .whereUserFilter(userRm, filter)
+
+        return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(user: User): Int {
-        // TODO: review generated method
+    fun update(user: User, permission: Permission): Int {
+        val userRm = UserRM(permission)
         val query = Query()
-                .updateTable("user")
-                .updateUserSet(user)
-                .whereEq("idUserPk", user.id)
+                .updateTable(userRm.table)
+                .updateSet(userRm.updateSet(user))
+                .whereEq(userRm.idUserPk.column, user.id)
 
         return con.execute(query).affectedRows
     }
 
-    fun insert(user: User): Long {
-        // TODO: review generated method
+    fun insert(user: User, permission: Permission): Long {
+        val userRm = UserRM(permission)
         val query = Query()
-                .insertInto("user")
-                .insertUserValues(user)
+                .insertInto(userRm.table)
+                .insertValues(userRm.insertValues(user))
 
         return con.execute(query).key
     }
 
-    fun exist(idUserPk: Long): Boolean {
-        // TODO: review generated method
-        val query = Query()
-                .select("idUserPk")
-                .from("user")
-                .whereEq("idUserPk", idUserPk)
+    fun exist(idUserPk: Long, permission: Permission): Boolean {
+        val userRm = UserRM(permission)
+        val vs = VirtualSelect()
+                .select(userRm.idUserPk)
+                .from(userRm)
+                .whereEq(userRm.idUserPk, idUserPk)
 
-        return con.exist(query)
+        return con.exist(vs.toQuery())
     }
 
-    private fun Query.selectUser() = selectFields(UserRM.selectFields())
+    fun getIdOfUser(email: String, senha: String?, permission: Permission): Long? {
+        val userRm = UserRM(permission)
+        val vs = VirtualSelect()
+                .select(userRm.idUserPk)
+                .from(userRm)
+                .whereEq(userRm.email, email)
 
-    private fun Query.updateUserSet(user: User) = updateSet(UserRM.updateSet(user))
+        senha?.let {
+            vs.whereRaw("%s = SHA2(?, 256)", arrayOf(userRm.senha), it)
+        }
 
-    private fun Query.insertUserValues(user: User) = insertValues(UserRM.insertValues(user))
+        return con.getFirstLong(vs.toQuery())
+    }
 
-    private fun Query.whereUserFilter(filter: UserListFilter, alias: String = "user"): Query {
+    fun updateUserPassword(email: String, senha: String, permission: Permission): Int {
+        val userRm = UserRM(permission)
+        val query = Query()
+                .updateTable(userRm.table)
+                .updateSet(
+                        userRm.senha.column to Query("SHA2(?, 256)", senha)
+                )
+                .whereEq(userRm.email.column, email)
+
+        return con.execute(query).affectedRows
+    }
+
+    private fun VirtualSelect.whereUserFilter(userRm: UserRM, filter: UserListFilter): VirtualSelect {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSomeLikeThis(UserRM.fieldsToSearch(alias), "%$it%")
+                whereSomeLikeThis(userRm.fieldsToSearch, "%$it%")
             }
         }
 
         return this
     }
 
-    private fun Query.orderAndLimitUser(filter: UserListFilter, alias: String = "user"): Query {
-        UserRM.orderMap(alias)[filter.orderBy]?.also {
-            orderByAsc(it, filter.ascending)
-        }
+    private fun VirtualSelect.orderAndLimitUser(userRm: UserRM, filter: UserListFilter): VirtualSelect {
+        orderBy(userRm.orderMap, filter.orderBy to filter.ascending)
 
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            limit(index, it)
-        }
+        limitByPage(filter.page, filter.limit)
 
         return this
     }

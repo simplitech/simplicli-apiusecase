@@ -7,6 +7,14 @@ import org.usecase.model.resource.User
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import br.com.simpli.model.PageCollection
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.USER_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.USER_READ_ALL
+import org.usecase.user.context.Permission.Companion.USER_UPDATE_ALL
+import org.valiktor.functions.hasSize
+import org.valiktor.functions.isEmail
+import org.valiktor.functions.isNotBlank
+import org.valiktor.validate
 import java.util.Date
 
 /**
@@ -18,23 +26,22 @@ class UserProcess(val context: RequestContext) {
     val dao = UserDao(context.con)
 
     fun get(id: Long?): User {
-        // TODO: review generated method
         if (id == null) throw BadRequestException()
 
-        return dao.getOne(id) ?: throw NotFoundException()
+        val permission = Permission(USER_READ_ALL)
+
+        return dao.getOne(id, permission) ?: throw NotFoundException()
     }
 
     fun list(filter: UserListFilter): PageCollection<User> {
-        // TODO: review generated method
-        val items = dao.getList(filter)
-        val total = dao.count(filter)
+        val permission = Permission(USER_READ_ALL)
+
+        val items = dao.getList(filter, permission)
+        val total = dao.count(filter, permission)
 
         return PageCollection(items, total)
     }
 
-    /**
-     * Use this to handle similarities between create and update
-     */
     fun persist(model: User): Long {
         if (model.id > 0) {
             update(model)
@@ -46,39 +53,36 @@ class UserProcess(val context: RequestContext) {
     }
 
     fun create(model: User): Long {
-        // TODO: review generated method
-        model.apply {
-            validate(context.lang)
-        }
+        val permission = Permission(USER_READ_ALL, USER_INSERT_ALL)
+        validateUser(permission, model, updating = false)
 
-        model.id = dao.run {
-            validate(model, updating = false)
-            insert(model)
-        }
+        model.id = dao.insert(model, permission)
 
         return model.id
     }
 
     fun update(model: User): Int {
-        // TODO: review generated method
-        model.apply {
-            validate(context.lang)
-        }
+        val permission = Permission(USER_READ_ALL, USER_UPDATE_ALL)
+        validateUser(permission, model, updating = true)
 
-        return dao.run {
-            validate(model, updating = true)
-            update(model)
-        }
+        return dao.update(model, permission)
     }
 
-    private fun UserDao.validate(model: User, updating: Boolean) {
+    fun validateUser(permission: Permission, model: User, updating: Boolean) {
+        context.lang.handleValidation("modelUser") {
+            validate(model) {
+                validate(User::email).isNotBlank().hasSize(max = 45).isEmail()
+                validate(User::senha).isNotBlank().hasSize(max = 200)
+            }
+        }
+
         if (updating) {
-            if (!exist(model.id)) {
-                throw BadRequestException(context.lang["does_not_exist"])
+            if (!dao.exist(model.id, permission)) {
+                throw BadRequestException(context.lang["error.doesNotExist"])
             }
         } else {
-            if (exist(model.id)) {
-                throw BadRequestException(context.lang["already_exists"])
+            if (dao.exist(model.id, permission)) {
+                throw BadRequestException(context.lang["error.alreadyExist"])
             }
         }
     }

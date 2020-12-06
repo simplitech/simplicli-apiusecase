@@ -22,14 +22,14 @@ class AuthProcessTest : ProcessTest() {
 
     @Test(expected = UnauthorizedException::class)
     fun testAuthFail() {
-        val param = DefaultParam.Auth()
+        val param = DefaultParam()
         param.authorization = "invalidtoken"
         subject.authenticate(param)
     }
 
     @Test
     fun testAuth() {
-        val param = DefaultParam.Auth()
+        val param = DefaultParam()
         param.authorization = "Bearer $token"
         subject.authenticate(param)
     }
@@ -53,7 +53,7 @@ class AuthProcessTest : ProcessTest() {
                 sha256("""${Env.TESTER_PASSWORD}new""")
         )
 
-        val result = subject.changePassword(request, auth)
+        val result = subject.changePassword(request)
         assertEquals(1L, result)
     }
 
@@ -65,7 +65,7 @@ class AuthProcessTest : ProcessTest() {
                 sha256("""${Env.TESTER_PASSWORD}new""")
         )
 
-        subject.changePassword(request, auth)
+        subject.changePassword(request)
     }
 
     @Test(expected = BadRequestException::class)
@@ -76,7 +76,7 @@ class AuthProcessTest : ProcessTest() {
                 sha256("""${Env.TESTER_PASSWORD}different""")
         )
 
-        subject.changePassword(request, auth)
+        subject.changePassword(request)
     }
 
     @Test(expected = NotFoundException::class)

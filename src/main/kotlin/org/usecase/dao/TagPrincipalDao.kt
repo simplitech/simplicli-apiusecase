@@ -6,6 +6,10 @@ import org.usecase.model.resource.Tag
 import org.usecase.model.rm.TagRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.VirtualSelect
+import org.usecase.model.resource.TagPrincipal
+import org.usecase.model.rm.TagPrincipalRM
+import org.usecase.user.context.Permission
 
 /**
  * Data Access Object of TagPrincipal from table tag_principal
@@ -13,59 +17,59 @@ import br.com.simpli.sql.Query
  */
 class TagPrincipalDao(val con: AbstractConnector) {
 
-    fun insert(idPrincipalFk: Long, idTagFk: Long): Long {
-        // TODO: review generated method
+    fun insert(tagPrincipal: TagPrincipal, permission: Permission): Long {
+        val tagPrincipalRM = TagPrincipalRM(permission)
         val query = Query()
-                .insertInto("tag_principal")
-                .insertValues(
-                        "idPrincipalFk" to idPrincipalFk,
-                        "idTagFk" to idTagFk
-                )
+                .insertInto(tagPrincipalRM.table)
+                .insertValues(tagPrincipalRM.insertValues(tagPrincipal))
 
         return con.execute(query).key
     }
 
-    fun removeAllFromTag(idTagFk: Long): Int {
-        // TODO: review generated method
+    fun removeAllFromTag(idTagFk: Long, permission: Permission): Int {
+        val tagPrincipalRM = TagPrincipalRM(permission)
         val query = Query()
-                .deleteFrom("tag_principal")
-                .whereEq("idTagFk", idTagFk)
+                .deleteFrom(tagPrincipalRM.table)
+                .whereEq(tagPrincipalRM.idTagFk.column, idTagFk)
 
         return con.execute(query).affectedRows
     }
 
-    fun listTagOfPrincipal(idPrincipalFk: Long): MutableList<Tag> {
-        // TODO: review generated method
-        val query = Query()
-                .selectFields(TagRM.selectFields())
-                .from("tag")
-                .innerJoin("tag_principal", "tag.idTagPk", "tag_principal.idTagFk")
-                .whereEq("tag_principal.idPrincipalFk", idPrincipalFk)
+    fun listTagOfPrincipal(idPrincipalFk: Long, permission: Permission): MutableList<Tag> {
+        val tagRm = TagRM(permission)
+        val tagPrincipalRM = TagPrincipalRM(permission)
 
-        return con.getList(query) {
-            TagRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(tagRm.selectFields)
+                .from(tagRm)
+                .innerJoin(tagPrincipalRM, tagPrincipalRM.idTagFk, tagRm.idTagPk)
+                .whereEq(tagPrincipalRM.idPrincipalFk, idPrincipalFk)
+
+        return con.getList(vs.toQuery()) {
+            tagRm.build(it)
         }
     }
 
-    fun removeAllFromPrincipal(idPrincipalFk: Long): Int {
-        // TODO: review generated method
+    fun removeAllFromPrincipal(idPrincipalFk: Long, permission: Permission): Int {
+        val tagPrincipalRM = TagPrincipalRM(permission)
         val query = Query()
-                .deleteFrom("tag_principal")
-                .whereEq("idPrincipalFk", idPrincipalFk)
+                .deleteFrom(tagPrincipalRM.table)
+                .whereEq(tagPrincipalRM.idPrincipalFk.column, idPrincipalFk)
 
         return con.execute(query).affectedRows
     }
 
-    fun listPrincipalOfTag(idTagFk: Long): MutableList<Principal> {
-        // TODO: review generated method
-        val query = Query()
-                .selectFields(PrincipalRM.selectFields())
-                .from("principal")
-                .innerJoin("tag_principal", "principal.idPrincipalPk", "tag_principal.idPrincipalFk")
-                .whereEq("tag_principal.idTagFk", idTagFk)
+    fun listPrincipalOfTag(idTagFk: Long, permission: Permission): MutableList<Principal> {
+        val principalRm = PrincipalRM(permission)
+        val tagPrincipalRM = TagPrincipalRM(permission)
+        val vs = VirtualSelect()
+                .selectFields(principalRm.selectFields)
+                .from(principalRm)
+                .innerJoin(tagPrincipalRM, tagPrincipalRM.idPrincipalFk, principalRm.idPrincipalPk)
+                .whereEq(tagPrincipalRM.idTagFk, idTagFk)
 
-        return con.getList(query) {
-            PrincipalRM.build(it)
+        return con.getList(vs.toQuery()) {
+            principalRm.build(it)
         }
     }
 

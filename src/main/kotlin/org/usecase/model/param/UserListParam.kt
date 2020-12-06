@@ -9,5 +9,5 @@ import javax.ws.rs.QueryParam
  * Authenticated User Param
  * @author Simpli CLI generator
  */
-open class AuthUserListParam: DefaultParam.AuthPaged(), UserListFilter {
+open class UserListParam: DefaultParam.Paged(), UserListFilter {
 }
