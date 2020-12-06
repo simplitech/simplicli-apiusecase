@@ -15,6 +15,11 @@ import org.usecase.user.request.ResetPasswordRequest
 import org.usecase.user.request.RecoverPasswordByMailRequest
 import org.usecase.user.response.AuthResponse
 import br.com.simpli.tools.SecurityUtils
+import org.usecase.dao.UserDao
+import org.usecase.exception.response.InternalServerErrorException
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.USER_READ_ALL
+import org.usecase.user.context.Permission.Companion.USER_UPDATE_ALL
 import java.util.regex.Pattern
 import java.util.Date
 import java.util.Calendar
@@ -24,13 +29,13 @@ import java.util.Calendar
  * @author Simpli CLI generator
  */
 class AuthProcess(val context: RequestContext) {
-    val dao = AuthDao(context.con)
+    val dao = UserDao(context.con)
 
     /**
      * Get the authentication information by the token
      */
-    fun authenticate(param: DefaultParam.Auth): AuthResponse {
-        val token = extractToken(param.authorization ?: "") ?: throw UnauthorizedException(context.lang["invalid_token"])
+    fun authenticate(param: DefaultParam): AuthResponse {
+        val token = extractToken(param.authorization ?: "") ?: throw UnauthorizedException(context.lang["error.invalidToken"])
         try {
             val request = tokenToRequest(token)
             val id = getId(request)
@@ -38,9 +43,9 @@ class AuthProcess(val context: RequestContext) {
 
             return AuthResponse(token, user)
         } catch (e: BadRequestException) {
-            throw UnauthorizedException(context.lang.pleaseLogin())
+            throw UnauthorizedException(context.lang["error.pleaseLogin"])
         } catch (e: NotFoundException) {
-            throw UnauthorizedException(context.lang.pleaseLogin())
+            throw UnauthorizedException(context.lang["error.pleaseLogin"])
         }
     }
 
@@ -55,7 +60,7 @@ class AuthProcess(val context: RequestContext) {
 
             return AuthResponse(token, user)
         } catch (e: NotFoundException) {
-            throw UnauthorizedException(context.lang.invalidLogin())
+            throw UnauthorizedException(context.lang["error.invalidLogin"])
         }
     }
 
@@ -66,12 +71,16 @@ class AuthProcess(val context: RequestContext) {
      */
     fun recoverPasswordByMail(request: RecoverPasswordByMailRequest): Long {
         request.validate(context.lang)
+        val permission = Permission(USER_READ_ALL)
 
-        val user = dao.getUserByEmail("${request.email}") ?: throw BadRequestException(context.lang.emailNotFound())
+        val user = request.email?.let { email ->
+            dao.getIdOfUser(email, null, permission)?.let { id ->
+                dao.getOne(id, permission)
+            }
+        } ?: throw BadRequestException(context.lang["error.emailNotFound"])
 
         val json = Cast.classToJson(TokenForgottenPassword("${user.email}"))
-        val encrypted = SecurityUtils.encrypt(json, Env.ENCRYPT_HASH)
-        val hash = encrypted?.replace("/", "%2F") ?: "invalid_hash"
+        val hash = SecurityUtils.encrypt(json, Env.ENCRYPT_HASH, encode = true, urlSafe = true) ?: throw InternalServerErrorException()
 
         RecoverPasswordMail(context.lang, user, hash).send()
 
@@ -84,8 +93,9 @@ class AuthProcess(val context: RequestContext) {
     fun resetPassword(request: ResetPasswordRequest): String {
         request.validate(context.lang)
 
-        val hashResolved = request.hash?.replace(" ", "+") ?: ""
-        val token = SecurityUtils.decrypt(hashResolved, Env.ENCRYPT_HASH) ?: throw BadRequestException(context.lang.invalidToken())
+        val permission = Permission(USER_UPDATE_ALL)
+
+        val token = SecurityUtils.decrypt("${request.hash}", Env.ENCRYPT_HASH, decode = true, urlSafe = true) ?: throw BadRequestException(context.lang["error.invalidToken"])
 
         val tokenForgottenPassword = Cast.jsonToClass(token, TokenForgottenPassword::class.java)
 
@@ -94,10 +104,10 @@ class AuthProcess(val context: RequestContext) {
         calendar.add(Calendar.DAY_OF_MONTH, Env.FORGOTTEN_PASSWORD_TOKEN_LIFE)
 
         // token expires after x days
-        if (calendar.time.before(Date())) throw BadRequestException(context.lang.expiredToken())
+        if (calendar.time.before(Date())) throw BadRequestException(context.lang["error.expiredToken"])
 
         request.newPassword?.also {
-            dao.updateUserPassword(tokenForgottenPassword.email, it)
+            dao.updateUserPassword(tokenForgottenPassword.email, it, permission)
         }
 
         return requestToToken(AuthRequest(tokenForgottenPassword.email, request.newPassword))
@@ -106,19 +116,21 @@ class AuthProcess(val context: RequestContext) {
     /**
      * Change the password
      */
-    fun changePassword(request: ChangePasswordRequest, auth: AuthResponse): Long {
-        val id = auth.id
-        val user = auth.user
-        val email = user.email ?: throw BadRequestException()
+    fun changePassword(request: ChangePasswordRequest): Long {
+        val id = context.auth?.id
+        val user = context.auth?.user
+        val email = user?.email ?: throw BadRequestException()
 
         request.validate(context.lang)
 
+        val permission = Permission(USER_READ_ALL, USER_UPDATE_ALL)
+
         request.newPassword?.also { newPassword ->
             request.currentPassword?.also { currentPassword ->
-                val idVerify = dao.getIdOfUser(email, currentPassword)
-                if (id != idVerify) throw BadRequestException(context.lang["wrong_password"])
+                val idVerify = dao.getIdOfUser(email, currentPassword, permission)
+                if (id != idVerify) throw BadRequestException(context.lang["error.wrongPassword"])
 
-                dao.updateUserPassword(email, newPassword)
+                dao.updateUserPassword(email, newPassword, permission)
             }
         }
 
@@ -131,14 +143,17 @@ class AuthProcess(val context: RequestContext) {
     fun getId(request: AuthRequest): Long {
         request.validate(context.lang)
 
-        return dao.getIdOfUser("${request.email}", "${request.senha}") ?: throw NotFoundException(context.lang["user_id_not_found"])
+        val permission = Permission(USER_READ_ALL)
+
+        return dao.getIdOfUser("${request.email}", "${request.senha}", permission) ?: throw NotFoundException(context.lang["error.userIdNotFound"])
     }
 
     /**
      * Get the user by ID
      */
     fun getUser(idUserPk: Long): User {
-        return dao.getUser(idUserPk) ?: throw NotFoundException(context.lang["user_not_found"])
+        val permission = Permission(USER_READ_ALL)
+        return dao.getOne(idUserPk, permission) ?: throw NotFoundException(context.lang["error.userNotFound"])
     }
 
     companion object {

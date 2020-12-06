@@ -1,18 +1,17 @@
 package org.usecase.user.process
 
+import org.apache.commons.lang3.RandomStringUtils
 import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.ItemDoPrincipal
-import org.usecase.model.param.AuthItemDoPrincipalListParam
-import java.util.Date
+import org.usecase.model.param.ItemDoPrincipalListParam
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
-import org.junit.Ignore
 import org.junit.Test
+import org.usecase.user.context.Permission
 
 /**
  * Tests ItemDoPrincipal business logic
@@ -22,9 +21,33 @@ class ItemDoPrincipalProcessTest : ProcessTest() {
     private val id = 1L
     private val model = ItemDoPrincipal()
 
-    private val listFilter = AuthItemDoPrincipalListParam()
+    private val listFilter = ItemDoPrincipalListParam()
 
     private val subject = ItemDoPrincipalProcess(context)
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloNullFail() {
+        model.titulo = ""
+
+        val permission = Permission(Permission.ITEM_DO_PRINCIPAL_READ_ALL)
+        subject.validateItemDoPrincipal(permission, model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloLengthFail() {
+        model.titulo = RandomStringUtils.randomAlphabetic(46)
+
+        val permission = Permission(Permission.ITEM_DO_PRINCIPAL_READ_ALL)
+        subject.validateItemDoPrincipal(permission, model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateIdPrincipalFkNullFail() {
+        model.idPrincipalFk = 0L
+
+        val permission = Permission(Permission.ITEM_DO_PRINCIPAL_READ_ALL)
+        subject.validateItemDoPrincipal(permission, model, updating = true)
+    }
 
     init {
         model.idItemDoPrincipalPk = 1

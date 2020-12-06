@@ -1,19 +1,19 @@
 package org.usecase.user.process
 
+import org.apache.commons.lang3.RandomStringUtils
 import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.Tag
-import org.usecase.model.param.AuthTagListParam
+import org.usecase.model.param.TagListParam
 import org.usecase.model.resource.Principal
-import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
-import org.junit.Ignore
 import org.junit.Test
+import org.usecase.user.context.Permission
 
 /**
  * Tests Tag business logic
@@ -23,7 +23,7 @@ class TagProcessTest : ProcessTest() {
     private val id = 1L
     private val model = Tag()
 
-    private val listFilter = AuthTagListParam()
+    private val listFilter = TagListParam()
 
     private val subject = TagProcess(context)
 
@@ -34,6 +34,22 @@ class TagProcessTest : ProcessTest() {
         val principal = Principal()
         principal.id = 1L
         model.tagPrincipal = mutableListOf(principal)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloNullFail() {
+        model.titulo = ""
+
+        val permission = Permission(Permission.TAG_READ_ALL)
+        subject.validateTag(permission, model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloLengthFail() {
+        model.titulo = RandomStringUtils.randomAlphabetic(46)
+
+        val permission = Permission(Permission.TAG_READ_ALL)
+        subject.validateTag(permission, model, updating = true)
     }
 
     @Test

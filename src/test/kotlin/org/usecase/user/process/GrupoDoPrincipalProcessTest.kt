@@ -1,18 +1,17 @@
 package org.usecase.user.process
 
+import org.apache.commons.lang3.RandomStringUtils
 import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.GrupoDoPrincipal
-import org.usecase.model.param.AuthGrupoDoPrincipalListParam
-import java.util.Date
+import org.usecase.model.param.GrupoDoPrincipalListParam
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
-import org.junit.Ignore
 import org.junit.Test
+import org.usecase.user.context.Permission
 
 /**
  * Tests GrupoDoPrincipal business logic
@@ -22,13 +21,29 @@ class GrupoDoPrincipalProcessTest : ProcessTest() {
     private val id = 1L
     private val model = GrupoDoPrincipal()
 
-    private val listFilter = AuthGrupoDoPrincipalListParam()
+    private val listFilter = GrupoDoPrincipalListParam()
 
     private val subject = GrupoDoPrincipalProcess(context)
 
     init {
         model.idGrupoDoPrincipalPk = 1
         model.titulo = "1"
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloNullFail() {
+        model.titulo = ""
+
+        val permission = Permission(Permission.GRUPO_DO_PRINCIPAL_READ_ALL)
+        subject.validateGrupoDoPrincipal(permission, model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloLengthFail() {
+        model.titulo = RandomStringUtils.randomAlphabetic(46)
+
+        val permission = Permission(Permission.GRUPO_DO_PRINCIPAL_READ_ALL)
+        subject.validateGrupoDoPrincipal(permission, model, updating = true)
     }
 
     @Test

@@ -9,5 +9,5 @@ import javax.ws.rs.QueryParam
  * Authenticated ExtensaoDoPrincipal Param
  * @author Simpli CLI generator
  */
-open class AuthExtensaoDoPrincipalListParam: DefaultParam.AuthPaged(), ExtensaoDoPrincipalListFilter {
+open class ExtensaoDoPrincipalListParam: DefaultParam.Paged(), ExtensaoDoPrincipalListFilter {
 }

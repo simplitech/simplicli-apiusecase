@@ -1,18 +1,17 @@
 package org.usecase.user.process
 
+import org.apache.commons.lang3.RandomStringUtils
 import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.User
-import org.usecase.model.param.AuthUserListParam
-import java.util.Date
+import org.usecase.model.param.UserListParam
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
-import org.junit.Ignore
 import org.junit.Test
+import org.usecase.user.context.Permission
 
 /**
  * Tests User business logic
@@ -22,7 +21,7 @@ class UserProcessTest : ProcessTest() {
     private val id = 1L
     private val model = User()
 
-    private val listFilter = AuthUserListParam()
+    private val listFilter = UserListParam()
 
     private val subject = UserProcess(context)
 
@@ -30,6 +29,46 @@ class UserProcessTest : ProcessTest() {
         model.idUserPk = 1
         model.email = "any@email.com"
         model.senha = "1"
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateEmailNullFail() {
+        model.email = ""
+
+        val permission = Permission(Permission.USER_READ_ALL)
+        subject.validateUser(permission, model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateEmailLengthFail() {
+        model.email = RandomStringUtils.randomAlphabetic(46)
+
+        val permission = Permission(Permission.USER_READ_ALL)
+        subject.validateUser(permission, model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateEmailInvalidEmailFail() {
+        model.email = "notAnEmail"
+
+        val permission = Permission(Permission.USER_READ_ALL)
+        subject.validateUser(permission, model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateSenhaNullFail() {
+        model.senha = ""
+
+        val permission = Permission(Permission.USER_READ_ALL)
+        subject.validateUser(permission, model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateSenhaLengthFail() {
+        model.senha = RandomStringUtils.randomAlphabetic(201)
+
+        val permission = Permission(Permission.USER_READ_ALL)
+        subject.validateUser(permission, model, updating = true)
     }
 
     @Test

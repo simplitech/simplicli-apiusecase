@@ -1,53 +1,47 @@
-<p align="center">
-  <img alt="Simpli CLI" src="https://raw.githubusercontent.com/simplitech/simpli-cli/master/logo.png" width="256" height="256">
-  <br>
-  <a href="https://www.npmjs.com/package/@simpli/cli"><img src="https://img.shields.io/npm/v/@simpli/cli.svg"></a>
-  <a href="https://www.npmjs.com/package/@simpli/cli"><img src="https://img.shields.io/npm/dt/@simpli/cli.svg"></a>
-  <a href="https://www.npmjs.com/package/@simpli/cli"><img src="https://img.shields.io/npm/l/@simpli/cli.svg"></a>
-</p>
+# Simpli CLI - API UsecaseServer
 
-### Simpli CLI - API UsecaseServer
-
-Make sure the port 8080 is not in use.
-
-Go to your project directory root and seed your database:
-
-```sh
-$ simpli server:seed
+## How to Setup IntelliJ to run a local Tomcat
+- Make sure you have a local database properly set
+- On IntelliJ, on the top-right corner, on the dropdown menu, choose "Add Configuration" or "Edit Configuration"
+- Add a new "Tomcat Server" > "Local"
+- On "Deployment" tab, add a new Artifact selecting the "simplicli-apiusecase:war exploded" option. And on the bottom, in Application Context field, type "/usecase" 
+- On "Server" tab, on "VM Options" field, add the following text:
 ```
-
-Then, run this shell:
-
-```sh
-$ sh build.sh
+-DENVIRONMENT=beta
+-DDB_URL=localhost
+-DDB_NAME=ndapp
+-DDB_USER=root
+-DDB_PASS=root
+-DLOG_LEVEL=debug
+-DLOG_NO_COLOR=false
 ```
+Replace `root` with your MySQL username and password;
 
-This command will use the `mvn` CLI and the `docker` CLI.
-Therefore, it should have those installed.
+## How to Setup the Web application
+- On a terminal, open the webapp folder (`cd src/main/webapp`)
+- Run `npm i`
 
-Go to `localhost:8080`
+## How to Run the project
+- Make sure you setup IntelliJ to run Tomcat and setup the web application
+- Run the Server-side part by clicking the play icon on IntelliJ
+- It will open a webpage on the browser, this is the compiled page to be used on beta or production server, it will probably show an error, but no problem, this page is not needed and can be closed
+- On a terminal, open the webapp folder (`cd src/main/webapp`)
+- Run `npm run serve`, this is the development server that updates automatically when the code is saved
+- Done
 
-![Server Running](https://raw.githubusercontent.com/simplitech/simpli-cli/master/docs/img/server-img3.png)
+## Things to do before the commit
+- Check the terminal that is running `npm run serve` to see if there is any error
+- Create **unit tests**, try to **cover** everything, you can check if everything is covered using IntelliJ tools to `Run 'All tests' with Coverage`
+  - You may need to create a new test case, to do so, change the `ut_data.sql`. **Avoid breaking other tests while doing this**
+- **Run all unit tests** of the project, if anything fails try to understand why it fails and do one of the following:
+  - Fix your own code
+  - Update the failling test
+- If the changes affect the front-end, **run the project** on your browser to test the changes on all possible cases
+- **Change the REQUIREMENTS.md** file informing which requirements were worked on (this step is better described in the file itself)
+- Read your new code, make a **self code-review**
 
-Copy the swagger URL in order to generate the `Client Project`.
+## Test Users
+Password: `tester`
 
-### Generating Fake Data
-
-Another useful feature of Simpli CLI is `Fake Data`. This data can be found in `root-project/src/test/resources/database/data.sql`.
-If you could not find it, go to the root of project and generate the `data.sql` by running `simpli new:seed`. Then run `simpli server:seed` to populate the fake data into your database.
-
-> The default login is `test@test.com` and the password is `tester`
-
-#### _Important_
-
-Make sure your database is used for testing because the command `simpli server:seed` will TRUNCATE your tables.
-
----
-
-## Contribute
-To generate an exact copy of this:
-- Run test/resources/database/create.sql
-- `npm install -g @simpli/cli`
-- `simpli new:project <project_name>`
-- Choose `Web Server project (backend)`
-- Choose `usecase` for database
+Login:
+- `test@test.com` (administrator)

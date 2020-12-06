@@ -1,18 +1,19 @@
 package org.usecase.user.process
 
+import br.com.simpli.sql.Query
+import org.apache.commons.lang3.RandomStringUtils
 import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.ExtensaoDoPrincipal
-import org.usecase.model.param.AuthExtensaoDoPrincipalListParam
-import java.util.Date
+import org.usecase.model.param.ExtensaoDoPrincipalListParam
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
-import org.junit.Ignore
 import org.junit.Test
+import org.usecase.model.rm.ExtensaoDoPrincipalRM
+import org.usecase.user.context.Permission
 
 /**
  * Tests ExtensaoDoPrincipal business logic
@@ -22,13 +23,27 @@ class ExtensaoDoPrincipalProcessTest : ProcessTest() {
     private val id = 1L
     private val model = ExtensaoDoPrincipal()
 
-    private val listFilter = AuthExtensaoDoPrincipalListParam()
+    private val listFilter = ExtensaoDoPrincipalListParam()
 
     private val subject = ExtensaoDoPrincipalProcess(context)
 
     init {
         model.idPrincipalFk = 1
         model.titulo = "1"
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloNullFail() {
+        model.titulo = ""
+
+        subject.validateExtensaoDoPrincipal(model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloLengthFail() {
+        model.titulo = RandomStringUtils.randomAlphabetic(46)
+
+        subject.validateExtensaoDoPrincipal(model, updating = true)
     }
 
     @Test
@@ -61,33 +76,24 @@ class ExtensaoDoPrincipalProcessTest : ProcessTest() {
     }
 
     @Test
-    @Ignore
     fun testCreateSuccess() {
-        model.id = 0
-
-        val result = subject.create(model)
-        assertTrue(result > 0)
-    }
-
-    @Test(expected = BadRequestException::class)
-    fun testCreateFail() {
         model.id = id
 
-        subject.create(model)
+        val extensaoDoPrincipalRm = ExtensaoDoPrincipalRM(Permission())
+
+        transacConnector.execute(Query()
+                .deleteFrom(extensaoDoPrincipalRm.table)
+                .whereEq(extensaoDoPrincipalRm.idPrincipalFk.column, id))
+
+        val result = subject.persist(model)
+        assertTrue(result > 0)
     }
 
     @Test
     fun testUpdateSuccess() {
         model.id = id
 
-        val result = subject.update(model)
+        val result = subject.persist(model)
         assertTrue(result > 0)
-    }
-
-    @Test(expected = BadRequestException::class)
-    fun testUpdateFail() {
-        model.id = 0
-
-        subject.update(model)
     }
 }

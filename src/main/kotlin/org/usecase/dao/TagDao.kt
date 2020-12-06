@@ -5,101 +5,95 @@ import org.usecase.model.resource.Tag
 import org.usecase.model.rm.TagRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.VirtualSelect
+import org.usecase.user.context.Permission
 
 /**
  * Data Access Object of Tag from table tag
  * @author Simpli CLI generator
  */
 class TagDao(val con: AbstractConnector) {
-    fun getOne(idTagPk: Long): Tag? {
-        // TODO: review generated method
-        val query = Query()
-                .selectTag()
-                .from("tag")
-                .whereEq("idTagPk", idTagPk)
+    fun getOne(idTagPk: Long, permission: Permission): Tag? {
+        val tagRm = TagRM(permission)
 
-        return con.getOne(query) {
-            TagRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(tagRm.selectFields)
+                .from(tagRm)
+                .whereEq(tagRm.idTagPk, idTagPk)
+
+        return con.getOne(vs.toQuery()) {
+            tagRm.build(it)
         }
     }
 
-    fun getList(filter: TagListFilter): MutableList<Tag> {
-        // TODO: review generated method
-        val query = Query()
-                .selectTag()
-                .from("tag")
-                .whereTagFilter(filter)
-                .orderAndLimitTag(filter)
+    fun getList(filter: TagListFilter, permission: Permission): MutableList<Tag> {
+        val tagRm = TagRM(permission)
 
-        return con.getList(query) {
-            TagRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(tagRm.selectFields)
+                .from(tagRm)
+                .whereTagFilter(tagRm, filter)
+                .orderAndLimitTag(tagRm, filter)
+
+        return con.getList(vs.toQuery()) {
+            tagRm.build(it)
         }
     }
 
-    fun count(filter: TagListFilter): Int {
-        // TODO: review generated method
-        val query = Query()
-                .countRaw("DISTINCT idTagPk")
-                .from("tag")
-                .whereTagFilter(filter)
+    fun count(filter: TagListFilter, permission: Permission): Int {
+        val tagRm = TagRM(permission)
 
-        return con.getFirstInt(query) ?: 0
+        val vs = VirtualSelect()
+                .selectRaw("COUNT(DISTINCT %s)", tagRm.idTagPk)
+                .from(tagRm)
+                .whereTagFilter(tagRm, filter)
+
+        return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(tag: Tag): Int {
-        // TODO: review generated method
+    fun update(tag: Tag, permission: Permission): Int {
+        val tagRm = TagRM(permission)
         val query = Query()
-                .updateTable("tag")
-                .updateTagSet(tag)
-                .whereEq("idTagPk", tag.id)
+                .updateTable(tagRm.table)
+                .updateSet(tagRm.updateSet(tag))
+                .whereEq(tagRm.idTagPk.column, tag.id)
 
         return con.execute(query).affectedRows
     }
 
-    fun insert(tag: Tag): Long {
-        // TODO: review generated method
+    fun insert(tag: Tag, permission: Permission): Long {
+        val tagRm = TagRM(permission)
         val query = Query()
-                .insertInto("tag")
-                .insertTagValues(tag)
+                .insertInto(tagRm.table)
+                .insertValues(tagRm.insertValues(tag))
 
         return con.execute(query).key
     }
 
-    fun exist(idTagPk: Long): Boolean {
-        // TODO: review generated method
-        val query = Query()
-                .select("idTagPk")
-                .from("tag")
-                .whereEq("idTagPk", idTagPk)
+    fun exist(idTagPk: Long, permission: Permission): Boolean {
+        val tagRm = TagRM(permission)
+        val vs = VirtualSelect()
+                .select(tagRm.idTagPk)
+                .from(tagRm)
+                .whereEq(tagRm.idTagPk, idTagPk)
 
-        return con.exist(query)
+        return con.exist(vs.toQuery())
     }
 
-    private fun Query.selectTag() = selectFields(TagRM.selectFields())
-
-    private fun Query.updateTagSet(tag: Tag) = updateSet(TagRM.updateSet(tag))
-
-    private fun Query.insertTagValues(tag: Tag) = insertValues(TagRM.insertValues(tag))
-
-    private fun Query.whereTagFilter(filter: TagListFilter, alias: String = "tag"): Query {
+    private fun VirtualSelect.whereTagFilter(tagRm: TagRM, filter: TagListFilter): VirtualSelect {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSomeLikeThis(TagRM.fieldsToSearch(alias), "%$it%")
+                whereSomeLikeThis(tagRm.fieldsToSearch, "%$it%")
             }
         }
 
         return this
     }
 
-    private fun Query.orderAndLimitTag(filter: TagListFilter, alias: String = "tag"): Query {
-        TagRM.orderMap(alias)[filter.orderBy]?.also {
-            orderByAsc(it, filter.ascending)
-        }
+    private fun VirtualSelect.orderAndLimitTag(tagRm: TagRM, filter: TagListFilter): VirtualSelect {
+        orderBy(tagRm.orderMap, filter.orderBy to filter.ascending)
 
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            limit(index, it)
-        }
+        limitByPage(filter.page, filter.limit)
 
         return this
     }

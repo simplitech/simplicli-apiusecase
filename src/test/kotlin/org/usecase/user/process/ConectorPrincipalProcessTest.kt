@@ -1,17 +1,15 @@
 package org.usecase.user.process
 
+import org.apache.commons.lang3.RandomStringUtils
 import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.ConectorPrincipal
-import org.usecase.model.param.AuthConectorPrincipalListParam
-import java.util.Date
+import org.usecase.model.param.ConectorPrincipalListParam
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
-import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -19,11 +17,11 @@ import org.junit.Test
  * @author Simpli CLI generator
  */
 class ConectorPrincipalProcessTest : ProcessTest() {
-    private val id1 = 1L
-    private val id2 = 1L
+    private val idPrincipalFk = 1L
+    private val idConectadoFk = 1L
     private val model = ConectorPrincipal()
 
-    private val listFilter = AuthConectorPrincipalListParam()
+    private val listFilter = ConectorPrincipalListParam()
 
     private val subject = ConectorPrincipalProcess(context)
 
@@ -31,6 +29,20 @@ class ConectorPrincipalProcessTest : ProcessTest() {
         model.idPrincipalFk = 1
         model.idConectadoFk = 1
         model.titulo = "1"
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloNullFail() {
+        model.titulo = ""
+
+        subject.validateConectorPrincipal(model, updating = true)
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloLengthFail() {
+        model.titulo = RandomStringUtils.randomAlphabetic(46)
+
+        subject.validateConectorPrincipal(model, updating = true)
     }
 
     @Test
@@ -53,9 +65,9 @@ class ConectorPrincipalProcessTest : ProcessTest() {
 
     @Test
     fun testGetSuccess() {
-        val result = subject.get(id1, id2)
-        assertNotSame(0, result.id1)
-        assertNotSame(0, result.id2)
+        val result = subject.get(idPrincipalFk, idConectadoFk)
+        assertNotSame(0, result.idPrincipalFk)
+        assertNotSame(0, result.idConectadoFk)
     }
 
     @Test(expected = NotFoundException::class)
@@ -65,35 +77,19 @@ class ConectorPrincipalProcessTest : ProcessTest() {
 
     @Test
     fun testCreateSuccess() {
-        model.id1 = 1
-        model.id2 = 2
+        model.idPrincipalFk = 1
+        model.idConectadoFk = 2
 
-        val result = subject.create(model)
+        val result = subject.persist(model)
         assertTrue(result > 0)
-    }
-
-    @Test(expected = BadRequestException::class)
-    fun testCreateFail() {
-        model.id1 = id1
-        model.id2 = id2
-
-        subject.create(model)
     }
 
     @Test
     fun testUpdateSuccess() {
-        model.id1 = id1
-        model.id2 = id2
+        model.idPrincipalFk = idPrincipalFk
+        model.idConectadoFk = idConectadoFk
 
-        val result = subject.update(model)
+        val result = subject.persist(model)
         assertTrue(result > 0)
-    }
-
-    @Test(expected = BadRequestException::class)
-    fun testUpdateFail() {
-        model.id1 = 0
-        model.id2 = 0
-
-        subject.update(model)
     }
 }

@@ -6,226 +6,237 @@ import org.usecase.model.rm.PrincipalRM
 import org.usecase.model.rm.GrupoDoPrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.VirtualSelect
+import org.usecase.user.context.Permission
 
 /**
  * Data Access Object of Principal from table principal
  * @author Simpli CLI generator
  */
 class PrincipalDao(val con: AbstractConnector) {
-    fun getOne(idPrincipalPk: Long): Principal? {
-        // TODO: review generated method
-        val query = Query()
-                .selectPrincipal()
-                .from("principal")
-                .whereEq("idPrincipalPk", idPrincipalPk)
+    fun getOne(idPrincipalPk: Long, permission: Permission): Principal? {
+        val principalRm = PrincipalRM(permission)
+        val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
+        val grupoDoPrincipalFacultativoRm = GrupoDoPrincipalRM(permission,"grupo_do_principal_facultativo")
 
-        return con.getOne(query) {
-            PrincipalRM.build(it)
-        }
-    }
+        val vs = VirtualSelect()
+                .selectFields(principalRm.selectFields)
+                .selectFields(grupoDoPrincipalRm.selectFields)
+                .selectFields(grupoDoPrincipalFacultativoRm.selectFields)
+                .from(principalRm)
+                .innerJoin(grupoDoPrincipalRm, grupoDoPrincipalRm.idGrupoDoPrincipalPk, principalRm.idGrupoDoPrincipalFk)
+                .leftJoin(grupoDoPrincipalFacultativoRm, grupoDoPrincipalFacultativoRm.idGrupoDoPrincipalPk, principalRm.idGrupoDoPrincipalFacultativoFk)
+                .whereEq(principalRm.idPrincipalPk, idPrincipalPk)
 
-    fun getList(filter: PrincipalListFilter): MutableList<Principal> {
-        // TODO: review generated method
-        val query = Query()
-                .selectFields(PrincipalRM.selectFields() + GrupoDoPrincipalRM.selectFields() + GrupoDoPrincipalRM.selectFields("grupo_do_principal_facultativo"))
-                .from("principal")
-                .innerJoin("grupo_do_principal", "grupo_do_principal.idGrupoDoPrincipalPk", "principal.idGrupoDoPrincipalFk")
-                .leftJoin("grupo_do_principal AS grupo_do_principal_facultativo", "grupo_do_principal_facultativo.idGrupoDoPrincipalPk", "principal.idGrupoDoPrincipalFacultativoFk")
-                .wherePrincipalFilter(filter)
-                .orderAndLimitPrincipal(filter)
-
-        return con.getList(query) {
-            PrincipalRM.build(it).apply {
-                grupoDoPrincipal = GrupoDoPrincipalRM.build(it)
-                grupoDoPrincipalFacultativo = GrupoDoPrincipalRM.build(it, "grupo_do_principal_facultativo")
+        return con.getOne(vs.toQuery()) {
+            principalRm.build(it).apply {
+                grupoDoPrincipal = grupoDoPrincipalRm.build(it)
+                grupoDoPrincipalFacultativo = grupoDoPrincipalFacultativoRm.build(it)
             }
         }
     }
 
-    fun count(filter: PrincipalListFilter): Int {
-        // TODO: review generated method
-        val query = Query()
-                .countRaw("DISTINCT idPrincipalPk")
-                .from("principal")
-                .wherePrincipalFilter(filter)
+    fun getList(filter: PrincipalListFilter, permission: Permission): MutableList<Principal> {
+        val principalRm = PrincipalRM(permission)
+        val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
+        val grupoDoPrincipalFacultativoRm = GrupoDoPrincipalRM(permission, "grupo_do_principal_facultativo")
 
-        return con.getFirstInt(query) ?: 0
+        val vs = VirtualSelect()
+                .selectFields(principalRm.selectFields)
+                .selectFields(grupoDoPrincipalRm.selectFields)
+                .selectFields(grupoDoPrincipalFacultativoRm.selectFields)
+                .from(principalRm)
+                .innerJoin(grupoDoPrincipalRm, grupoDoPrincipalRm.idGrupoDoPrincipalPk, principalRm.idGrupoDoPrincipalFk)
+                .leftJoin(grupoDoPrincipalFacultativoRm, grupoDoPrincipalFacultativoRm.idGrupoDoPrincipalPk, principalRm.idGrupoDoPrincipalFacultativoFk)
+                .wherePrincipalFilter(principalRm, filter)
+                .orderAndLimitPrincipal(principalRm, filter)
+
+        return con.getList(vs.toQuery()) {
+            principalRm.build(it).apply {
+                grupoDoPrincipal = grupoDoPrincipalRm.build(it)
+                grupoDoPrincipalFacultativo = grupoDoPrincipalFacultativoRm.build(it)
+            }
+        }
     }
 
-    fun update(principal: Principal): Int {
-        // TODO: review generated method
+    fun count(filter: PrincipalListFilter, permission: Permission): Int {
+        val principalRm = PrincipalRM(permission)
+        val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
+        val grupoDoPrincipalFacultativoRm = GrupoDoPrincipalRM(permission, "grupo_do_principal_facultativo")
+
+        val vs = VirtualSelect()
+                .selectRaw("COUNT(DISTINCT %s)", principalRm.idPrincipalPk)
+                .from(principalRm)
+                .innerJoin(grupoDoPrincipalRm, grupoDoPrincipalRm.idGrupoDoPrincipalPk, principalRm.idGrupoDoPrincipalFk)
+                .leftJoin(grupoDoPrincipalFacultativoRm, grupoDoPrincipalFacultativoRm.idGrupoDoPrincipalPk, principalRm.idGrupoDoPrincipalFacultativoFk)
+                .wherePrincipalFilter(principalRm, filter)
+
+        return con.getFirstInt(vs.toQuery()) ?: 0
+    }
+
+    fun update(principal: Principal, permission: Permission): Int {
+        val principalRm = PrincipalRM(permission)
         val query = Query()
-                .updateTable("principal")
-                .updatePrincipalSet(principal)
-                .whereEq("idPrincipalPk", principal.id)
+                .updateTable(principalRm.table)
+                .updateSet(principalRm.updateSet(principal))
+                .whereEq(principalRm.idPrincipalPk.column, principal.id)
 
         return con.execute(query).affectedRows
     }
 
-    fun insert(principal: Principal): Long {
-        // TODO: review generated method
+    fun insert(principal: Principal, permission: Permission): Long {
+        val principalRm = PrincipalRM(permission)
         val query = Query()
-                .insertInto("principal")
-                .insertPrincipalValues(principal)
+                .insertInto(principalRm.table)
+                .insertValues(principalRm.insertValues(principal))
 
         return con.execute(query).key
     }
 
-    fun exist(idPrincipalPk: Long): Boolean {
-        // TODO: review generated method
-        val query = Query()
-                .select("idPrincipalPk")
-                .from("principal")
-                .whereEq("idPrincipalPk", idPrincipalPk)
+    fun exist(idPrincipalPk: Long, permission: Permission): Boolean {
+        val principalRm = PrincipalRM(permission)
+        val vs = VirtualSelect()
+                .select(principalRm.idPrincipalPk)
+                .from(principalRm)
+                .whereEq(principalRm.idPrincipalPk, idPrincipalPk)
 
-        return con.exist(query)
+        return con.exist(vs.toQuery())
     }
 
-    fun existUnico(unico: String, idPrincipalPk: Long): Boolean {
-        // TODO: review generated method
-        val query = Query()
-                .select("unico")
-                .from("principal")
-                .whereEq("unico", unico)
-                .whereNotEq("idPrincipalPk", idPrincipalPk)
+    fun existUnico(unico: String, idPrincipalPk: Long, permission: Permission): Boolean {
+        val principalRm = PrincipalRM(permission)
+        val vs = VirtualSelect()
+                .select(principalRm.unico)
+                .from(principalRm)
+                .whereEq(principalRm.unico, unico)
+                .whereNotEq(principalRm.idPrincipalPk, idPrincipalPk)
 
-        return con.exist(query)
+        return con.exist(vs.toQuery())
     }
 
-    fun softDelete(idPrincipalPk: Long): Int {
-        // TODO: review generated method
+    fun softDelete(idPrincipalPk: Long, permission: Permission): Int {
+        val principalRm = PrincipalRM(permission)
         val query = Query()
-                .updateTable("principal")
-                .updateSet("ativo" to false)
-                .whereEq("idPrincipalPk", idPrincipalPk)
+                .updateTable(principalRm.table)
+                .updateSet(principalRm.ativo.column to false)
+                .whereEq(principalRm.idPrincipalPk.column, idPrincipalPk)
 
         return con.execute(query).affectedRows
     }
 
-    private fun Query.selectPrincipal() = selectFields(PrincipalRM.selectFields())
-
-    private fun Query.updatePrincipalSet(principal: Principal) = updateSet(PrincipalRM.updateSet(principal))
-
-    private fun Query.insertPrincipalValues(principal: Principal) = insertValues(PrincipalRM.insertValues(principal))
-
-    private fun Query.wherePrincipalFilter(filter: PrincipalListFilter, alias: String = "principal"): Query {
-        whereEq("$alias.ativo", true)
+    private fun VirtualSelect.wherePrincipalFilter(principalRm: PrincipalRM, filter: PrincipalListFilter): VirtualSelect {
+        whereEq(principalRm.ativo, true)
 
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSomeLikeThis(PrincipalRM.fieldsToSearch(alias), "%$it%")
+                whereSomeLikeThis(principalRm.fieldsToSearch, "%$it%")
             }
         }
 
         filter.idGrupoDoPrincipalFk?.also {
             if (it.isNotEmpty()) {
-                whereIn("$alias.idGrupoDoPrincipalFk", *it.toTypedArray())
+                whereIn(principalRm.idGrupoDoPrincipalFk, *it.toTypedArray())
             }
         }
 
         filter.idGrupoDoPrincipalFacultativoFk?.also {
             if (it.isNotEmpty()) {
-                whereIn("$alias.idGrupoDoPrincipalFacultativoFk", *it.toTypedArray())
+                whereIn(principalRm.idGrupoDoPrincipalFacultativoFk, *it.toTypedArray())
             }
         }
 
         filter.startDataObrigatoria?.also {
-            where("DATE($alias.dataObrigatoria) >= DATE(?)", it)
+            whereDateGtEq(principalRm.dataObrigatoria, it)
         }
         filter.endDataObrigatoria?.also {
-            where("DATE($alias.dataObrigatoria) <= DATE(?)", it)
+            whereDateLtEq(principalRm.dataObrigatoria, it)
         }
 
         filter.startDataFacultativa?.also {
-            where("DATE($alias.dataFacultativa) >= DATE(?)", it)
+            whereDateGtEq(principalRm.dataFacultativa, it)
         }
         filter.endDataFacultativa?.also {
-            where("DATE($alias.dataFacultativa) <= DATE(?)", it)
+            whereDateLtEq(principalRm.dataFacultativa, it)
         }
 
         filter.startDatahoraObrigatoria?.also {
-            where("DATE($alias.datahoraObrigatoria) >= DATE(?)", it)
+            whereDateGtEq(principalRm.datahoraObrigatoria, it)
         }
         filter.endDatahoraObrigatoria?.also {
-            where("DATE($alias.datahoraObrigatoria) <= DATE(?)", it)
+            whereDateLtEq(principalRm.datahoraObrigatoria, it)
         }
 
         filter.startDatahoraFacultativa?.also {
-            where("DATE($alias.datahoraFacultativa) >= DATE(?)", it)
+            whereDateGtEq(principalRm.datahoraFacultativa, it)
         }
         filter.endDatahoraFacultativa?.also {
-            where("DATE($alias.datahoraFacultativa) <= DATE(?)", it)
+            whereDateLtEq(principalRm.datahoraFacultativa, it)
         }
 
         filter.startDataCriacao?.also {
-            where("DATE($alias.dataCriacao) >= DATE(?)", it)
+            whereDateGtEq(principalRm.dataCriacao, it)
         }
         filter.endDataCriacao?.also {
-            where("DATE($alias.dataCriacao) <= DATE(?)", it)
+            whereDateLtEq(principalRm.dataCriacao, it)
         }
 
         filter.startDataAlteracao?.also {
-            where("DATE($alias.dataAlteracao) >= DATE(?)", it)
+            whereDateGtEq(principalRm.dataAlteracao, it)
         }
         filter.endDataAlteracao?.also {
-            where("DATE($alias.dataAlteracao) <= DATE(?)", it)
+            whereDateLtEq(principalRm.dataAlteracao, it)
         }
 
         filter.minDecimalObrigatorio?.also {
-            whereGtEq("$alias.decimalObrigatorio", it)
+            whereGtEq(principalRm.decimalObrigatorio, it)
         }
         filter.maxDecimalObrigatorio?.also {
-            whereLtEq("$alias.decimalObrigatorio", it)
+            whereLtEq(principalRm.decimalObrigatorio, it)
         }
 
         filter.minDecimalFacultativo?.also {
-            whereGtEq("$alias.decimalFacultativo", it)
+            whereGtEq(principalRm.decimalFacultativo, it)
         }
         filter.maxDecimalFacultativo?.also {
-            whereLtEq("$alias.decimalFacultativo", it)
+            whereLtEq(principalRm.decimalFacultativo, it)
         }
 
         filter.minInteiroObrigatorio?.also {
-            whereGtEq("$alias.inteiroObrigatorio", it)
+            whereGtEq(principalRm.inteiroObrigatorio, it)
         }
         filter.maxInteiroObrigatorio?.also {
-            whereLtEq("$alias.inteiroObrigatorio", it)
+            whereLtEq(principalRm.inteiroObrigatorio, it)
         }
 
         filter.minInteiroFacultativo?.also {
-            whereGtEq("$alias.inteiroFacultativo", it)
+            whereGtEq(principalRm.inteiroFacultativo, it)
         }
         filter.maxInteiroFacultativo?.also {
-            whereLtEq("$alias.inteiroFacultativo", it)
+            whereLtEq(principalRm.inteiroFacultativo, it)
         }
 
         filter.minPreco?.also {
-            whereGtEq("$alias.preco", it)
+            whereGtEq(principalRm.preco, it)
         }
         filter.maxPreco?.also {
-            whereLtEq("$alias.preco", it)
+            whereLtEq(principalRm.preco, it)
         }
 
         filter.booleanoObrigatorio?.also {
-            whereEq("$alias.booleanoObrigatorio", it)
+            whereEq(principalRm.booleanoObrigatorio, it)
         }
 
         filter.booleanoFacultativo?.also {
-            whereEq("$alias.booleanoFacultativo", it)
+            whereEq(principalRm.booleanoFacultativo, it)
         }
 
         return this
     }
 
-    private fun Query.orderAndLimitPrincipal(filter: PrincipalListFilter, alias: String = "principal"): Query {
-        PrincipalRM.orderMap(alias)[filter.orderBy]?.also {
-            orderByAsc(it, filter.ascending)
-        }
+    private fun VirtualSelect.orderAndLimitPrincipal(principalRm: PrincipalRM, filter: PrincipalListFilter): VirtualSelect {
+        orderBy(principalRm.orderMap, filter.orderBy to filter.ascending)
 
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            limit(index, it)
-        }
+        limitByPage(filter.page, filter.limit)
 
         return this
     }

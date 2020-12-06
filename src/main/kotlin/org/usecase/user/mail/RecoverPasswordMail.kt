@@ -2,22 +2,22 @@ package org.usecase.user.mail
 
 import org.usecase.wrapper.MailWrapper
 import org.usecase.model.resource.User
-import br.com.simpli.model.LanguageHolder
+import org.usecase.locale.LangDefinition
 
 /**
  * Recover Password E-Mail handler
  * @author Simpli CLI generator
  */
-class RecoverPasswordMail(lang: LanguageHolder, user: User, hash: String) : MailWrapper(lang) {
+class RecoverPasswordMail(lang: LangDefinition, user: User, hash: String) : MailWrapper(lang) {
     init {
         to = "${user.email}"
-        subject = lang["email_reset_password_subject"]
+        subject = lang["mailResetPassword.subject"]
 
-        data["title"] = lang["email_reset_password_title"]
-        data["subtitle"] = lang["email_reset_password_subtitle"]
-        data["body"] = lang["email_reset_password_body"]
-        data["textButton"] = lang["email_reset_password_text_button"]
-        data["labelButton"] = lang["email_reset_password_label_button"]
+        data["title"] = lang["mailResetPassword.title"]
+        data["subtitle"] = lang["mailResetPassword.subtitle"]
+        data["body"] = lang["mailResetPassword.body"]
+        data["textButton"] = lang["mailResetPassword.text_button"]
+        data["labelButton"] = lang["mailResetPassword.label_button"]
         data["linkButton"] = """$appUrl/#/password/reset/$hash"""
 
         setBodyFromTemplate(this::class.java, data, "template.html")

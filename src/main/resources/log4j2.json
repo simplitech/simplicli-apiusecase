@@ -11,7 +11,7 @@
           "type": "Console",
           "name": "STDOUT",
           "PatternLayout": {
-            "pattern": "%highlight{%d [%p] %c{-0} – %m%n}{STYLE=Logback}",
+            "pattern": "%highlight{%d [%p] %c{-0} – %m%n%ex}{STYLE=Logback}",
             "disableAnsi": "${sys:LOG_NO_COLOR:-true}"
           }
         },
@@ -19,7 +19,7 @@
           "type": "Console",
           "name": "AWS",
           "PatternLayout": {
-            "pattern": "%highlight{%d [%p] %c{-0} – %m%n}{STYLE=Logback}",
+            "pattern": "%highlight{%d [%p] %c{-0} – %m%n%ex}{STYLE=Logback}",
             "disableAnsi": "${sys:LOG_NO_COLOR:-true}"
           },
           "ThresholdFilter": {

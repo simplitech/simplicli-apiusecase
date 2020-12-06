@@ -7,7 +7,13 @@ import org.usecase.model.resource.GrupoDoPrincipal
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import br.com.simpli.model.PageCollection
-import java.util.Date
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.GRUPO_DO_PRINCIPAL_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.GRUPO_DO_PRINCIPAL_READ_ALL
+import org.usecase.user.context.Permission.Companion.GRUPO_DO_PRINCIPAL_UPDATE_ALL
+import org.valiktor.functions.hasSize
+import org.valiktor.functions.isNotBlank
+import org.valiktor.validate
 
 /**
  * GrupoDoPrincipal business logic
@@ -18,23 +24,20 @@ class GrupoDoPrincipalProcess(val context: RequestContext) {
     val dao = GrupoDoPrincipalDao(context.con)
 
     fun get(id: Long?): GrupoDoPrincipal {
-        // TODO: review generated method
         if (id == null) throw BadRequestException()
+        val permission = Permission(GRUPO_DO_PRINCIPAL_READ_ALL)
 
-        return dao.getOne(id) ?: throw NotFoundException()
+        return dao.getOne(id, permission) ?: throw NotFoundException()
     }
 
     fun list(filter: GrupoDoPrincipalListFilter): PageCollection<GrupoDoPrincipal> {
-        // TODO: review generated method
-        val items = dao.getList(filter)
-        val total = dao.count(filter)
+        val permission = Permission(GRUPO_DO_PRINCIPAL_READ_ALL)
+        val items = dao.getList(filter, permission)
+        val total = dao.count(filter, permission)
 
         return PageCollection(items, total)
     }
 
-    /**
-     * Use this to handle similarities between create and update
-     */
     fun persist(model: GrupoDoPrincipal): Long {
         if (model.id > 0) {
             update(model)
@@ -46,39 +49,33 @@ class GrupoDoPrincipalProcess(val context: RequestContext) {
     }
 
     fun create(model: GrupoDoPrincipal): Long {
-        // TODO: review generated method
-        model.apply {
-            validate(context.lang)
-        }
-
-        model.id = dao.run {
-            validate(model, updating = false)
-            insert(model)
-        }
+        val permission = Permission(GRUPO_DO_PRINCIPAL_READ_ALL, GRUPO_DO_PRINCIPAL_INSERT_ALL)
+        validateGrupoDoPrincipal(permission, model, updating = false)
+        model.id = dao.insert(model, permission)
 
         return model.id
     }
 
     fun update(model: GrupoDoPrincipal): Int {
-        // TODO: review generated method
-        model.apply {
-            validate(context.lang)
-        }
-
-        return dao.run {
-            validate(model, updating = true)
-            update(model)
-        }
+        val permission = Permission(GRUPO_DO_PRINCIPAL_READ_ALL, GRUPO_DO_PRINCIPAL_UPDATE_ALL)
+        validateGrupoDoPrincipal(permission, model, updating = true)
+        return dao.update(model, permission)
     }
 
-    private fun GrupoDoPrincipalDao.validate(model: GrupoDoPrincipal, updating: Boolean) {
+    fun validateGrupoDoPrincipal(permission: Permission, model: GrupoDoPrincipal, updating: Boolean) {
+        context.lang.handleValidation("modelGrupoDoPrincipal") {
+            validate(model) {
+                validate(GrupoDoPrincipal::titulo).isNotBlank().hasSize(max = 45)
+            }
+        }
+
         if (updating) {
-            if (!exist(model.id)) {
-                throw BadRequestException(context.lang["does_not_exist"])
+            if (!dao.exist(model.id, permission)) {
+                throw BadRequestException(context.lang["error.doesNotExist"])
             }
         } else {
-            if (exist(model.id)) {
-                throw BadRequestException(context.lang["already_exists"])
+            if (dao.exist(model.id, permission)) {
+                throw BadRequestException(context.lang["error.alreadyExist"])
             }
         }
     }

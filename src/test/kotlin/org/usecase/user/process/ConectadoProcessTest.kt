@@ -1,18 +1,17 @@
 package org.usecase.user.process
 
+import org.apache.commons.lang3.RandomStringUtils
 import org.usecase.user.ProcessTest
 import org.usecase.exception.response.BadRequestException
 import org.usecase.exception.response.NotFoundException
 import org.usecase.model.resource.Conectado
-import org.usecase.model.param.AuthConectadoListParam
-import java.util.Date
+import org.usecase.model.param.ConectadoListParam
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
-import org.junit.Ignore
 import org.junit.Test
+import org.usecase.user.context.Permission
 
 /**
  * Tests Conectado business logic
@@ -22,12 +21,20 @@ class ConectadoProcessTest : ProcessTest() {
     private val id = 1L
     private val model = Conectado()
 
-    private val listFilter = AuthConectadoListParam()
+    private val listFilter = ConectadoListParam()
 
     private val subject = ConectadoProcess(context)
 
     init {
         model.idConectadoPk = 1
+    }
+
+    @Test(expected = BadRequestException::class)
+    fun testValidateTituloLengthFail() {
+        model.titulo = RandomStringUtils.randomAlphabetic(46)
+
+        val permission = Permission(Permission.CONECTADO_READ_ALL)
+        subject.validateConectado(permission, model, updating = true)
     }
 
     @Test

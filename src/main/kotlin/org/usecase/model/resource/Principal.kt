@@ -1,12 +1,7 @@
 package org.usecase.model.resource
 
-import org.usecase.exception.response.BadRequestException
-import org.usecase.model.param.DefaultParam
-import br.com.simpli.model.LanguageHolder
-import br.com.simpli.tools.Validator
 import io.swagger.v3.oas.annotations.media.Schema
-import java.util.Date
-import javax.ws.rs.PathParam
+import java.util.*
 
 /**
  * Reference model of table principal
@@ -70,105 +65,20 @@ class Principal {
         @Schema(required = true)
         get() = grupoDoPrincipal?.idGrupoDoPrincipalPk ?: 0
         set(value) {
-            if (value == 0L) {
-                grupoDoPrincipal = null
-                return
+            grupoDoPrincipal = if (value == 0L) { null } else {
+                (grupoDoPrincipal ?: GrupoDoPrincipal()).apply {
+                    idGrupoDoPrincipalPk = value
+                }
             }
-            if (grupoDoPrincipal == null) {
-                grupoDoPrincipal = GrupoDoPrincipal()
-            }
-            grupoDoPrincipal?.idGrupoDoPrincipalPk = value
         }
 
     var idGrupoDoPrincipalFacultativoFk: Long?
         get() = grupoDoPrincipalFacultativo?.idGrupoDoPrincipalPk
         set(value) {
-            if (value == null || value == 0L) {
-                grupoDoPrincipalFacultativo = null
-                return
+            grupoDoPrincipalFacultativo = if (value == null || value == 0L) { null } else {
+                (grupoDoPrincipalFacultativo ?: GrupoDoPrincipal()).apply {
+                    idGrupoDoPrincipalPk = value
+                }
             }
-            if (grupoDoPrincipalFacultativo == null) {
-                grupoDoPrincipalFacultativo = GrupoDoPrincipal()
-            }
-            grupoDoPrincipalFacultativo?.idGrupoDoPrincipalPk = value
         }
-
-    fun validate(lang: LanguageHolder) {
-        // TODO: review generated method
-        if (textoObrigatorio.isNullOrBlank()) {
-            throw BadRequestException(lang.cannotBeNull(lang["Principal.textoObrigatorio"]))
-        }
-        if (textoObrigatorio?.length ?: 0 > 160) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.textoObrigatorio"], 160))
-        }
-        if (textoFacultativo?.length ?: 0 > 45) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.textoFacultativo"], 45))
-        }
-        if (inteiroObrigatorio == 0L) {
-            throw BadRequestException(lang.cannotBeNull(lang["Principal.inteiroObrigatorio"]))
-        }
-        if (dataObrigatoria == null) {
-            throw BadRequestException(lang.cannotBeNull(lang["Principal.dataObrigatoria"]))
-        }
-        if (datahoraObrigatoria == null) {
-            throw BadRequestException(lang.cannotBeNull(lang["Principal.datahoraObrigatoria"]))
-        }
-        if (email?.length ?: 0 > 200) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.email"], 200))
-        }
-        if (email != null && !Validator.isEmail(email)) {
-            throw BadRequestException(lang.isNotAValidEmail(lang["Principal.email"]))
-        }
-        if (senha?.length ?: 0 > 200) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.senha"], 200))
-        }
-        if (urlImagem?.length ?: 0 > 200) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.urlImagem"], 200))
-        }
-        if (url?.length ?: 0 > 200) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.url"], 200))
-        }
-        if (idGrupoDoPrincipalFk == 0L) {
-            throw BadRequestException(lang.cannotBeNull(lang["Principal.idGrupoDoPrincipalFk"]))
-        }
-        if (unico.isNullOrBlank()) {
-            throw BadRequestException(lang.cannotBeNull(lang["Principal.unico"]))
-        }
-        if (unico?.length ?: 0 > 40) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.unico"], 40))
-        }
-        if (dataCriacao == null) {
-            throw BadRequestException(lang.cannotBeNull(lang["Principal.dataCriacao"]))
-        }
-        if (nome?.length ?: 0 > 45) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.nome"], 45))
-        }
-        if (titulo?.length ?: 0 > 45) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.titulo"], 45))
-        }
-        if (cpf?.length ?: 0 > 45) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.cpf"], 45))
-        }
-        if (cpf != null && !Validator.isCPF(cpf)) {
-            throw BadRequestException(lang.isNotAValidCPF(lang["Principal.cpf"]))
-        }
-        if (cnpj?.length ?: 0 > 45) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.cnpj"], 45))
-        }
-        if (cnpj != null && !Validator.isCNPJ(cnpj ?: "")) {
-            throw BadRequestException(lang.isNotAValidCNPJ(lang["Principal.cnpj"]))
-        }
-        if (rg?.length ?: 0 > 45) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.rg"], 45))
-        }
-        if (celular?.length ?: 0 > 45) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.celular"], 45))
-        }
-        if (textoGrande?.length ?: 0 > 300) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.textoGrande"], 300))
-        }
-        if (snakeCase?.length ?: 0 > 200) {
-            throw BadRequestException(lang.lengthCannotBeMoreThan(lang["Principal.snakeCase"], 200))
-        }
-    }
 }

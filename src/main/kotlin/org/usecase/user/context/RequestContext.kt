@@ -2,11 +2,12 @@ package org.usecase.user.context
 
 import org.usecase.app.Facade.Env
 import org.usecase.enums.Lang
-import org.usecase.locale.EnUs
 import org.usecase.model.filter.ListFilter
 import org.usecase.model.param.DefaultParam
-import br.com.simpli.model.LanguageHolder
+import org.usecase.locale.LangDefinition
 import br.com.simpli.sql.AbstractConnector
+import org.usecase.user.response.AuthResponse
+import java.util.*
 
 /**
  * Request Context
@@ -14,8 +15,9 @@ import br.com.simpli.sql.AbstractConnector
  * @author Simpli CLI generator
  */
  open class RequestContext(val con: AbstractConnector, param: DefaultParam) {
-     val lang: LanguageHolder = Env.AVAILABLE_LANGUAGES[Lang.from(param.lang)] ?: EnUs()
+     val lang: LangDefinition = Env.AVAILABLE_LANGUAGES[Lang.from(param.lang)] ?: LangDefinition("en_US")
      val clientVersion: String = param.clientVersion
+     var auth: AuthResponse? = null
 
      init {
          when (param) {
@@ -24,4 +26,8 @@ import br.com.simpli.sql.AbstractConnector
              }
          }
      }
+
+    companion object {
+        val langBundle: ResourceBundle = ResourceBundle.getBundle("pt_BR")
+    }
  }

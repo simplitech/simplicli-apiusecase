@@ -1,47 +1,67 @@
 package org.usecase.model.rm
 
 import org.usecase.model.resource.ItemDoPrincipal
-import br.com.simpli.sql.Query
-import br.com.simpli.sql.ResultBuilder
+import br.com.simpli.sql.RelationalMapper
+import br.com.simpli.sql.VirtualColumn
+import org.usecase.model.resource.GrupoDoPrincipal
+import org.usecase.user.context.Permission
+import org.usecase.user.context.Permission.Companion.ITEM_DO_PRINCIPAL_INSERT_ALL
+import org.usecase.user.context.Permission.Companion.ITEM_DO_PRINCIPAL_READ_ALL
+import org.usecase.user.context.Permission.Companion.ITEM_DO_PRINCIPAL_UPDATE_ALL
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table item_do_principal
  * @author Simpli CLI generator
  */
-object ItemDoPrincipalRM {
-    fun build(rs: ResultSet, alias: String = "item_do_principal", allowedColumns: Array<String> = selectFields(alias)) = ItemDoPrincipal().apply {
-        ResultBuilder(allowedColumns, rs, alias).run {
-            idItemDoPrincipalPk = getLong("idItemDoPrincipalPk")
-            titulo = getString("titulo")
-            idPrincipalFk = getLong("idPrincipalFk")
+class ItemDoPrincipalRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<ItemDoPrincipal>() {
+    override val table = "item_do_principal"
+
+    val idItemDoPrincipalPk = col("idItemDoPrincipalPk",
+            { idItemDoPrincipalPk },
+            { idItemDoPrincipalPk = it.value() })
+
+    val titulo = col("titulo",
+            { titulo },
+            { titulo = it.value() })
+
+    val idPrincipalFk = col("idPrincipalFk",
+            { idPrincipalFk },
+            { idPrincipalFk = it.value() })
+
+    fun build(rs: ResultSet) = ItemDoPrincipal().apply {
+        selectFields.forEach { col ->
+            col.build(this, rs)
         }
     }
 
-    fun selectFields(alias: String = "item_do_principal") = arrayOf(
-            "$alias.idItemDoPrincipalPk",
-            "$alias.titulo",
-            "$alias.idPrincipalFk"
-    )
+    val selectFields: Array<VirtualColumn<ItemDoPrincipal>>
+        get() = permission.buildArray {
+            add(ITEM_DO_PRINCIPAL_READ_ALL, idItemDoPrincipalPk)
+            add(ITEM_DO_PRINCIPAL_READ_ALL, titulo)
+            add(ITEM_DO_PRINCIPAL_READ_ALL, idPrincipalFk)
+        }
 
-    fun fieldsToSearch(alias: String = "item_do_principal") = arrayOf(
-            "$alias.idItemDoPrincipalPk",
-            "$alias.titulo"
-    )
+    val fieldsToSearch: Array<VirtualColumn<ItemDoPrincipal>>
+        get() = permission.buildArray {
+            add(ITEM_DO_PRINCIPAL_READ_ALL, idItemDoPrincipalPk)
+            add(ITEM_DO_PRINCIPAL_READ_ALL, titulo)
+        }
 
-    fun orderMap(alias: String = "item_do_principal") = mapOf(
-            "principal" to "$alias.idPrincipalFk",
-            "idItemDoPrincipalPk" to "$alias.idItemDoPrincipalPk",
-            "titulo" to "$alias.titulo"
-    )
+    val orderMap: Map<String, VirtualColumn<ItemDoPrincipal>>
+        get() = permission.buildMap {
+            add(ITEM_DO_PRINCIPAL_READ_ALL, "idPrincipalFk" to idPrincipalFk)
+            add(ITEM_DO_PRINCIPAL_READ_ALL, "idItemDoPrincipalPk" to idItemDoPrincipalPk)
+            add(ITEM_DO_PRINCIPAL_READ_ALL, "titulo" to titulo)
+        }
 
-    fun updateSet(itemDoPrincipal: ItemDoPrincipal) = mapOf(
-            "titulo" to itemDoPrincipal.titulo,
-            "idPrincipalFk" to itemDoPrincipal.idPrincipalFk
-    )
+    fun updateSet(itemDoPrincipal: ItemDoPrincipal) = colsToMap(itemDoPrincipal, *permission.buildArray {
+        add(ITEM_DO_PRINCIPAL_UPDATE_ALL, titulo)
+        add(ITEM_DO_PRINCIPAL_UPDATE_ALL, idPrincipalFk)
+    })
 
-    fun insertValues(itemDoPrincipal: ItemDoPrincipal) = mapOf(
-            "titulo" to itemDoPrincipal.titulo,
-            "idPrincipalFk" to itemDoPrincipal.idPrincipalFk
-    )
+    fun insertValues(itemDoPrincipal: ItemDoPrincipal) = colsToMap(itemDoPrincipal, *permission.buildArray {
+        add(ITEM_DO_PRINCIPAL_INSERT_ALL, titulo)
+        add(ITEM_DO_PRINCIPAL_INSERT_ALL, idPrincipalFk)
+    })
 }

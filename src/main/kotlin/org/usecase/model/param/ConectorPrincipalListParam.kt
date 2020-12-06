@@ -9,5 +9,5 @@ import javax.ws.rs.QueryParam
  * Authenticated ConectorPrincipal Param
  * @author Simpli CLI generator
  */
-open class AuthConectorPrincipalListParam: DefaultParam.AuthPaged(), ConectorPrincipalListFilter {
+open class ConectorPrincipalListParam: DefaultParam.Paged(), ConectorPrincipalListFilter {
 }

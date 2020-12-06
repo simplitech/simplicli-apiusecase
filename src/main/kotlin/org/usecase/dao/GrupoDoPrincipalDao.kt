@@ -5,101 +5,95 @@ import org.usecase.model.resource.GrupoDoPrincipal
 import org.usecase.model.rm.GrupoDoPrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.VirtualSelect
+import org.usecase.user.context.Permission
 
 /**
  * Data Access Object of GrupoDoPrincipal from table grupo_do_principal
  * @author Simpli CLI generator
  */
 class GrupoDoPrincipalDao(val con: AbstractConnector) {
-    fun getOne(idGrupoDoPrincipalPk: Long): GrupoDoPrincipal? {
-        // TODO: review generated method
-        val query = Query()
-                .selectGrupoDoPrincipal()
-                .from("grupo_do_principal")
-                .whereEq("idGrupoDoPrincipalPk", idGrupoDoPrincipalPk)
+    fun getOne(idGrupoDoPrincipalPk: Long, permission: Permission): GrupoDoPrincipal? {
+        val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
 
-        return con.getOne(query) {
-            GrupoDoPrincipalRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(grupoDoPrincipalRm.selectFields)
+                .from(grupoDoPrincipalRm)
+                .whereEq(grupoDoPrincipalRm.idGrupoDoPrincipalPk, idGrupoDoPrincipalPk)
+
+        return con.getOne(vs.toQuery()) {
+            grupoDoPrincipalRm.build(it)
         }
     }
 
-    fun getList(filter: GrupoDoPrincipalListFilter): MutableList<GrupoDoPrincipal> {
-        // TODO: review generated method
-        val query = Query()
-                .selectGrupoDoPrincipal()
-                .from("grupo_do_principal")
-                .whereGrupoDoPrincipalFilter(filter)
-                .orderAndLimitGrupoDoPrincipal(filter)
+    fun getList(filter: GrupoDoPrincipalListFilter, permission: Permission): MutableList<GrupoDoPrincipal> {
+        val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
 
-        return con.getList(query) {
-            GrupoDoPrincipalRM.build(it)
+        val vs = VirtualSelect()
+                .selectFields(grupoDoPrincipalRm.selectFields)
+                .from(grupoDoPrincipalRm)
+                .whereGrupoDoPrincipalFilter(grupoDoPrincipalRm, filter)
+                .orderAndLimitGrupoDoPrincipal(grupoDoPrincipalRm, filter)
+
+        return con.getList(vs.toQuery()) {
+            grupoDoPrincipalRm.build(it)
         }
     }
 
-    fun count(filter: GrupoDoPrincipalListFilter): Int {
-        // TODO: review generated method
-        val query = Query()
-                .countRaw("DISTINCT idGrupoDoPrincipalPk")
-                .from("grupo_do_principal")
-                .whereGrupoDoPrincipalFilter(filter)
+    fun count(filter: GrupoDoPrincipalListFilter, permission: Permission): Int {
+        val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
 
-        return con.getFirstInt(query) ?: 0
+        val vs = VirtualSelect()
+                .selectRaw("COUNT(DISTINCT %s)", grupoDoPrincipalRm.idGrupoDoPrincipalPk)
+                .from(grupoDoPrincipalRm)
+                .whereGrupoDoPrincipalFilter(grupoDoPrincipalRm, filter)
+
+        return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(grupoDoPrincipal: GrupoDoPrincipal): Int {
-        // TODO: review generated method
+    fun update(grupoDoPrincipal: GrupoDoPrincipal, permission: Permission): Int {
+        val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
         val query = Query()
-                .updateTable("grupo_do_principal")
-                .updateGrupoDoPrincipalSet(grupoDoPrincipal)
-                .whereEq("idGrupoDoPrincipalPk", grupoDoPrincipal.id)
+                .updateTable(grupoDoPrincipalRm.table)
+                .updateSet(grupoDoPrincipalRm.updateSet(grupoDoPrincipal))
+                .whereEq(grupoDoPrincipalRm.idGrupoDoPrincipalPk.column, grupoDoPrincipal.id)
 
         return con.execute(query).affectedRows
     }
 
-    fun insert(grupoDoPrincipal: GrupoDoPrincipal): Long {
-        // TODO: review generated method
+    fun insert(grupoDoPrincipal: GrupoDoPrincipal, permission: Permission): Long {
+        val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
         val query = Query()
-                .insertInto("grupo_do_principal")
-                .insertGrupoDoPrincipalValues(grupoDoPrincipal)
+                .insertInto(grupoDoPrincipalRm.table)
+                .insertValues(grupoDoPrincipalRm.insertValues(grupoDoPrincipal))
 
         return con.execute(query).key
     }
 
-    fun exist(idGrupoDoPrincipalPk: Long): Boolean {
-        // TODO: review generated method
-        val query = Query()
-                .select("idGrupoDoPrincipalPk")
-                .from("grupo_do_principal")
-                .whereEq("idGrupoDoPrincipalPk", idGrupoDoPrincipalPk)
+    fun exist(idGrupoDoPrincipalPk: Long, permission: Permission): Boolean {
+        val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
+        val vs = VirtualSelect()
+                .select(grupoDoPrincipalRm.idGrupoDoPrincipalPk)
+                .from(grupoDoPrincipalRm)
+                .whereEq(grupoDoPrincipalRm.idGrupoDoPrincipalPk, idGrupoDoPrincipalPk)
 
-        return con.exist(query)
+        return con.exist(vs.toQuery())
     }
 
-    private fun Query.selectGrupoDoPrincipal() = selectFields(GrupoDoPrincipalRM.selectFields())
-
-    private fun Query.updateGrupoDoPrincipalSet(grupoDoPrincipal: GrupoDoPrincipal) = updateSet(GrupoDoPrincipalRM.updateSet(grupoDoPrincipal))
-
-    private fun Query.insertGrupoDoPrincipalValues(grupoDoPrincipal: GrupoDoPrincipal) = insertValues(GrupoDoPrincipalRM.insertValues(grupoDoPrincipal))
-
-    private fun Query.whereGrupoDoPrincipalFilter(filter: GrupoDoPrincipalListFilter, alias: String = "grupo_do_principal"): Query {
+    private fun VirtualSelect.whereGrupoDoPrincipalFilter(grupoDoPrincipalRm: GrupoDoPrincipalRM, filter: GrupoDoPrincipalListFilter): VirtualSelect {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSomeLikeThis(GrupoDoPrincipalRM.fieldsToSearch(alias), "%$it%")
+                whereSomeLikeThis(grupoDoPrincipalRm.fieldsToSearch, "%$it%")
             }
         }
 
         return this
     }
 
-    private fun Query.orderAndLimitGrupoDoPrincipal(filter: GrupoDoPrincipalListFilter, alias: String = "grupo_do_principal"): Query {
-        GrupoDoPrincipalRM.orderMap(alias)[filter.orderBy]?.also {
-            orderByAsc(it, filter.ascending)
-        }
+    private fun VirtualSelect.orderAndLimitGrupoDoPrincipal(grupoDoPrincipalRm: GrupoDoPrincipalRM, filter: GrupoDoPrincipalListFilter): VirtualSelect {
+        orderBy(grupoDoPrincipalRm.orderMap, filter.orderBy to filter.ascending)
 
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            limit(index, it)
-        }
+        limitByPage(filter.page, filter.limit)
 
         return this
     }

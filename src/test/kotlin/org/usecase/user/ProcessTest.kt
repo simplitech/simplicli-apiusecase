@@ -23,11 +23,10 @@ open class ProcessTest: AppTest() {
 
     protected val authRequest: AuthRequest
     protected val token: String
-    protected val auth: AuthResponse
 
     init {
         authRequest = AuthRequest(user.email, user.senha)
         token = authRequest.toToken()
-        auth = AuthResponse(token, user)
+        context.auth = AuthResponse(token, user)
     }
 }

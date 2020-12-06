@@ -29,17 +29,17 @@ class NotificationSocket: RouterWrapper() {
 
     @OnOpen
     fun onConnect(session: Session, @PathParam("token") token: String) {
-        val param = DefaultParam.Auth()
+        val param = DefaultParam()
 
         param.lang = "en-US"
         param.clientVersion = "ws.auth"
         param.authorization = """Bearer $token"""
 
-        AuthPipe.handle(connectionPipe, param) { _, auth ->
-            session.userProperties["token"] = auth.token
-            session.userProperties["email"] = auth.email
+        AuthPipe().handle(readPipe, param) { context ->
+            session.userProperties["token"] = context.auth?.token
+            session.userProperties["email"] = context.auth?.email
 
-            socket.attachSession(session, auth.id)
+            socket.attachSession(session, context.auth?.id)
         }
 
         logger.debug(session.jsonProperties(ConnectionStatus.ESTABLISHED))

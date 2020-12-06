@@ -7,109 +7,120 @@ import org.usecase.model.rm.ConectadoRM
 import org.usecase.model.rm.PrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
+import br.com.simpli.sql.VirtualSelect
+import org.usecase.user.context.Permission
 
 /**
  * Data Access Object of ConectorPrincipal from table conector_principal
  * @author Simpli CLI generator
  */
 class ConectorPrincipalDao(val con: AbstractConnector) {
-    fun getOne(idPrincipalFk: Long, idConectadoFk: Long): ConectorPrincipal? {
-        // TODO: review generated method
-        val query = Query()
-                .selectConectorPrincipal()
-                .from("conector_principal")
-                .whereEq("idPrincipalFk", idPrincipalFk)
-                .whereEq("idConectadoFk", idConectadoFk)
+    fun getOne(idPrincipalFk: Long, idConectadoFk: Long, permission: Permission): ConectorPrincipal? {
+        val conectorPrincipalRm = ConectorPrincipalRM(permission)
+        val conectadoRm = ConectadoRM(permission)
+        val principalRm = PrincipalRM(permission)
 
-        return con.getOne(query) {
-            ConectorPrincipalRM.build(it)
-        }
-    }
+        val vs = VirtualSelect()
+                .selectFields(conectorPrincipalRm.selectFields)
+                .selectFields(conectadoRm.selectFields)
+                .selectFields(principalRm.selectFields)
+                .from(conectorPrincipalRm)
+                .innerJoin(conectadoRm, conectadoRm.idConectadoPk, conectorPrincipalRm.idConectadoFk)
+                .innerJoin(principalRm, principalRm.idPrincipalPk, conectorPrincipalRm.idPrincipalFk)
+                .whereEq(conectorPrincipalRm.idPrincipalFk, idPrincipalFk)
+                .whereEq(conectorPrincipalRm.idConectadoFk, idConectadoFk)
 
-    fun getList(filter: ConectorPrincipalListFilter): MutableList<ConectorPrincipal> {
-        // TODO: review generated method
-        val query = Query()
-                .selectFields(ConectorPrincipalRM.selectFields() + ConectadoRM.selectFields() + PrincipalRM.selectFields())
-                .from("conector_principal")
-                .innerJoin("conectado", "conectado.idConectadoPk", "conector_principal.idConectadoFk")
-                .innerJoin("principal", "principal.idprincipalpk", "conector_principal.idPrincipalFk")
-                .whereConectorPrincipalFilter(filter)
-                .orderAndLimitConectorPrincipal(filter)
-
-        return con.getList(query) {
-            ConectorPrincipalRM.build(it).apply {
-                conectado = ConectadoRM.build(it)
-                principal = PrincipalRM.build(it)
+        return con.getOne(vs.toQuery()) {
+            conectorPrincipalRm.build(it).apply {
+                conectado = conectadoRm.build(it)
+                principal = principalRm.build(it)
             }
         }
     }
 
-    fun count(filter: ConectorPrincipalListFilter): Int {
-        // TODO: review generated method
-        val query = Query()
-                .countRaw("DISTINCT idPrincipalFk")
-                .from("conector_principal")
-                .whereConectorPrincipalFilter(filter)
+    fun getList(filter: ConectorPrincipalListFilter, permission: Permission): MutableList<ConectorPrincipal> {
+        val conectorPrincipalRm = ConectorPrincipalRM(permission)
+        val conectadoRm = ConectadoRM(permission)
+        val principalRm = PrincipalRM(permission)
 
-        return con.getFirstInt(query) ?: 0
+        val vs = VirtualSelect()
+                .selectFields(conectorPrincipalRm.selectFields)
+                .selectFields(conectadoRm.selectFields)
+                .selectFields(principalRm.selectFields)
+                .from(conectorPrincipalRm)
+                .innerJoin(conectadoRm, conectadoRm.idConectadoPk, conectorPrincipalRm.idConectadoFk)
+                .innerJoin(principalRm, principalRm.idPrincipalPk, conectorPrincipalRm.idPrincipalFk)
+                .whereConectorPrincipalFilter(conectorPrincipalRm, filter)
+                .orderAndLimitConectorPrincipal(conectorPrincipalRm, filter)
+
+        return con.getList(vs.toQuery()) {
+            conectorPrincipalRm.build(it).apply {
+                conectado = conectadoRm.build(it)
+                principal = principalRm.build(it)
+            }
+        }
     }
 
-    fun update(conectorPrincipal: ConectorPrincipal): Int {
-        // TODO: review generated method
+    fun count(filter: ConectorPrincipalListFilter, permission: Permission): Int {
+        val conectorPrincipalRm = ConectorPrincipalRM(permission)
+        val conectadoRm = ConectadoRM(permission)
+        val principalRm = PrincipalRM(permission)
+
+        val vs = VirtualSelect()
+                .selectRaw("COUNT(DISTINCT %s)", conectorPrincipalRm.idPrincipalFk)
+                .from(conectorPrincipalRm)
+                .innerJoin(conectadoRm, conectadoRm.idConectadoPk, conectorPrincipalRm.idConectadoFk)
+                .innerJoin(principalRm, principalRm.idPrincipalPk, conectorPrincipalRm.idPrincipalFk)
+                .whereConectorPrincipalFilter(conectorPrincipalRm, filter)
+
+        return con.getFirstInt(vs.toQuery()) ?: 0
+    }
+
+    fun update(conectorPrincipal: ConectorPrincipal, permission: Permission): Int {
+        val conectorPrincipalRm = ConectorPrincipalRM(permission)
         val query = Query()
-                .updateTable("conector_principal")
-                .updateConectorPrincipalSet(conectorPrincipal)
-                .whereEq("idPrincipalFk", conectorPrincipal.id1)
-                .whereEq("idConectadoFk", conectorPrincipal.id2)
+                .updateTable(conectorPrincipalRm.table)
+                .updateSet(conectorPrincipalRm.updateSet(conectorPrincipal))
+                .whereEq(conectorPrincipalRm.idPrincipalFk.column, conectorPrincipal.idPrincipalFk)
+                .whereEq(conectorPrincipalRm.idConectadoFk.column, conectorPrincipal.idConectadoFk)
 
         return con.execute(query).affectedRows
     }
 
-    fun insert(conectorPrincipal: ConectorPrincipal): Long {
-        // TODO: review generated method
+    fun insert(conectorPrincipal: ConectorPrincipal, permission: Permission): Long {
+        val conectorPrincipalRm = ConectorPrincipalRM(permission)
         val query = Query()
-                .insertInto("conector_principal")
-                .insertConectorPrincipalValues(conectorPrincipal)
+                .insertInto(conectorPrincipalRm.table)
+                .insertValues(conectorPrincipalRm.insertValues(conectorPrincipal))
 
         return con.execute(query).key
     }
 
-    fun exist(idPrincipalFk: Long, idConectadoFk: Long): Boolean {
-        // TODO: review generated method
-        val query = Query()
-                .select("idPrincipalFk")
-                .from("conector_principal")
-                .whereEq("idPrincipalFk", idPrincipalFk)
-                .whereEq("idConectadoFk", idConectadoFk)
+    fun exist(idPrincipalFk: Long, idConectadoFk: Long, permission: Permission): Boolean {
+        val conectorPrincipalRm = ConectorPrincipalRM(permission)
+        val vs = VirtualSelect()
+                .select(conectorPrincipalRm.idPrincipalFk)
+                .from(conectorPrincipalRm)
+                .whereEq(conectorPrincipalRm.idPrincipalFk, idPrincipalFk)
+                .whereEq(conectorPrincipalRm.idConectadoFk, idConectadoFk)
 
-        return con.exist(query)
+        return con.exist(vs.toQuery())
     }
 
-    private fun Query.selectConectorPrincipal() = selectFields(ConectorPrincipalRM.selectFields())
-
-    private fun Query.updateConectorPrincipalSet(conectorPrincipal: ConectorPrincipal) = updateSet(ConectorPrincipalRM.updateSet(conectorPrincipal))
-
-    private fun Query.insertConectorPrincipalValues(conectorPrincipal: ConectorPrincipal) = insertValues(ConectorPrincipalRM.insertValues(conectorPrincipal))
-
-    private fun Query.whereConectorPrincipalFilter(filter: ConectorPrincipalListFilter, alias: String = "conector_principal"): Query {
+    private fun VirtualSelect.whereConectorPrincipalFilter(conectorPrincipalRm: ConectorPrincipalRM, filter: ConectorPrincipalListFilter): VirtualSelect {
         filter.query?.also {
             if (it.isNotEmpty()) {
-                whereSomeLikeThis(ConectorPrincipalRM.fieldsToSearch(alias), "%$it%")
+                whereSomeLikeThis(conectorPrincipalRm.fieldsToSearch, "%$it%")
             }
         }
 
         return this
     }
 
-    private fun Query.orderAndLimitConectorPrincipal(filter: ConectorPrincipalListFilter, alias: String = "conector_principal"): Query {
-        ConectorPrincipalRM.orderMap(alias)[filter.orderBy]?.also {
-            orderByAsc(it, filter.ascending)
-        }
+    private fun VirtualSelect.orderAndLimitConectorPrincipal(conectorPrincipalRm: ConectorPrincipalRM, filter: ConectorPrincipalListFilter): VirtualSelect {
+        orderBy(conectorPrincipalRm.orderMap, filter.orderBy to filter.ascending)
 
-        filter.limit?.also {
-            val index = (filter.page ?: 0) * it
-            limit(index, it)
-        }
+        limitByPage(filter.page, filter.limit)
 
         return this
     }
