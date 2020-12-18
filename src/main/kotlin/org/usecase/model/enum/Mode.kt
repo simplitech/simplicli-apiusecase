@@ -1,4 +1,4 @@
-package org.usecase.enums
+package org.usecase.model.enum
 
 /**
  * Mode enum
@@ -6,7 +6,7 @@ package org.usecase.enums
  * @author Simpli CLI generator
  */
 enum class Mode {
-    BETA, STAGING, PRODUCTION;
+    TEST, BETA, STAGING, PRODUCTION;
 
     companion object {
         fun fromString(string: String?): Mode? {

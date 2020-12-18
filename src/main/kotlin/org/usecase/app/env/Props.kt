@@ -1,7 +1,7 @@
 package org.usecase.app.env
 
-import org.usecase.enums.Lang
-import org.usecase.enums.Mode
+import org.usecase.model.enum.Lang
+import org.usecase.model.enum.Mode
 import com.amazonaws.regions.Regions
 import org.usecase.locale.LangDefinition
 

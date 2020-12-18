@@ -1,7 +1,7 @@
 package org.usecase.extension
 
 import org.usecase.app.Facade.Env
-import org.usecase.enums.Lang
+import org.usecase.model.enum.Lang
 import org.usecase.locale.LangDefinition
 import javax.servlet.http.HttpServletRequest
 

@@ -10,6 +10,7 @@ import org.usecase.exception.response.UnauthorizedException
 import org.usecase.model.param.DefaultParam
 import br.com.simpli.tools.SecurityUtils.sha256
 import org.junit.Test
+import org.usecase.user.request.RecoverPasswordByMailRequest
 import kotlin.test.assertEquals
 
 /**
@@ -43,6 +44,14 @@ class AuthProcessTest : ProcessTest() {
     fun testSignIn() {
         val result = subject.signIn(authRequest)
         assertEquals(token, result.token)
+    }
+
+    @Test
+    fun testRecoverPasswordByMail() {
+        val request = RecoverPasswordByMailRequest(user.email)
+
+        val result = subject.recoverPasswordByMail(request)
+        assertEquals(1L, result)
     }
 
     @Test

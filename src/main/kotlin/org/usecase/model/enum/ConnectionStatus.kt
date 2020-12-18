@@ -1,4 +1,4 @@
-package org.usecase.enums
+package org.usecase.model.enum
 
 /**
  * ConnectionStatus enum

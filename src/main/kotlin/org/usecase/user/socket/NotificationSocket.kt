@@ -1,7 +1,7 @@
 package org.usecase.user.socket
 
 import org.usecase.user.context.AuthPipe
-import org.usecase.enums.ConnectionStatus
+import org.usecase.model.enum.ConnectionStatus
 import org.usecase.extension.jsonProperties
 import org.usecase.model.param.DefaultParam
 import org.usecase.wrapper.RouterWrapper

@@ -1,6 +1,6 @@
 package org.usecase.app.env
 
-import org.usecase.enums.Mode
+import org.usecase.model.enum.Mode
 
 /**
  * Environment Variables - Beta

@@ -1,7 +1,7 @@
 package org.usecase.extension
 
 import org.usecase.app.Cast
-import org.usecase.enums.ConnectionStatus
+import org.usecase.model.enum.ConnectionStatus
 import com.google.gson.JsonObject
 import javax.websocket.Session
 

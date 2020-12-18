@@ -20,6 +20,7 @@ import org.usecase.exception.response.InternalServerErrorException
 import org.usecase.user.context.Permission
 import org.usecase.user.context.Permission.Companion.USER_READ_ALL
 import org.usecase.user.context.Permission.Companion.USER_UPDATE_ALL
+import org.usecase.user.mail.manager.MailManager
 import java.util.regex.Pattern
 import java.util.Date
 import java.util.Calendar
@@ -82,7 +83,9 @@ class AuthProcess(val context: RequestContext) {
         val json = Cast.classToJson(TokenForgottenPassword("${user.email}"))
         val hash = SecurityUtils.encrypt(json, Env.ENCRYPT_HASH, encode = true, urlSafe = true) ?: throw InternalServerErrorException()
 
-        RecoverPasswordMail(context.lang, user, hash).send()
+        MailManager.use(context.con) {
+            RecoverPasswordMail(context.lang, user, hash).sendWithManager(this)
+        }
 
         return 1L
     }
