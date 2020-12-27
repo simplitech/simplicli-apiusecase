@@ -6,14 +6,15 @@ import org.usecase.model.rm.EnderecoRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.VirtualSelect
-import org.usecase.user.context.Permission
+import org.usecase.context.PermissionGroup
+import org.usecase.model.resource.Permission
 
 /**
  * Data Access Object of Endereco from table endereco
  * @author Simpli CLI generator
  */
-class EnderecoDao(val con: AbstractConnector) {
-    fun getOne(idEnderecoPk: Long, permission: Permission): Endereco? {
+class EnderecoDao(val con: AbstractConnector, val permission: PermissionGroup) {
+    fun getOne(idEnderecoPk: Long): Endereco? {
         val enderecoRm = EnderecoRM(permission)
 
         val vs = VirtualSelect()
@@ -26,7 +27,7 @@ class EnderecoDao(val con: AbstractConnector) {
         }
     }
 
-    fun getList(filter: EnderecoListFilter, permission: Permission): MutableList<Endereco> {
+    fun getList(filter: EnderecoListFilter): MutableList<Endereco> {
         val enderecoRm = EnderecoRM(permission)
 
         val vs = VirtualSelect()
@@ -40,7 +41,7 @@ class EnderecoDao(val con: AbstractConnector) {
         }
     }
 
-    fun count(filter: EnderecoListFilter, permission: Permission): Int {
+    fun count(filter: EnderecoListFilter): Int {
         val enderecoRm = EnderecoRM(permission)
 
         val vs = VirtualSelect()
@@ -51,7 +52,7 @@ class EnderecoDao(val con: AbstractConnector) {
         return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(endereco: Endereco, permission: Permission): Int {
+    fun update(endereco: Endereco): Int {
         val enderecoRm = EnderecoRM(permission)
         val query = Query()
                 .updateTable(enderecoRm.table)
@@ -61,7 +62,7 @@ class EnderecoDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun insert(endereco: Endereco, permission: Permission): Long {
+    fun insert(endereco: Endereco): Long {
         val enderecoRm = EnderecoRM(permission)
         val query = Query()
                 .insertInto(enderecoRm.table)
@@ -70,7 +71,7 @@ class EnderecoDao(val con: AbstractConnector) {
         return con.execute(query).key
     }
 
-    fun exist(idEnderecoPk: Long, permission: Permission): Boolean {
+    fun exist(idEnderecoPk: Long): Boolean {
         val enderecoRm = EnderecoRM(permission)
         val vs = VirtualSelect()
                 .select(enderecoRm.idEnderecoPk)

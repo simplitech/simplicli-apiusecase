@@ -14,7 +14,7 @@ abstract class Props(val MODE: Mode) {
      * Database DS name
      * Do not change it unless you know what you are doing
      */
-    val DS_NAME = "jdbc/usecaseDS"
+    open val DS_NAME = "jdbc/usecaseDS"
 
     /**
      * Default Web Application Origin
@@ -24,7 +24,7 @@ abstract class Props(val MODE: Mode) {
     /**
      * Available Languages
      */
-    val AVAILABLE_LANGUAGES = hashMapOf(
+    open val AVAILABLE_LANGUAGES = hashMapOf(
         Lang.EN_US to LangDefinition("pt_BR"),
         Lang.PT_BR to LangDefinition("en_US")
     )
@@ -33,35 +33,37 @@ abstract class Props(val MODE: Mode) {
      * E-Mail server information
      * Go to AwsCredentials.properties to set your AWS credentials
      */
-    val EMAIL_SENDER_PROVIDER = "no-reply@usecase.org"
-    val EMAIL_AWS_REGION = Regions.US_EAST_1
+    open val EMAIL_SENDER_PROVIDER = "no-reply@usecase.org"
+    open val EMAIL_AWS_REGION = Regions.US_EAST_1
 
     /**
      * Forgotten password token expiration time in days
      * @default 15 days
      */
-    val FORGOTTEN_PASSWORD_TOKEN_LIFE = 15
+    open val FORGOTTEN_PASSWORD_TOKEN_LIFE = 15
+
+    /**
+     * Session authentication token expiration time in days
+     * @default 1 day
+     */
+    open val SESSION_AUTH_TOKEN_LIFE = 1
+
+    /**
+     * Authentication token by direct link expiration time in days
+     * @default 15 days
+     */
+    open val DIRECT_LINK_AUTH_TOKEN_LIFE = 15
 
     /**
      * Set the DATE_FORMAT if you know what you are doing
      * @default yyyy-MM-dd'T'HH:mm:ssXXX
      */
-    val DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
+    open val DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
 
     /**
      * Hash to transform data into token
      * @warning DO NOT SHARE this hash in order to keep your project safe
      * Your are able to change it whenever you want, but all clients must login again
      */
-    val ENCRYPT_HASH = "d93d0169-d223-47ad-b114-1b5869452391"
-
-    /**
-     * Credentials used in Unit Test
-     * The Unit Test always happens in localhost
-     * Not recommended to change these values
-     */
-    val TESTER_DATABASE = "usecase"
-    val TESTER_ID = 1L
-    val TESTER_LOGIN = "test@test.com"
-    val TESTER_PASSWORD = "tester"
+    open val ENCRYPT_HASH = "d93d0169-d223-47ad-b114-1b5869452391"
 }

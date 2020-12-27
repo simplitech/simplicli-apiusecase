@@ -7,14 +7,15 @@ import org.usecase.model.rm.GrupoDoPrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.VirtualSelect
-import org.usecase.user.context.Permission
+import org.usecase.context.PermissionGroup
+import org.usecase.model.resource.Permission
 
 /**
  * Data Access Object of Principal from table principal
  * @author Simpli CLI generator
  */
-class PrincipalDao(val con: AbstractConnector) {
-    fun getOne(idPrincipalPk: Long, permission: Permission): Principal? {
+class PrincipalDao(val con: AbstractConnector, val permission: PermissionGroup) {
+    fun getOne(idPrincipalPk: Long): Principal? {
         val principalRm = PrincipalRM(permission)
         val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
         val grupoDoPrincipalFacultativoRm = GrupoDoPrincipalRM(permission,"grupo_do_principal_facultativo")
@@ -36,7 +37,7 @@ class PrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun getList(filter: PrincipalListFilter, permission: Permission): MutableList<Principal> {
+    fun getList(filter: PrincipalListFilter): MutableList<Principal> {
         val principalRm = PrincipalRM(permission)
         val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
         val grupoDoPrincipalFacultativoRm = GrupoDoPrincipalRM(permission, "grupo_do_principal_facultativo")
@@ -59,7 +60,7 @@ class PrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun count(filter: PrincipalListFilter, permission: Permission): Int {
+    fun count(filter: PrincipalListFilter): Int {
         val principalRm = PrincipalRM(permission)
         val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
         val grupoDoPrincipalFacultativoRm = GrupoDoPrincipalRM(permission, "grupo_do_principal_facultativo")
@@ -74,7 +75,7 @@ class PrincipalDao(val con: AbstractConnector) {
         return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(principal: Principal, permission: Permission): Int {
+    fun update(principal: Principal): Int {
         val principalRm = PrincipalRM(permission)
         val query = Query()
                 .updateTable(principalRm.table)
@@ -84,7 +85,7 @@ class PrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun insert(principal: Principal, permission: Permission): Long {
+    fun insert(principal: Principal): Long {
         val principalRm = PrincipalRM(permission)
         val query = Query()
                 .insertInto(principalRm.table)
@@ -93,7 +94,7 @@ class PrincipalDao(val con: AbstractConnector) {
         return con.execute(query).key
     }
 
-    fun exist(idPrincipalPk: Long, permission: Permission): Boolean {
+    fun exist(idPrincipalPk: Long): Boolean {
         val principalRm = PrincipalRM(permission)
         val vs = VirtualSelect()
                 .select(principalRm.idPrincipalPk)
@@ -103,7 +104,7 @@ class PrincipalDao(val con: AbstractConnector) {
         return con.exist(vs.toQuery())
     }
 
-    fun existUnico(unico: String, idPrincipalPk: Long, permission: Permission): Boolean {
+    fun existUnico(unico: String, idPrincipalPk: Long): Boolean {
         val principalRm = PrincipalRM(permission)
         val vs = VirtualSelect()
                 .select(principalRm.unico)
@@ -114,11 +115,13 @@ class PrincipalDao(val con: AbstractConnector) {
         return con.exist(vs.toQuery())
     }
 
-    fun softDelete(idPrincipalPk: Long, permission: Permission): Int {
+    fun softDelete(idPrincipalPk: Long): Int {
         val principalRm = PrincipalRM(permission)
         val query = Query()
                 .updateTable(principalRm.table)
-                .updateSet(principalRm.ativo.column to false)
+                .updateSet(principalRm.colsToMap(Principal().apply { ativo = false }, *permission.buildArray {
+                    add(principalRm.ativo, Permission.FULL_CONTROL, Permission.PRINCIPAL_FULL_CONTROL, Permission.PRINCIPAL_UPDATE_ALL, Permission.PRINCIPAL_UPDATE_ATIVO)
+                }))
                 .whereEq(principalRm.idPrincipalPk.column, idPrincipalPk)
 
         return con.execute(query).affectedRows

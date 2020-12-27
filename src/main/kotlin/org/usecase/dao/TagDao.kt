@@ -6,14 +6,15 @@ import org.usecase.model.rm.TagRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.VirtualSelect
-import org.usecase.user.context.Permission
+import org.usecase.context.PermissionGroup
+import org.usecase.model.resource.Permission
 
 /**
  * Data Access Object of Tag from table tag
  * @author Simpli CLI generator
  */
-class TagDao(val con: AbstractConnector) {
-    fun getOne(idTagPk: Long, permission: Permission): Tag? {
+class TagDao(val con: AbstractConnector, val permission: PermissionGroup) {
+    fun getOne(idTagPk: Long): Tag? {
         val tagRm = TagRM(permission)
 
         val vs = VirtualSelect()
@@ -26,7 +27,7 @@ class TagDao(val con: AbstractConnector) {
         }
     }
 
-    fun getList(filter: TagListFilter, permission: Permission): MutableList<Tag> {
+    fun getList(filter: TagListFilter): MutableList<Tag> {
         val tagRm = TagRM(permission)
 
         val vs = VirtualSelect()
@@ -40,7 +41,7 @@ class TagDao(val con: AbstractConnector) {
         }
     }
 
-    fun count(filter: TagListFilter, permission: Permission): Int {
+    fun count(filter: TagListFilter): Int {
         val tagRm = TagRM(permission)
 
         val vs = VirtualSelect()
@@ -51,7 +52,7 @@ class TagDao(val con: AbstractConnector) {
         return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(tag: Tag, permission: Permission): Int {
+    fun update(tag: Tag): Int {
         val tagRm = TagRM(permission)
         val query = Query()
                 .updateTable(tagRm.table)
@@ -61,7 +62,7 @@ class TagDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun insert(tag: Tag, permission: Permission): Long {
+    fun insert(tag: Tag): Long {
         val tagRm = TagRM(permission)
         val query = Query()
                 .insertInto(tagRm.table)
@@ -70,7 +71,7 @@ class TagDao(val con: AbstractConnector) {
         return con.execute(query).key
     }
 
-    fun exist(idTagPk: Long, permission: Permission): Boolean {
+    fun exist(idTagPk: Long): Boolean {
         val tagRm = TagRM(permission)
         val vs = VirtualSelect()
                 .select(tagRm.idTagPk)

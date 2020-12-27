@@ -3,18 +3,15 @@ package org.usecase.model.rm
 import org.usecase.model.resource.Endereco
 import br.com.simpli.sql.RelationalMapper
 import br.com.simpli.sql.VirtualColumn
-import org.usecase.model.resource.Conectado
-import org.usecase.user.context.Permission
-import org.usecase.user.context.Permission.Companion.ENDERECO_INSERT_ALL
-import org.usecase.user.context.Permission.Companion.ENDERECO_READ_ALL
-import org.usecase.user.context.Permission.Companion.ENDERECO_UPDATE_ALL
+import org.usecase.context.PermissionGroup
+import org.usecase.model.resource.Permission
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table endereco
  * @author Simpli CLI generator
  */
-class EnderecoRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<Endereco>() {
+class EnderecoRM(val permission: PermissionGroup, override var alias: String? = null) : RelationalMapper<Endereco>() {
     override val table = "endereco"
 
     val idEnderecoPk = col("idEnderecoPk",
@@ -61,59 +58,69 @@ class EnderecoRM(val permission: Permission, override var alias: String? = null)
 
     val selectFields: Array<VirtualColumn<Endereco>>
         get() = permission.buildArray {
-            add(ENDERECO_READ_ALL, idEnderecoPk)
-            add(ENDERECO_READ_ALL, cep)
-            add(ENDERECO_READ_ALL, zipcode)
-            add(ENDERECO_READ_ALL, rua)
-            add(ENDERECO_READ_ALL, nro)
-            add(ENDERECO_READ_ALL, cidade)
-            add(ENDERECO_READ_ALL, uf)
-            add(ENDERECO_READ_ALL, latitude)
-            add(ENDERECO_READ_ALL, longitude)
+            Permission.apply {
+                add(idEnderecoPk, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_ID_ENDERECO_PK)
+                add(cep, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_CEP)
+                add(zipcode, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_ZIPCODE)
+                add(rua, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_RUA)
+                add(nro, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_NRO)
+                add(cidade, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_CIDADE)
+                add(uf, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_UF)
+                add(latitude, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_LATITUDE)
+                add(longitude, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_LONGITUDE)
+            }
         }
 
     val fieldsToSearch: Array<VirtualColumn<Endereco>>
         get() = permission.buildArray {
-            add(ENDERECO_READ_ALL, idEnderecoPk)
-            add(ENDERECO_READ_ALL, cep)
-            add(ENDERECO_READ_ALL, zipcode)
-            add(ENDERECO_READ_ALL, rua)
-            add(ENDERECO_READ_ALL, cidade)
-            add(ENDERECO_READ_ALL, uf)
+            Permission.apply {
+                add(idEnderecoPk, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_ID_ENDERECO_PK)
+                add(cep, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_CEP)
+                add(zipcode, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_ZIPCODE)
+                add(rua, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_RUA)
+                add(cidade, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_CIDADE)
+                add(uf, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_UF)
+            }
         }
 
     val orderMap: Map<String, VirtualColumn<Endereco>>
         get() = permission.buildMap {
-            add(ENDERECO_READ_ALL, "idEnderecoPk" to idEnderecoPk)
-            add(ENDERECO_READ_ALL, "cep" to cep)
-            add(ENDERECO_READ_ALL, "zipcode" to zipcode)
-            add(ENDERECO_READ_ALL, "rua" to rua)
-            add(ENDERECO_READ_ALL, "nro" to nro)
-            add(ENDERECO_READ_ALL, "cidade" to cidade)
-            add(ENDERECO_READ_ALL, "uf" to uf)
-            add(ENDERECO_READ_ALL, "latitude" to latitude)
-            add(ENDERECO_READ_ALL, "longitude" to longitude)
+            Permission.apply {
+                add("idEnderecoPk" to idEnderecoPk, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_ID_ENDERECO_PK)
+                add("cep" to cep, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_CEP)
+                add("zipcode" to zipcode, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_ZIPCODE)
+                add("rua" to rua, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_RUA)
+                add("nro" to nro, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_NRO)
+                add("cidade" to cidade, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_CIDADE)
+                add("uf" to uf, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_UF)
+                add("latitude" to latitude, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_LATITUDE)
+                add("longitude" to longitude, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_READ_ALL, ENDERECO_READ_LONGITUDE)
+            }
         }
 
     fun updateSet(endereco: Endereco) = colsToMap(endereco, *permission.buildArray {
-        add(ENDERECO_UPDATE_ALL, cep)
-        add(ENDERECO_UPDATE_ALL, zipcode)
-        add(ENDERECO_UPDATE_ALL, rua)
-        add(ENDERECO_UPDATE_ALL, nro)
-        add(ENDERECO_UPDATE_ALL, cidade)
-        add(ENDERECO_UPDATE_ALL, uf)
-        add(ENDERECO_UPDATE_ALL, latitude)
-        add(ENDERECO_UPDATE_ALL, longitude)
+        Permission.apply {
+            add(cep, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_UPDATE_ALL, ENDERECO_UPDATE_CEP)
+            add(zipcode, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_UPDATE_ALL, ENDERECO_UPDATE_ZIPCODE)
+            add(rua, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_UPDATE_ALL, ENDERECO_UPDATE_RUA)
+            add(nro, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_UPDATE_ALL, ENDERECO_UPDATE_NRO)
+            add(cidade, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_UPDATE_ALL, ENDERECO_UPDATE_CIDADE)
+            add(uf, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_UPDATE_ALL, ENDERECO_UPDATE_UF)
+            add(latitude, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_UPDATE_ALL, ENDERECO_UPDATE_LATITUDE)
+            add(longitude, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_UPDATE_ALL, ENDERECO_UPDATE_LONGITUDE)
+        }
     })
 
     fun insertValues(endereco: Endereco) = colsToMap(endereco, *permission.buildArray {
-        add(ENDERECO_INSERT_ALL, cep)
-        add(ENDERECO_INSERT_ALL, zipcode)
-        add(ENDERECO_INSERT_ALL, rua)
-        add(ENDERECO_INSERT_ALL, nro)
-        add(ENDERECO_INSERT_ALL, cidade)
-        add(ENDERECO_INSERT_ALL, uf)
-        add(ENDERECO_INSERT_ALL, latitude)
-        add(ENDERECO_INSERT_ALL, longitude)
+        Permission.apply {
+            add(cep, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_INSERT_ALL, ENDERECO_INSERT_CEP)
+            add(zipcode, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_INSERT_ALL, ENDERECO_INSERT_ZIPCODE)
+            add(rua, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_INSERT_ALL, ENDERECO_INSERT_RUA)
+            add(nro, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_INSERT_ALL, ENDERECO_INSERT_NRO)
+            add(cidade, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_INSERT_ALL, ENDERECO_INSERT_CIDADE)
+            add(uf, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_INSERT_ALL, ENDERECO_INSERT_UF)
+            add(latitude, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_INSERT_ALL, ENDERECO_INSERT_LATITUDE)
+            add(longitude, FULL_CONTROL, ENDERECO_FULL_CONTROL, ENDERECO_INSERT_ALL, ENDERECO_INSERT_LONGITUDE)
+        }
     })
 }

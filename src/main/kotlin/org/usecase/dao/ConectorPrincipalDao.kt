@@ -8,14 +8,15 @@ import org.usecase.model.rm.PrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.VirtualSelect
-import org.usecase.user.context.Permission
+import org.usecase.context.PermissionGroup
+import org.usecase.model.resource.Permission
 
 /**
  * Data Access Object of ConectorPrincipal from table conector_principal
  * @author Simpli CLI generator
  */
-class ConectorPrincipalDao(val con: AbstractConnector) {
-    fun getOne(idPrincipalFk: Long, idConectadoFk: Long, permission: Permission): ConectorPrincipal? {
+class ConectorPrincipalDao(val con: AbstractConnector, val permission: PermissionGroup) {
+    fun getOne(idPrincipalFk: Long, idConectadoFk: Long): ConectorPrincipal? {
         val conectorPrincipalRm = ConectorPrincipalRM(permission)
         val conectadoRm = ConectadoRM(permission)
         val principalRm = PrincipalRM(permission)
@@ -38,7 +39,7 @@ class ConectorPrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun getList(filter: ConectorPrincipalListFilter, permission: Permission): MutableList<ConectorPrincipal> {
+    fun getList(filter: ConectorPrincipalListFilter): MutableList<ConectorPrincipal> {
         val conectorPrincipalRm = ConectorPrincipalRM(permission)
         val conectadoRm = ConectadoRM(permission)
         val principalRm = PrincipalRM(permission)
@@ -61,7 +62,7 @@ class ConectorPrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun count(filter: ConectorPrincipalListFilter, permission: Permission): Int {
+    fun count(filter: ConectorPrincipalListFilter): Int {
         val conectorPrincipalRm = ConectorPrincipalRM(permission)
         val conectadoRm = ConectadoRM(permission)
         val principalRm = PrincipalRM(permission)
@@ -76,7 +77,7 @@ class ConectorPrincipalDao(val con: AbstractConnector) {
         return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(conectorPrincipal: ConectorPrincipal, permission: Permission): Int {
+    fun update(conectorPrincipal: ConectorPrincipal): Int {
         val conectorPrincipalRm = ConectorPrincipalRM(permission)
         val query = Query()
                 .updateTable(conectorPrincipalRm.table)
@@ -87,7 +88,7 @@ class ConectorPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun insert(conectorPrincipal: ConectorPrincipal, permission: Permission): Long {
+    fun insert(conectorPrincipal: ConectorPrincipal): Long {
         val conectorPrincipalRm = ConectorPrincipalRM(permission)
         val query = Query()
                 .insertInto(conectorPrincipalRm.table)
@@ -96,7 +97,7 @@ class ConectorPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).key
     }
 
-    fun exist(idPrincipalFk: Long, idConectadoFk: Long, permission: Permission): Boolean {
+    fun exist(idPrincipalFk: Long, idConectadoFk: Long): Boolean {
         val conectorPrincipalRm = ConectorPrincipalRM(permission)
         val vs = VirtualSelect()
                 .select(conectorPrincipalRm.idPrincipalFk)

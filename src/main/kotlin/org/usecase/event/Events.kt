@@ -1,6 +1,6 @@
 package org.usecase.event
 
-import org.usecase.user.context.RequestContext
+import org.usecase.context.RequestContext
 
 abstract class Event(val context: RequestContext)
 

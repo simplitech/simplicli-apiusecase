@@ -1,12 +1,16 @@
 package org.usecase.model.resource
 
 import io.swagger.v3.oas.annotations.media.Schema
+import org.usecase.context.PermissionGroup
 
 /**
  * Reference model of table user
  * @author Simpli CLI generator
  */
-class User {
+class User : PermissionGroup() {
+    var permissions: List<Permission>? = null
+    var roles: List<Role>? = null
+
     @Schema(required = true) var idUserPk: Long = 0
 
     @Schema(required = true, maxLength = 45)
@@ -20,5 +24,23 @@ class User {
         get() = idUserPk
         set(value) {
             idUserPk = value
+        }
+
+    override val scopes: MutableList<String>
+        @Schema(hidden = true)
+        get() {
+            val roles = (roles ?: emptyList())
+                    .map { it.scopes }
+                    .flatten()
+                    .distinct()
+                    .toMutableList()
+
+            val permissions = (permissions ?: emptyList())
+                    .map { it.scopes }
+                    .flatten()
+                    .distinct()
+                    .toMutableList()
+
+            return (roles + permissions).distinct().toMutableList()
         }
 }

@@ -2,18 +2,16 @@ package org.usecase.model.rm
 
 import br.com.simpli.sql.RelationalMapper
 import br.com.simpli.sql.VirtualColumn
-import org.usecase.model.resource.Principal
+import org.usecase.context.PermissionGroup
 import org.usecase.model.resource.TagPrincipal
-import org.usecase.user.context.Permission
-import org.usecase.user.context.Permission.Companion.TAG_PRINCIPAL_INSERT_ALL
-import org.usecase.user.context.Permission.Companion.TAG_PRINCIPAL_READ_ALL
+import org.usecase.model.resource.Permission
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table conector_principal
  * @author Simpli CLI generator
  */
-class TagPrincipalRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<TagPrincipal>() {
+class TagPrincipalRM(val permission: PermissionGroup, override var alias: String? = null) : RelationalMapper<TagPrincipal>() {
     override val table = "tag_principal"
 
     val idTagFk = col("idTagFk",
@@ -32,24 +30,32 @@ class TagPrincipalRM(val permission: Permission, override var alias: String? = n
 
     val selectFields: Array<VirtualColumn<TagPrincipal>>
         get() = permission.buildArray {
-            add(TAG_PRINCIPAL_READ_ALL, idTagFk)
-            add(TAG_PRINCIPAL_READ_ALL, idPrincipalFk)
+            Permission.apply {
+                add(idTagFk, FULL_CONTROL, TAG_PRINCIPAL_FULL_CONTROL, TAG_PRINCIPAL_READ_ALL, TAG_PRINCIPAL_READ_ID_TAG_FK)
+                add(idPrincipalFk, FULL_CONTROL, TAG_PRINCIPAL_FULL_CONTROL, TAG_PRINCIPAL_READ_ALL, TAG_PRINCIPAL_READ_ID_PRINCIPAL_FK)
+            }
         }
 
     val fieldsToSearch: Array<VirtualColumn<TagPrincipal>>
         get() = permission.buildArray {
-            add(TAG_PRINCIPAL_READ_ALL, idTagFk)
-            add(TAG_PRINCIPAL_READ_ALL, idPrincipalFk)
+            Permission.apply {
+                add(idTagFk, FULL_CONTROL, TAG_PRINCIPAL_FULL_CONTROL, TAG_PRINCIPAL_READ_ALL, TAG_PRINCIPAL_READ_ID_TAG_FK)
+                add(idPrincipalFk, FULL_CONTROL, TAG_PRINCIPAL_FULL_CONTROL, TAG_PRINCIPAL_READ_ALL, TAG_PRINCIPAL_READ_ID_PRINCIPAL_FK)
+            }
         }
 
     val orderMap: Map<String, VirtualColumn<TagPrincipal>>
         get() = permission.buildMap {
-            add(TAG_PRINCIPAL_READ_ALL, "idTagFk" to idTagFk)
-            add(TAG_PRINCIPAL_READ_ALL, "idPrincipalFk" to idPrincipalFk)
+            Permission.apply {
+                add("idTagFk" to idTagFk, FULL_CONTROL, TAG_PRINCIPAL_FULL_CONTROL, TAG_PRINCIPAL_READ_ALL, TAG_PRINCIPAL_READ_ID_TAG_FK)
+                add("idPrincipalFk" to idPrincipalFk, FULL_CONTROL, TAG_PRINCIPAL_FULL_CONTROL, TAG_PRINCIPAL_READ_ALL, TAG_PRINCIPAL_READ_ID_PRINCIPAL_FK)
+            }
         }
 
     fun insertValues(tagPrincipal: TagPrincipal) = colsToMap(tagPrincipal, *permission.buildArray {
-        add(TAG_PRINCIPAL_INSERT_ALL, idTagFk)
-        add(TAG_PRINCIPAL_INSERT_ALL, idPrincipalFk)
+        Permission.apply {
+            add(idTagFk, FULL_CONTROL, TAG_PRINCIPAL_FULL_CONTROL, TAG_PRINCIPAL_INSERT_ALL, TAG_PRINCIPAL_INSERT_ID_TAG_FK)
+            add(idPrincipalFk, FULL_CONTROL, TAG_PRINCIPAL_FULL_CONTROL, TAG_PRINCIPAL_INSERT_ALL, TAG_PRINCIPAL_INSERT_ID_PRINCIPAL_FK)
+        }
     })
 }
