@@ -1,6 +1,6 @@
 package org.usecase.model.param
 
-import org.usecase.enums.Lang
+import org.usecase.model.enum.Lang
 import io.swagger.v3.oas.annotations.media.Schema
 import javax.ws.rs.HeaderParam
 import javax.ws.rs.PathParam

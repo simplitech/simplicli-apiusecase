@@ -6,14 +6,15 @@ import org.usecase.model.rm.GrupoDoPrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.VirtualSelect
-import org.usecase.user.context.Permission
+import org.usecase.context.PermissionGroup
+import org.usecase.model.resource.Permission
 
 /**
  * Data Access Object of GrupoDoPrincipal from table grupo_do_principal
  * @author Simpli CLI generator
  */
-class GrupoDoPrincipalDao(val con: AbstractConnector) {
-    fun getOne(idGrupoDoPrincipalPk: Long, permission: Permission): GrupoDoPrincipal? {
+class GrupoDoPrincipalDao(val con: AbstractConnector, val permission: PermissionGroup) {
+    fun getOne(idGrupoDoPrincipalPk: Long): GrupoDoPrincipal? {
         val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
 
         val vs = VirtualSelect()
@@ -26,7 +27,7 @@ class GrupoDoPrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun getList(filter: GrupoDoPrincipalListFilter, permission: Permission): MutableList<GrupoDoPrincipal> {
+    fun getList(filter: GrupoDoPrincipalListFilter): MutableList<GrupoDoPrincipal> {
         val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
 
         val vs = VirtualSelect()
@@ -40,7 +41,7 @@ class GrupoDoPrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun count(filter: GrupoDoPrincipalListFilter, permission: Permission): Int {
+    fun count(filter: GrupoDoPrincipalListFilter): Int {
         val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
 
         val vs = VirtualSelect()
@@ -51,7 +52,7 @@ class GrupoDoPrincipalDao(val con: AbstractConnector) {
         return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(grupoDoPrincipal: GrupoDoPrincipal, permission: Permission): Int {
+    fun update(grupoDoPrincipal: GrupoDoPrincipal): Int {
         val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
         val query = Query()
                 .updateTable(grupoDoPrincipalRm.table)
@@ -61,7 +62,7 @@ class GrupoDoPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun insert(grupoDoPrincipal: GrupoDoPrincipal, permission: Permission): Long {
+    fun insert(grupoDoPrincipal: GrupoDoPrincipal): Long {
         val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
         val query = Query()
                 .insertInto(grupoDoPrincipalRm.table)
@@ -70,7 +71,7 @@ class GrupoDoPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).key
     }
 
-    fun exist(idGrupoDoPrincipalPk: Long, permission: Permission): Boolean {
+    fun exist(idGrupoDoPrincipalPk: Long): Boolean {
         val grupoDoPrincipalRm = GrupoDoPrincipalRM(permission)
         val vs = VirtualSelect()
                 .select(grupoDoPrincipalRm.idGrupoDoPrincipalPk)

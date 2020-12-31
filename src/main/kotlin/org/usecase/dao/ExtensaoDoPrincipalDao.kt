@@ -6,15 +6,16 @@ import org.usecase.model.rm.ExtensaoDoPrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.VirtualSelect
+import org.usecase.context.PermissionGroup
 import org.usecase.model.rm.PrincipalRM
-import org.usecase.user.context.Permission
+import org.usecase.model.resource.Permission
 
 /**
  * Data Access Object of ExtensaoDoPrincipal from table extensao_do_principal
  * @author Simpli CLI generator
  */
-class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
-    fun getOne(idPrincipalFk: Long, permission: Permission): ExtensaoDoPrincipal? {
+class ExtensaoDoPrincipalDao(val con: AbstractConnector, val permission: PermissionGroup) {
+    fun getOne(idPrincipalFk: Long): ExtensaoDoPrincipal? {
         val extensaoDoPrincipalRm = ExtensaoDoPrincipalRM(permission)
         val principalRm = PrincipalRM(permission)
 
@@ -32,7 +33,7 @@ class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun getList(filter: ExtensaoDoPrincipalListFilter, permission: Permission): MutableList<ExtensaoDoPrincipal> {
+    fun getList(filter: ExtensaoDoPrincipalListFilter): MutableList<ExtensaoDoPrincipal> {
         val extensaoDoPrincipalRm = ExtensaoDoPrincipalRM(permission)
         val principalRm = PrincipalRM(permission)
 
@@ -51,7 +52,7 @@ class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun count(filter: ExtensaoDoPrincipalListFilter, permission: Permission): Int {
+    fun count(filter: ExtensaoDoPrincipalListFilter): Int {
         val extensaoDoPrincipalRm = ExtensaoDoPrincipalRM(permission)
         val principalRm = PrincipalRM(permission)
 
@@ -64,7 +65,7 @@ class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
         return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(extensaoDoPrincipal: ExtensaoDoPrincipal, permission: Permission): Int {
+    fun update(extensaoDoPrincipal: ExtensaoDoPrincipal): Int {
         val extensaoDoPrincipalRm = ExtensaoDoPrincipalRM(permission)
         val query = Query()
                 .updateTable(extensaoDoPrincipalRm.table)
@@ -74,7 +75,7 @@ class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun insert(extensaoDoPrincipal: ExtensaoDoPrincipal, permission: Permission): Long {
+    fun insert(extensaoDoPrincipal: ExtensaoDoPrincipal): Long {
         val extensaoDoPrincipalRm = ExtensaoDoPrincipalRM(permission)
         val query = Query()
                 .insertInto(extensaoDoPrincipalRm.table)
@@ -83,7 +84,7 @@ class ExtensaoDoPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).key
     }
 
-    fun exist(idPrincipalFk: Long, permission: Permission): Boolean {
+    fun exist(idPrincipalFk: Long): Boolean {
         val extensaoDoPrincipalRm = ExtensaoDoPrincipalRM(permission)
         val vs = VirtualSelect()
                 .select(extensaoDoPrincipalRm.idPrincipalFk)

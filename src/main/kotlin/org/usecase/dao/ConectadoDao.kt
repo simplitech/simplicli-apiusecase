@@ -6,14 +6,15 @@ import org.usecase.model.rm.ConectadoRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.VirtualSelect
-import org.usecase.user.context.Permission
+import org.usecase.context.PermissionGroup
+import org.usecase.model.resource.Permission
 
 /**
  * Data Access Object of Conectado from table conectado
  * @author Simpli CLI generator
  */
-class ConectadoDao(val con: AbstractConnector) {
-    fun getOne(idConectadoPk: Long, permission: Permission): Conectado? {
+class ConectadoDao(val con: AbstractConnector, val permission: PermissionGroup) {
+    fun getOne(idConectadoPk: Long): Conectado? {
         val conectadoRm = ConectadoRM(permission)
 
         val vs = VirtualSelect()
@@ -26,7 +27,7 @@ class ConectadoDao(val con: AbstractConnector) {
         }
     }
 
-    fun getList(filter: ConectadoListFilter, permission: Permission): MutableList<Conectado> {
+    fun getList(filter: ConectadoListFilter): MutableList<Conectado> {
         val conectadoRm = ConectadoRM(permission)
 
         val vs = VirtualSelect()
@@ -40,7 +41,7 @@ class ConectadoDao(val con: AbstractConnector) {
         }
     }
 
-    fun count(filter: ConectadoListFilter, permission: Permission): Int {
+    fun count(filter: ConectadoListFilter): Int {
         val conectadoRm = ConectadoRM(permission)
 
         val vs = VirtualSelect()
@@ -51,7 +52,7 @@ class ConectadoDao(val con: AbstractConnector) {
         return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(conectado: Conectado, permission: Permission): Int {
+    fun update(conectado: Conectado): Int {
         val conectadoRm = ConectadoRM(permission)
         val query = Query()
                 .updateTable(conectadoRm.table)
@@ -61,7 +62,7 @@ class ConectadoDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun insert(conectado: Conectado, permission: Permission): Long {
+    fun insert(conectado: Conectado): Long {
         val conectadoRm = ConectadoRM(permission)
         val query = Query()
                 .insertInto(conectadoRm.table)
@@ -70,7 +71,7 @@ class ConectadoDao(val con: AbstractConnector) {
         return con.execute(query).key
     }
 
-    fun exist(idConectadoPk: Long, permission: Permission): Boolean {
+    fun exist(idConectadoPk: Long): Boolean {
         val conectadoRm = ConectadoRM(permission)
         val vs = VirtualSelect()
                 .select(conectadoRm.idConectadoPk)

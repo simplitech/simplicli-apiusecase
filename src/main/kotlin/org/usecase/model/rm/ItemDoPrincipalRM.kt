@@ -3,18 +3,15 @@ package org.usecase.model.rm
 import org.usecase.model.resource.ItemDoPrincipal
 import br.com.simpli.sql.RelationalMapper
 import br.com.simpli.sql.VirtualColumn
-import org.usecase.model.resource.GrupoDoPrincipal
-import org.usecase.user.context.Permission
-import org.usecase.user.context.Permission.Companion.ITEM_DO_PRINCIPAL_INSERT_ALL
-import org.usecase.user.context.Permission.Companion.ITEM_DO_PRINCIPAL_READ_ALL
-import org.usecase.user.context.Permission.Companion.ITEM_DO_PRINCIPAL_UPDATE_ALL
+import org.usecase.context.PermissionGroup
+import org.usecase.model.resource.Permission
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table item_do_principal
  * @author Simpli CLI generator
  */
-class ItemDoPrincipalRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<ItemDoPrincipal>() {
+class ItemDoPrincipalRM(val permission: PermissionGroup, override var alias: String? = null) : RelationalMapper<ItemDoPrincipal>() {
     override val table = "item_do_principal"
 
     val idItemDoPrincipalPk = col("idItemDoPrincipalPk",
@@ -37,31 +34,41 @@ class ItemDoPrincipalRM(val permission: Permission, override var alias: String? 
 
     val selectFields: Array<VirtualColumn<ItemDoPrincipal>>
         get() = permission.buildArray {
-            add(ITEM_DO_PRINCIPAL_READ_ALL, idItemDoPrincipalPk)
-            add(ITEM_DO_PRINCIPAL_READ_ALL, titulo)
-            add(ITEM_DO_PRINCIPAL_READ_ALL, idPrincipalFk)
+            Permission.apply {
+                add(idItemDoPrincipalPk, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_READ_ALL, ITEM_DO_PRINCIPAL_READ_ID_ITEM_DO_PRINCIPAL_PK)
+                add(idPrincipalFk, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_READ_ALL, ITEM_DO_PRINCIPAL_READ_ID_PRINCIPAL_FK)
+                add(titulo, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_READ_ALL, ITEM_DO_PRINCIPAL_READ_TITULO)
+            }
         }
 
     val fieldsToSearch: Array<VirtualColumn<ItemDoPrincipal>>
         get() = permission.buildArray {
-            add(ITEM_DO_PRINCIPAL_READ_ALL, idItemDoPrincipalPk)
-            add(ITEM_DO_PRINCIPAL_READ_ALL, titulo)
+            Permission.apply {
+                add(idItemDoPrincipalPk, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_READ_ALL, ITEM_DO_PRINCIPAL_READ_ID_ITEM_DO_PRINCIPAL_PK)
+                add(titulo, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_READ_ALL, ITEM_DO_PRINCIPAL_READ_TITULO)
+            }
         }
 
     val orderMap: Map<String, VirtualColumn<ItemDoPrincipal>>
         get() = permission.buildMap {
-            add(ITEM_DO_PRINCIPAL_READ_ALL, "idPrincipalFk" to idPrincipalFk)
-            add(ITEM_DO_PRINCIPAL_READ_ALL, "idItemDoPrincipalPk" to idItemDoPrincipalPk)
-            add(ITEM_DO_PRINCIPAL_READ_ALL, "titulo" to titulo)
+            Permission.apply {
+                add("idItemDoPrincipalPk" to idItemDoPrincipalPk, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_READ_ALL, ITEM_DO_PRINCIPAL_READ_ID_ITEM_DO_PRINCIPAL_PK)
+                add("idPrincipalFk" to idPrincipalFk, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_READ_ALL, ITEM_DO_PRINCIPAL_READ_ID_PRINCIPAL_FK)
+                add("titulo" to titulo, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_READ_ALL, ITEM_DO_PRINCIPAL_READ_TITULO)
+            }
         }
 
     fun updateSet(itemDoPrincipal: ItemDoPrincipal) = colsToMap(itemDoPrincipal, *permission.buildArray {
-        add(ITEM_DO_PRINCIPAL_UPDATE_ALL, titulo)
-        add(ITEM_DO_PRINCIPAL_UPDATE_ALL, idPrincipalFk)
+        Permission.apply {
+            add(idPrincipalFk, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_UPDATE_ALL, ITEM_DO_PRINCIPAL_UPDATE_ID_PRINCIPAL_FK)
+            add(titulo, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_UPDATE_ALL, ITEM_DO_PRINCIPAL_UPDATE_TITULO)
+        }
     })
 
     fun insertValues(itemDoPrincipal: ItemDoPrincipal) = colsToMap(itemDoPrincipal, *permission.buildArray {
-        add(ITEM_DO_PRINCIPAL_INSERT_ALL, titulo)
-        add(ITEM_DO_PRINCIPAL_INSERT_ALL, idPrincipalFk)
+        Permission.apply {
+            add(idPrincipalFk, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_INSERT_ALL, ITEM_DO_PRINCIPAL_INSERT_ID_PRINCIPAL_FK)
+            add(titulo, FULL_CONTROL, ITEM_DO_PRINCIPAL_FULL_CONTROL, ITEM_DO_PRINCIPAL_INSERT_ALL, ITEM_DO_PRINCIPAL_INSERT_TITULO)
+        }
     })
 }

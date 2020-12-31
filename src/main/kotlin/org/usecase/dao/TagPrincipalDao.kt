@@ -7,17 +7,18 @@ import org.usecase.model.rm.TagRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.VirtualSelect
+import org.usecase.context.PermissionGroup
 import org.usecase.model.resource.TagPrincipal
 import org.usecase.model.rm.TagPrincipalRM
-import org.usecase.user.context.Permission
+import org.usecase.model.resource.Permission
 
 /**
  * Data Access Object of TagPrincipal from table tag_principal
  * @author Simpli CLI generator
  */
-class TagPrincipalDao(val con: AbstractConnector) {
+class TagPrincipalDao(val con: AbstractConnector, val permission: PermissionGroup) {
 
-    fun insert(tagPrincipal: TagPrincipal, permission: Permission): Long {
+    fun insert(tagPrincipal: TagPrincipal): Long {
         val tagPrincipalRM = TagPrincipalRM(permission)
         val query = Query()
                 .insertInto(tagPrincipalRM.table)
@@ -26,7 +27,7 @@ class TagPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).key
     }
 
-    fun removeAllFromTag(idTagFk: Long, permission: Permission): Int {
+    fun removeAllFromTag(idTagFk: Long): Int {
         val tagPrincipalRM = TagPrincipalRM(permission)
         val query = Query()
                 .deleteFrom(tagPrincipalRM.table)
@@ -35,7 +36,7 @@ class TagPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun listTagOfPrincipal(idPrincipalFk: Long, permission: Permission): MutableList<Tag> {
+    fun listTagOfPrincipal(idPrincipalFk: Long): MutableList<Tag> {
         val tagRm = TagRM(permission)
         val tagPrincipalRM = TagPrincipalRM(permission)
 
@@ -50,7 +51,7 @@ class TagPrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun removeAllFromPrincipal(idPrincipalFk: Long, permission: Permission): Int {
+    fun removeAllFromPrincipal(idPrincipalFk: Long): Int {
         val tagPrincipalRM = TagPrincipalRM(permission)
         val query = Query()
                 .deleteFrom(tagPrincipalRM.table)
@@ -59,7 +60,7 @@ class TagPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun listPrincipalOfTag(idTagFk: Long, permission: Permission): MutableList<Principal> {
+    fun listPrincipalOfTag(idTagFk: Long): MutableList<Principal> {
         val principalRm = PrincipalRM(permission)
         val tagPrincipalRM = TagPrincipalRM(permission)
         val vs = VirtualSelect()

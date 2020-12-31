@@ -1,5 +1,6 @@
 .DS_Store
 src/main/webapp/node_modules
+src/test/mail/*
 /target/
 .idea
 *.iml

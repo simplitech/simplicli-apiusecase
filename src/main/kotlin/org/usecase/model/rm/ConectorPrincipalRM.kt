@@ -2,19 +2,16 @@ package org.usecase.model.rm
 
 import br.com.simpli.sql.RelationalMapper
 import br.com.simpli.sql.VirtualColumn
-import org.usecase.model.resource.Conectado
+import org.usecase.context.PermissionGroup
 import org.usecase.model.resource.ConectorPrincipal
-import org.usecase.user.context.Permission
-import org.usecase.user.context.Permission.Companion.CONECTOR_PRINCIPAL_INSERT_ALL
-import org.usecase.user.context.Permission.Companion.CONECTOR_PRINCIPAL_READ_ALL
-import org.usecase.user.context.Permission.Companion.CONECTOR_PRINCIPAL_UPDATE_ALL
+import org.usecase.model.resource.Permission
 import java.sql.ResultSet
 
 /**
  * Relational Mapping of Principal from table conector_principal
  * @author Simpli CLI generator
  */
-class ConectorPrincipalRM(val permission: Permission, override var alias: String? = null) : RelationalMapper<ConectorPrincipal>() {
+class ConectorPrincipalRM(val permission: PermissionGroup, override var alias: String? = null) : RelationalMapper<ConectorPrincipal>() {
     override val table = "conector_principal"
 
     val idPrincipalFk = col("idPrincipalFk",
@@ -37,32 +34,42 @@ class ConectorPrincipalRM(val permission: Permission, override var alias: String
 
     val selectFields: Array<VirtualColumn<ConectorPrincipal>>
         get() = permission.buildArray {
-            add(CONECTOR_PRINCIPAL_READ_ALL, idPrincipalFk)
-            add(CONECTOR_PRINCIPAL_READ_ALL, idConectadoFk)
-            add(CONECTOR_PRINCIPAL_READ_ALL, titulo)
+            Permission.apply {
+                add(idPrincipalFk, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_READ_ALL, CONECTOR_PRINCIPAL_READ_ID_PRINCIPAL_FK)
+                add(idConectadoFk, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_READ_ALL, CONECTOR_PRINCIPAL_READ_ID_CONECTADO_FK)
+                add(titulo, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_READ_ALL, CONECTOR_PRINCIPAL_READ_TITULO)
+            }
         }
 
     val fieldsToSearch: Array<VirtualColumn<ConectorPrincipal>>
         get() = permission.buildArray {
-            add(CONECTOR_PRINCIPAL_READ_ALL, idPrincipalFk)
-            add(CONECTOR_PRINCIPAL_READ_ALL, idConectadoFk)
-            add(CONECTOR_PRINCIPAL_READ_ALL, titulo)
+            Permission.apply {
+                add(idPrincipalFk, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_READ_ALL, CONECTOR_PRINCIPAL_READ_ID_PRINCIPAL_FK)
+                add(idConectadoFk, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_READ_ALL, CONECTOR_PRINCIPAL_READ_ID_CONECTADO_FK)
+                add(titulo, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_READ_ALL, CONECTOR_PRINCIPAL_READ_TITULO)
+            }
         }
 
     val orderMap: Map<String, VirtualColumn<ConectorPrincipal>>
         get() = permission.buildMap {
-            add(CONECTOR_PRINCIPAL_READ_ALL, "idPrincipalFk" to idPrincipalFk)
-            add(CONECTOR_PRINCIPAL_READ_ALL, "idConectadoFk" to idConectadoFk)
-            add(CONECTOR_PRINCIPAL_READ_ALL, "titulo" to titulo)
+            Permission.apply {
+                add("idPrincipalFk" to idPrincipalFk, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_READ_ALL, CONECTOR_PRINCIPAL_READ_ID_PRINCIPAL_FK)
+                add("idConectadoFk" to idConectadoFk, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_READ_ALL, CONECTOR_PRINCIPAL_READ_ID_CONECTADO_FK)
+                add("titulo" to titulo, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_READ_ALL, CONECTOR_PRINCIPAL_READ_TITULO)
+            }
         }
 
     fun updateSet(conectorPrincipal: ConectorPrincipal) = colsToMap(conectorPrincipal, *permission.buildArray {
-        add(CONECTOR_PRINCIPAL_UPDATE_ALL, titulo)
+        Permission.apply {
+            add(titulo, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_UPDATE_ALL, CONECTOR_PRINCIPAL_UPDATE_TITULO)
+        }
     })
 
     fun insertValues(conectorPrincipal: ConectorPrincipal) = colsToMap(conectorPrincipal, *permission.buildArray {
-        add(CONECTOR_PRINCIPAL_INSERT_ALL, idPrincipalFk)
-        add(CONECTOR_PRINCIPAL_INSERT_ALL, idConectadoFk)
-        add(CONECTOR_PRINCIPAL_INSERT_ALL, titulo)
+        Permission.apply {
+            add(idPrincipalFk, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_INSERT_ALL, CONECTOR_PRINCIPAL_INSERT_ID_PRINCIPAL_FK)
+            add(idConectadoFk, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_INSERT_ALL, CONECTOR_PRINCIPAL_INSERT_ID_CONECTADO_FK)
+            add(titulo, FULL_CONTROL, CONECTOR_PRINCIPAL_FULL_CONTROL, CONECTOR_PRINCIPAL_INSERT_ALL, CONECTOR_PRINCIPAL_INSERT_TITULO)
+        }
     })
 }

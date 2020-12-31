@@ -6,15 +6,16 @@ import org.usecase.model.rm.ItemDoPrincipalRM
 import br.com.simpli.sql.AbstractConnector
 import br.com.simpli.sql.Query
 import br.com.simpli.sql.VirtualSelect
+import org.usecase.context.PermissionGroup
 import org.usecase.model.rm.PrincipalRM
-import org.usecase.user.context.Permission
+import org.usecase.model.resource.Permission
 
 /**
  * Data Access Object of ItemDoPrincipal from table item_do_principal
  * @author Simpli CLI generator
  */
-class ItemDoPrincipalDao(val con: AbstractConnector) {
-    fun getOne(idItemDoPrincipalPk: Long, permission: Permission): ItemDoPrincipal? {
+class ItemDoPrincipalDao(val con: AbstractConnector, val permission: PermissionGroup) {
+    fun getOne(idItemDoPrincipalPk: Long): ItemDoPrincipal? {
         val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
         val principalRm = PrincipalRM(permission)
 
@@ -32,7 +33,7 @@ class ItemDoPrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun getList(filter: ItemDoPrincipalListFilter, permission: Permission): MutableList<ItemDoPrincipal> {
+    fun getList(filter: ItemDoPrincipalListFilter): MutableList<ItemDoPrincipal> {
         val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
         val principalRm = PrincipalRM(permission)
 
@@ -51,7 +52,7 @@ class ItemDoPrincipalDao(val con: AbstractConnector) {
         }
     }
 
-    fun count(filter: ItemDoPrincipalListFilter, permission: Permission): Int {
+    fun count(filter: ItemDoPrincipalListFilter): Int {
         val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
         val principalRm = PrincipalRM(permission)
 
@@ -64,7 +65,7 @@ class ItemDoPrincipalDao(val con: AbstractConnector) {
         return con.getFirstInt(vs.toQuery()) ?: 0
     }
 
-    fun update(itemDoPrincipal: ItemDoPrincipal, permission: Permission): Int {
+    fun update(itemDoPrincipal: ItemDoPrincipal): Int {
         val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
         val query = Query()
                 .updateTable(itemDoPrincipalRm.table)
@@ -74,7 +75,7 @@ class ItemDoPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).affectedRows
     }
 
-    fun insert(itemDoPrincipal: ItemDoPrincipal, permission: Permission): Long {
+    fun insert(itemDoPrincipal: ItemDoPrincipal): Long {
         val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
         val query = Query()
                 .insertInto(itemDoPrincipalRm.table)
@@ -83,7 +84,7 @@ class ItemDoPrincipalDao(val con: AbstractConnector) {
         return con.execute(query).key
     }
 
-    fun exist(idItemDoPrincipalPk: Long, permission: Permission): Boolean {
+    fun exist(idItemDoPrincipalPk: Long): Boolean {
         val itemDoPrincipalRm = ItemDoPrincipalRM(permission)
         val vs = VirtualSelect()
                 .select(itemDoPrincipalRm.idItemDoPrincipalPk)
