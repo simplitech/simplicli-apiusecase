@@ -1,4 +1,4 @@
-package org.usecase.user.mail.manager
+package org.usecase.mail.manager
 
 import br.com.simpli.sql.AbstractConnector
 import org.usecase.app.Cast

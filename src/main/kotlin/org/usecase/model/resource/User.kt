@@ -26,21 +26,19 @@ class User : PermissionGroup() {
             idUserPk = value
         }
 
-    override val scopes: MutableList<String>
-        @Schema(hidden = true)
-        get() {
-            val roles = (roles ?: emptyList())
-                    .map { it.scopes }
-                    .flatten()
-                    .distinct()
-                    .toMutableList()
+    fun applyScope() {
+        val roles = (roles ?: emptyList())
+                .map { it.scopes }
+                .flatten()
+                .distinct()
+                .toMutableList()
 
-            val permissions = (permissions ?: emptyList())
-                    .map { it.scopes }
-                    .flatten()
-                    .distinct()
-                    .toMutableList()
+        val permissions = (permissions ?: emptyList())
+                .map { it.scopes }
+                .flatten()
+                .distinct()
+                .toMutableList()
 
-            return (roles + permissions).distinct().toMutableList()
-        }
+        scopes = (roles + permissions).distinct().toMutableList()
+    }
 }

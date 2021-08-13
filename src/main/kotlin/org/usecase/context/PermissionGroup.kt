@@ -1,6 +1,6 @@
 package org.usecase.context
 
-open class PermissionGroup(open val scopes: MutableList<String> = mutableListOf()) {
+open class PermissionGroup(open var scopes: MutableList<String> = mutableListOf()) {
     fun isAllowed(scope: String): Boolean = scopes.contains(scope)
     fun isDenied(scope: String): Boolean = !isAllowed(scope)
 

@@ -29,13 +29,21 @@ class Role : PermissionGroup() {
             idRolePk = value
         }
 
-    override val scopes
-        @Schema(hidden = true)
-        get() = (permissions ?: emptyList())
+    fun applyScope() {
+        val permissions = (permissions ?: emptyList())
                 .map { it.scopes }
                 .flatten()
                 .distinct()
                 .toMutableList()
+
+        val users = (users ?: emptyList())
+                .map { it.scopes }
+                .flatten()
+                .distinct()
+                .toMutableList()
+
+        scopes = (users + permissions).distinct().toMutableList()
+    }
 
     companion object {
         const val GUEST = "guest"

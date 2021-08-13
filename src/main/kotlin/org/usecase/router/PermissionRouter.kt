@@ -20,7 +20,7 @@ import javax.ws.rs.core.MediaType
  * Routing the API address into Permission Process
  * @author Simpli CLI generator
  */
-@Path("/role")
+@Path("/permission")
 @Produces(MediaType.APPLICATION_JSON)
 class PermissionRouter : RouterWrapper() {
     @GET

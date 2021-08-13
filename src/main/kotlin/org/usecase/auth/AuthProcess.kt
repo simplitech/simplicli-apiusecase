@@ -18,7 +18,7 @@ import org.usecase.context.PermissionGroup
 import org.usecase.dao.*
 import org.usecase.exception.response.*
 import org.usecase.model.resource.Permission
-import org.usecase.user.mail.manager.MailManager
+import org.usecase.mail.manager.MailManager
 import java.util.regex.Pattern
 
 /**
@@ -173,8 +173,11 @@ class AuthProcess(val context: RequestContext) {
                                             populatePermissions(permission)
                                         }
                                     }
+                            role.applyScope()
                         }
                     }
+
+            applyScope()
         } ?: throw NotFoundException(context.lang["error.userNotFound"])
     }
 
@@ -186,6 +189,7 @@ class AuthProcess(val context: RequestContext) {
                         if (deep > 0) populatePermissions(it, deep - 1)
                     }
                 }
+        permission.applyScope()
     }
 
     /**

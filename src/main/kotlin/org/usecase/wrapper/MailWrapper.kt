@@ -4,7 +4,7 @@ import org.usecase.app.Facade.Env
 import org.usecase.locale.LangDefinition
 import br.com.simpli.ws.AwsSendEmailRequest
 import org.usecase.model.enum.MailType
-import org.usecase.user.mail.manager.IMailManager
+import org.usecase.mail.manager.IMailManager
 import java.util.HashMap
 
 /**

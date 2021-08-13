@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager
  * The generic two-way (bi-directional) ongoing conversation between the client and the server
  * @author Simpli CLI generator
  */
-@ServerEndpoint("/ws/user/notification/{token}")
+@ServerEndpoint("/ws/notification/{token}")
 class NotificationSocket: RouterWrapper() {
     companion object {
         val socket = SocketWrapper<String>()
